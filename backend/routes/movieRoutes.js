@@ -7,6 +7,8 @@ import {
   getMoviesByGenre,
   getMoviesByYear,
   createMovie,
+  updateMovie,
+  deleteMovie,
  
 } from "../controllers/movieController.js";
 
@@ -19,4 +21,6 @@ router.get("/year/:year", getMoviesByYear);
 
 // Protected route to create a new movie
 router.post("/",upload.single("poster"), createMovie);
+router.put("/:id",upload.single("poster"), updateMovie);
+router.delete("/:id", deleteMovie);
 export default router;

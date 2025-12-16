@@ -84,7 +84,7 @@ export const getMoviesByYear = async (req, res) => {
 };
 
 
-export const createMovie = async (req,res) => {
+export const createMovie = async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ message: "Poster image is required" });
@@ -119,11 +119,87 @@ export const createMovie = async (req,res) => {
 
 
         result.end(req.file.buffer);  //sends binary image to Cloudinary
-                                    //starts the actual upload
-                                    //Until this line => nothing uploads
+        //starts the actual upload
+        //Until this line => nothing uploads
 
 
     } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+
+//helper function to get public id from cloudinary url
+const getPublicIdFromUrl = (url) => {
+    const parts = url.split('/');
+    const fileName = parts[parts.length - 1];
+    const publicId = fileName.split('.')[0];
+    return `movies/posters/${publicId}`;
+}
+
+export const updateMovie = async (req, res) => {
+    try {
+        const movie = await Movie.findById(req.params.id)
+
+        if (!movie) {
+            return res.status(404).json({ message: "movie not found" })
+        }
+
+        let posterUrl = movie.posterUrl;  //older poster url
+
+        if (req.file) {
+            //delete old poster from cloudinary
+            const publicId = getPublicIdFromUrl(movie.posterUrl);
+            await cloudinary.uploader.destroy(publicId);
+
+            //upload new poster
+            await new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream(
+                    { folder: "movies/posters" },
+                    (error, result) => {
+                        if (error) return reject(error);
+                        posterUrl = result.secure_url;
+                        resolve();
+                    }
+                ).end(req.file.buffer);
+            });
+        }
+
+        // update fields
+        movie.title = req.body.title ?? movie.title;
+        movie.year = req.body.year ?? movie.year;
+        movie.runtime = req.body.runtime ?? movie.runtime;
+        movie.genres = req.body.genres
+            ? JSON.parse(req.body.genres)
+            : movie.genres;
+        movie.director = req.body.director ?? movie.director;
+        movie.actors = req.body.actors ?? movie.actors;
+        movie.plot = req.body.plot ?? movie.plot;
+        movie.posterUrl = posterUrl;
+
+        await movie.save();
+
+        res.status(200).json(movie);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+
+    }
+}
+
+export const deleteMovie = async (req, res) => {
+    try {
+        const movie = await Movie.findById(req.params.id);
+        if (!movie) {
+            return res.status(404).json({ message: "Movie not found" });
+        }
+        // Delete poster from Cloudinary
+        const publicId = getPublicIdFromUrl(movie.posterUrl);
+        await cloudinary.uploader.destroy(publicId);
+
+        await Movie.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: "Movie deleted successfully" });
+    }
+    catch (error) {
         res.status(500).json({ message: error.message });
     }
 }
