@@ -1,4 +1,4 @@
-const movies=    [
+const movieData=    [
     {
         "id": 1,
         "title": "Beetlejuice",
@@ -2126,4 +2126,4 @@ const movies=    [
         "posterUrl": "https://images-na.ssl-images-amazon.com/images/M/MV5BNDc4MThhN2EtZjMzNC00ZDJmLThiZTgtNThlY2UxZWMzNjdkXkEyXkFqcGdeQXVyNDk3NzU2MTQ@._V1_SX300.jpg"
     }
 ]
-export default movies;
+export default movieData;

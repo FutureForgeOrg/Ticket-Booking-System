@@ -1,0 +1,213 @@
+import Show from '../models/Show.js';
+import Ticket from '../models/Ticket.js';
+
+export const bookSeats = async (req, res) => {
+    try {
+
+        const { showId, seats, userId } = req.body;
+
+        // Validate input
+        if (!showId || !userId || !seats) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+
+        if (!seats || seats.length === 0) {
+            return res.status(400).json({ message: "No seats selected" });
+        }
+        //  Find show
+        const show = await Show.findById(showId);
+        if (!show) {
+            return res.status(404).json({ message: "Show not found" });
+        }
+
+        //unlock expired seats
+
+        const expiredTickets = await Ticket.find({
+            show: showId,
+            status: "PENDING",
+            expiresAt: { $lt: new Date() }
+        });
+
+        for (const ticket of expiredTickets) {
+            show.seats.forEach(seat => {
+                ticket.seats.forEach(tSeat => {
+                    if (
+                        seat.row === tSeat.row &&
+                        seat.number === tSeat.number &&
+                        seat.bookedBy?.toString() === ticket.user.toString()
+                    ) {
+                        seat.isBooked = false;
+                        seat.bookedBy = null;
+                    }
+                });
+            });
+
+            ticket.status = "EXPIRED";
+            await ticket.save();
+        }
+
+
+        await show.save();
+
+
+
+
+
+        //check if seat exists
+        const invalidSeats = seats.filter(s => !show.seats.find(seat => seat.row === s.row && seat.number === s.number));
+
+        if (invalidSeats.length > 0) {
+            return res.status(400).json({
+                message: "Some selected seats do not exist in this show",
+                seats: invalidSeats
+            });
+        }
+
+
+        const seatKeys = seats.map(seat => `${seat.row}-${seat.number}`);
+
+
+        const unavailable = show.seats.filter(
+            seat =>
+                seatKeys.includes(`${seat.row}-${seat.number}`) &&
+                seat.isBooked
+        )
+        if (unavailable.length > 0) {
+            return res.status(409).json({
+                message: "Some seats are already booked",
+                seats: unavailable
+            });
+        }
+
+        //lock seats
+
+        show.seats = show.seats.map(seat => {
+            if (seatKeys.includes(`${seat.row}-${seat.number}`)) {
+                seat.isBooked = true;
+                seat.bookedBy = userId;
+            }
+            return seat;
+        });
+        await show.save();
+
+        //calculate price
+        let totalPrice = 0;
+        seats.forEach(s => {
+            const seatData = show.seats.find(
+                seat => seat.row === s.row && seat.number === s.number
+            );
+            totalPrice += show.price[seatData.type];
+        })
+
+        //creat ticket
+        const ticket = await Ticket.create({
+            user: userId,
+            show: showId,
+            seats,
+            totalPrice,
+            status: "PENDING",
+            expiresAt: new Date(Date.now() + 1 * 60 * 1000) //1 minutes from now
+
+        });
+
+        res.status(201).json({
+            message: "Seats locked, proceed to payment",
+            ticketId: ticket._id,
+            expiresAt: ticket.expiresAt,
+            seats,
+            totalPrice
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
+
+export const confirmTicket = async (req, res) => {
+    const { ticketId } = req.params;
+
+    // Fetch the ticket first
+    const ticket = await Ticket.findById(ticketId);
+    if (!ticket) {
+        return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    // If ticket is pending but expired
+    if (ticket.status === "PENDING" && new Date() > new Date(ticket.expiresAt)) {
+        const show = await Show.findById(ticket.show);
+        if (show) {
+            // Unlock seats
+            show.seats.forEach(seat => {
+                ticket.seats.forEach(tSeat => {
+                    if (
+                        seat.row === tSeat.row &&
+                        seat.number === tSeat.number &&
+                        seat.bookedBy?.toString() === ticket.user.toString()
+                    ) {
+                        seat.isBooked = false;
+                        seat.bookedBy = null;
+                    }
+                });
+            });
+
+            await show.save();
+        }
+
+        ticket.status = "EXPIRED";
+        await ticket.save();
+
+        return res.status(400).json({ message: "Ticket expired, seats unlocked" });
+    }
+
+    // If ticket is already confirmed or invalid
+    if (ticket.status !== "PENDING") {
+        return res.status(400).json({ message: "Ticket already confirmed or invalid" });
+    }
+
+    // Confirm the ticket
+    ticket.status = "CONFIRMED";
+    await ticket.save();
+
+    res.json({ message: "Booking confirmed" });
+};
+
+
+export const cancelTicket = async (req, res) => {
+    try {
+        const { ticketId, userId } = req.body;
+
+        if (!ticketId || !userId) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+
+        const ticket = await Ticket.findById(ticketId);
+        if (!ticket) {
+            return res.status(404).json({ message: "Ticket not found" });
+        }
+
+        const show = await Show.findById(ticket.show);
+        if (!show) {
+            return res.status(404).json({ message: "Show not found" })
+        }
+
+        show.seats.forEach(seat => {
+            ticket.seats.forEach(tSeat => {
+                if (
+                    seat.row === tSeat.row &&
+                    seat.number === tSeat.number &&
+                    seat.bookedBy?.toString() === ticket.user.toString()
+                ) {
+                    seat.isBooked = false;
+                    seat.bookedBy = null;
+                }
+            });
+        });
+
+        await show.save();
+
+        ticket.status = "CANCELLED";
+        await ticket.save();
+        res.status(200).json({ message: "Ticket cancelled successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
