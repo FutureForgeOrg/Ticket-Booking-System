@@ -1,7 +1,7 @@
 import Show from "../models/Show.js";
 import Cinema from "../models/Cinema.js";
 import Movie from "../models/Movie.js";
-
+import pagination from "../utils/pagination.js";
 
 
 export const createShow = async (req, res) => {
@@ -84,6 +84,67 @@ export const createShow = async (req, res) => {
         });
 
     } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+export const getAllShows = async (req, res) => {
+
+    try {
+
+        const { movieId, cinemaId } = req.query;
+
+        const { page, limit, skip } = pagination(req);
+
+        const filter = {};
+        if (movieId) {
+            filter.movie = movieId;
+        }
+        if (cinemaId) {
+            filter.cinema = cinemaId;
+        }
+
+        const shows = await Show.find(filter)
+            .populate('movie', 'title duration genres')
+            .populate('cinema', 'name location')
+            .sort({ showTime: 1 })
+            .skip(skip)
+            .limit(limit);
+
+
+        const totalShows = await Show.countDocuments(filter);
+
+        res.status(200).json({
+            success: true,
+            count: shows.length,
+            total: totalShows,
+            page,
+            limit,
+            totalPages: Math.ceil(totalShows / limit),
+            data: shows
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+
+    }
+}
+
+export const getShowById = async (req, res) => {
+    try {
+        const show = await Show.findById(req.params.id)
+            .populate('movie', 'title duration genres')
+            .populate('cinema', 'name location');
+
+
+        if (!show) {
+            return res.status(404).json({ message: "Show not found" });
+        }
+        res.status(200).json({
+            success: true,
+            data: show
+        });
+    }
+    catch (error) {
         res.status(500).json({ message: error.message });
     }
 }

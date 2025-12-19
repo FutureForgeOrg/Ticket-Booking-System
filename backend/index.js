@@ -7,6 +7,7 @@ import movieRoutes from './routes/movieRoutes.js';
 import cinemaRoutes from './routes/cinemaRoutes.js'
 import showRoutes from './routes/showRoutes.js'
 import ticketRoutes from './routes/ticketRoutes.js'
+// import "./jobs/expireTickets.job.js"
 import connectDB from './config/db.js';
 
 

@@ -1,14 +1,27 @@
 import Movie from "../models/Movie.js"
 import cloudinary from "../config/cloudinary.js";
+import pagination from "../utils/pagination.js";
 
 export const getAllMovies = async (req, res) => {
     try {
-        const movies = await Movie.find();
+        const { page, limit, skip } = pagination(req)
+
+        const movies = await Movie.find()
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 });  //latest first
+
+        const totalMovies = await Movie.countDocuments();
+        let totalPages = Math.ceil(totalMovies / limit);
 
         res.status(200).json({
             success: true,
             count: movies.length,
             data: movies,
+            totalPages,
+            currentPage: page,
+            limit,
+            totalMovies
         });
     } catch (error) {
         res.status(500).json({
@@ -46,13 +59,28 @@ export const getMovieById = async (req, res) => {
 export const getMoviesByGenre = async (req, res) => {
     try {
         const { genre } = req.params;
+        
+        const {skip, limit, page} = pagination(req);
 
-        const movies = await Movie.find({ genres: genre });
+
+        const movies = await Movie.find({ genres: genre }).
+            skip(skip).
+            limit(limit).
+            sort({ createdAt: -1 });  //latest first
+
+            const totalMovies = await Movie.countDocuments({ genres: genre });
+            let totalPages = Math.ceil(totalMovies / limit);
+
 
         res.status(200).json({
             success: true,
             count: movies.length,
             data: movies,
+            totalPages,
+            currentPage: page,
+            limit,
+            totalMovies
+
         });
     } catch (error) {
         res.status(500).json({
@@ -65,14 +93,27 @@ export const getMoviesByGenre = async (req, res) => {
 
 export const getMoviesByYear = async (req, res) => {
     try {
-        const { year } = req.params;
 
-        const movies = await Movie.find({ year });
+        const {skip, limit, page} = pagination(req);
+        const { year } = req.params;
+        
+        const movies = await Movie.find({ year }).
+            skip(skip).
+            limit(limit).
+            sort({ createdAt: -1 });  
+
+            const totalMovies = await Movie.countDocuments({ year });
+            let totalPages = Math.ceil(totalMovies / limit);
+
 
         res.status(200).json({
             success: true,
             count: movies.length,
             data: movies,
+            totalPages,
+            currentPage: page,
+            limit,
+            totalMovies
         });
     } catch (error) {
         res.status(500).json({

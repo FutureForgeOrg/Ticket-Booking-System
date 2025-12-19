@@ -1,8 +1,10 @@
 import express from 'express';
 import {
-    bookSeats} from '../controllers/bookSeatsAndTicketController.js';
+    bookSeats,cancelTicket,confirmTicket} from '../controllers/bookSeatsAndTicketController.js';
 
 const router = express.Router();
 
 router.post('/book-seats', bookSeats);
+router.post('/cancel-ticket',cancelTicket);
+router.post('/confirm-ticket/:ticketId',confirmTicket);
 export default router;
