@@ -1,6 +1,6 @@
 import express from 'express';
 import {
-    bookSeats,cancelTicket,confirmTicket} from '../controllers/bookSeatsAndTicketController.js';
+    bookSeats,cancelTicket,confirmTicket} from '../controllers/TicketController.js';
 
 const router = express.Router();
 
