@@ -32,12 +32,18 @@ const movieSchema = new mongoose.Schema({
     },
     posterUrl: {
         type: String
+    },
+    bannerUrl: {
+        type: String
+    },
+    trailerUrl: {
+        type: String
     }
 
 },
-{ timestamps: true }
+    { timestamps: true }
 )
 
-const Movie=mongoose.model("Movie",movieSchema)
+const Movie = mongoose.model("Movie", movieSchema)
 
 export default Movie;
