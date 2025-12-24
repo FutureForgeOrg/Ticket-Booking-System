@@ -9,15 +9,18 @@ import {
   createMovie,
   updateMovie,
   deleteMovie,
+  mostLikedMovies
 
 } from "../controllers/movieController.js";
 
 const router = express.Router();
 
 router.get("/", getAllMovies);
+router.get("/trending", mostLikedMovies);
 router.get("/:id", getMovieById);
 router.get("/genre/:genre", getMoviesByGenre);
 router.get("/year/:year", getMoviesByYear);
+
 
 // Protected route to create a new movie
 router.post("/", upload.fields([
