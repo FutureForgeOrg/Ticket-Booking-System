@@ -26,7 +26,7 @@ const config: Config = {
         text: {
           primary: "#111827",
           secondary: "#4B5563",
-          muted: "#9CA3AF",
+          muted: "#787d87ff",
         },
 
         danger: "#DC2626",

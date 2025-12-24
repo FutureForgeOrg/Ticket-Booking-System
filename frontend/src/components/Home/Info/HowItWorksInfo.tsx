@@ -4,7 +4,7 @@ import { steps, perks } from "./data";
 export default function HowItWorks() {
   return (
     <section className="bg-canvas">
-      <div className="mx-auto max-w-7xl px-6 py-20">
+      <div className="mx-auto max-w-7xl px-6 py-8">
 
         {/* HEADER */}
         <div className="text-center max-w-2xl mx-auto">
