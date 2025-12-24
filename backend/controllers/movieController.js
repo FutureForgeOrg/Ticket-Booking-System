@@ -252,3 +252,21 @@ export const deleteMovie = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+
+export const mostLikedMovies = async (req, res) => {
+    try {
+        const topMovies = await Movie.find()
+            .sort({ likesCount: -1 }) // Sort by likesCount in descending order
+            .limit(10);
+        res.status(200).json({
+            success: true,
+            data: topMovies,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch top movies",
+            error: error.message,
+        });
+    }
+};
