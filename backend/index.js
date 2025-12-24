@@ -7,6 +7,7 @@ import movieRoutes from './routes/movieRoutes.js';
 import cinemaRoutes from './routes/cinemaRoutes.js'
 import showRoutes from './routes/showRoutes.js'
 import ticketRoutes from './routes/ticketRoutes.js'
+import movieLikeRoutes from './routes/movieLikeRoutes.js'
 // import "./jobs/expireTickets.job.js"
 import connectDB from './config/db.js';
 
@@ -29,6 +30,7 @@ app.use('/api/movies', movieRoutes);
 app.use('/api/cinemas', cinemaRoutes);
 app.use('/api/shows', showRoutes)
 app.use('/api/tickets', ticketRoutes)
+app.use('/api/movieLikes', movieLikeRoutes)
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
