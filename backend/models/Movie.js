@@ -6,10 +6,17 @@ const movieSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    year: {
-        type: Number,
+    releaseDate: {
+        type: Date,
         required: true,
+        index: true
+    },
 
+    status: {
+        type: String,
+        enum: ["UPCOMING", "RELEASED"],
+        default: "UPCOMING",
+        index: true
     },
     runtime: {
         type: Number,   //minutes
@@ -47,6 +54,18 @@ const movieSchema = new mongoose.Schema({
 },
     { timestamps: true }
 )
+
+
+movieSchema.pre('save', function () {
+    
+    if (this.releaseDate <= new Date()) {
+        this.status = "RELEASED";
+    } else {
+        this.status = "UPCOMING";
+    }
+    
+});
+
 
 const Movie = mongoose.model("Movie", movieSchema)
 
