@@ -99,12 +99,19 @@ export const getMoviesByYear = async (req, res) => {
         const { skip, limit, page } = pagination(req);
         const { year } = req.params;
 
-        const movies = await Movie.find({ year }).
+        const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
+        const endDate = new Date(`${parseInt(year) + 1}-01-01T00:00:00.000Z`);
+
+        const movies = await Movie.find({
+            releaseDate: { $gte: startDate, $lt: endDate }
+        }).
             skip(skip).
             limit(limit).
             sort({ createdAt: -1 });
 
-        const totalMovies = await Movie.countDocuments({ year });
+        const totalMovies = await Movie.countDocuments({
+            releaseDate: { $gte: startDate, $lt: endDate }
+        });
         let totalPages = Math.ceil(totalMovies / limit);
 
 
@@ -146,7 +153,7 @@ export const createMovie = async (req, res) => {
 
         const movie = await Movie.create({
             title: req.body.title,
-            year: req.body.year,
+            releaseDate: req.body.releaseDate,
             runtime: req.body.runtime,
             genres: JSON.parse(req.body.genres),
             director: req.body.director,
@@ -206,7 +213,7 @@ export const updateMovie = async (req, res) => {
 
         // update fields
         movie.title = req.body.title ?? movie.title;
-        movie.year = req.body.year ?? movie.year;
+        movie.releaseDate = req.body.releaseDate ?? movie.releaseDate;
         movie.runtime = req.body.runtime ?? movie.runtime;
         movie.genres = req.body.genres
             ? JSON.parse(req.body.genres)
@@ -216,7 +223,7 @@ export const updateMovie = async (req, res) => {
         movie.plot = req.body.plot ?? movie.plot;
         movie.posterUrl = posterUrl;
         movie.bannerUrl = bannerUrl;
-        movie.trailerUrl = req.body.trailerUrl ?? trailerUrl
+        movie.trailerUrl = req.body.trailerUrl ?? movie.trailerUrl
 
         await movie.save();
 
@@ -266,6 +273,25 @@ export const mostLikedMovies = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Failed to fetch top movies",
+            error: error.message,
+        });
+    }
+};
+
+export const getMovieByStatus = async (req, res) => {
+    try {
+        const { status } = req.params;
+        const movies = await Movie.find({ status : status.toUpperCase()});
+
+        res.status(200).json({
+            success: true,
+            count: movies.length,
+            data: movies,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch movies by status",
             error: error.message,
         });
     }

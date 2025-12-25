@@ -9,7 +9,8 @@ import {
   createMovie,
   updateMovie,
   deleteMovie,
-  mostLikedMovies
+  mostLikedMovies,
+  getMovieByStatus
 
 } from "../controllers/movieController.js";
 
@@ -20,7 +21,7 @@ router.get("/trending", mostLikedMovies);
 router.get("/:id", getMovieById);
 router.get("/genre/:genre", getMoviesByGenre);
 router.get("/year/:year", getMoviesByYear);
-
+router.get("/status/:status", getMovieByStatus);
 
 // Protected route to create a new movie
 router.post("/", upload.fields([
