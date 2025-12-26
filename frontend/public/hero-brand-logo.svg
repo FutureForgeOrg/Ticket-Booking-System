@@ -1,0 +1,112 @@
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Floating tickets with different angles -->
+  <g id="ticket1" opacity="0.95">
+    <defs>
+      <linearGradient id="ticketGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#10B981;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    <rect x="100" y="150" width="200" height="120" rx="12" fill="url(#ticketGrad1)" transform="rotate(-15 200 210)"/>
+    <circle cx="110" cy="210" r="8" fill="white" opacity="0.3" transform="rotate(-15 200 210)"/>
+    <circle cx="290" cy="210" r="8" fill="white" opacity="0.3" transform="rotate(-15 200 210)"/>
+    <line x1="110" y1="170" x2="110" y2="250" stroke="white" stroke-width="2" stroke-dasharray="5,5" opacity="0.4" transform="rotate(-15 200 210)"/>
+    <line x1="290" y1="170" x2="290" y2="250" stroke="white" stroke-width="2" stroke-dasharray="5,5" opacity="0.4" transform="rotate(-15 200 210)"/>
+    <text x="200" y="200" fill="white" font-size="16" font-weight="bold" text-anchor="middle" transform="rotate(-15 200 210)">MOVIE</text>
+    <text x="200" y="225" fill="white" font-size="12" text-anchor="middle" opacity="0.9" transform="rotate(-15 200 210)">ADMIT ONE</text>
+  </g>
+
+  <g id="ticket2" opacity="0.9">
+    <defs>
+      <linearGradient id="ticketGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#FCD34D;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    <rect x="480" y="100" width="220" height="130" rx="12" fill="url(#ticketGrad2)" transform="rotate(12 590 165)"/>
+    <circle cx="490" cy="165" r="8" fill="white" opacity="0.3" transform="rotate(12 590 165)"/>
+    <circle cx="690" cy="165" r="8" fill="white" opacity="0.3" transform="rotate(12 590 165)"/>
+    <line x1="490" y1="120" x2="490" y2="210" stroke="white" stroke-width="2" stroke-dasharray="5,5" opacity="0.4" transform="rotate(12 590 165)"/>
+    <line x1="690" y1="120" x2="690" y2="210" stroke="white" stroke-width="2" stroke-dasharray="5,5" opacity="0.4" transform="rotate(12 590 165)"/>
+    <text x="590" y="155" fill="white" font-size="18" font-weight="bold" text-anchor="middle" transform="rotate(12 590 165)">CONCERT</text>
+    <text x="590" y="180" fill="white" font-size="13" text-anchor="middle" opacity="0.9" transform="rotate(12 590 165)">LIVE EVENT</text>
+  </g>
+
+  <g id="ticket3" opacity="0.85">
+    <rect x="150" y="380" width="190" height="110" rx="12" fill="#10B981" transform="rotate(8 245 435)"/>
+    <circle cx="160" cy="435" r="7" fill="white" opacity="0.3" transform="rotate(8 245 435)"/>
+    <circle cx="330" cy="435" r="7" fill="white" opacity="0.3" transform="rotate(8 245 435)"/>
+    <line x1="160" y1="395" x2="160" y2="475" stroke="white" stroke-width="2" stroke-dasharray="5,5" opacity="0.4" transform="rotate(8 245 435)"/>
+    <line x1="330" y1="395" x2="330" y2="475" stroke="white" stroke-width="2" stroke-dasharray="5,5" opacity="0.4" transform="rotate(8 245 435)"/>
+    <text x="245" y="430" fill="white" font-size="15" font-weight="bold" text-anchor="middle" transform="rotate(8 245 435)">THEATER</text>
+    <text x="245" y="450" fill="white" font-size="11" text-anchor="middle" opacity="0.9" transform="rotate(8 245 435)">SHOW TIME</text>
+  </g>
+
+  <!-- Center main ticket - largest and most prominent -->
+  <g id="mainTicket" opacity="1">
+    <defs>
+      <linearGradient id="mainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#10B981;stop-opacity:1" />
+        <stop offset="50%" style="stop-color:#059669;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#047857;stop-opacity:1" />
+      </linearGradient>
+      <filter id="shadow">
+        <feDropShadow dx="0" dy="8" stdDeviation="15" flood-opacity="0.3"/>
+      </filter>
+    </defs>
+    <rect x="250" y="220" width="300" height="180" rx="16" fill="url(#mainGrad)" filter="url(#shadow)"/>
+    <circle cx="265" cy="310" r="12" fill="white" opacity="0.2"/>
+    <circle cx="535" cy="310" r="12" fill="white" opacity="0.2"/>
+    
+    <!-- Perforated lines -->
+    <line x1="265" y1="240" x2="265" y2="380" stroke="white" stroke-width="3" stroke-dasharray="8,6" opacity="0.3"/>
+    <line x1="535" y1="240" x2="535" y2="380" stroke="white" stroke-width="3" stroke-dasharray="8,6" opacity="0.3"/>
+    
+    <!-- Ticket content -->
+    <text x="400" y="285" fill="white" font-size="32" font-weight="bold" text-anchor="middle">GoBookIt</text>
+    <text x="400" y="315" fill="white" font-size="18" text-anchor="middle" opacity="0.95">Explore The Events</text>
+    <rect x="340" y="335" width="120" height="35" rx="18" fill="#FCD34D"/>
+    <text x="400" y="358" fill="#047857" font-size="16" font-weight="bold" text-anchor="middle">GET TICKETS</text>
+  </g>
+
+  <g id="ticket4" opacity="0.8">
+    <rect x="520" y="370" width="180" height="105" rx="12" fill="#FCD34D" transform="rotate(-10 610 422)"/>
+    <circle cx="530" cy="422" r="7" fill="white" opacity="0.3" transform="rotate(-10 610 422)"/>
+    <circle cx="690" cy="422" r="7" fill="white" opacity="0.3" transform="rotate(-10 610 422)"/>
+    <line x1="530" y1="385" x2="530" y2="460" stroke="white" stroke-width="2" stroke-dasharray="5,5" opacity="0.4" transform="rotate(-10 610 422)"/>
+    <line x1="690" y1="385" x2="690" y2="460" stroke="white" stroke-width="2" stroke-dasharray="5,5" opacity="0.4" transform="rotate(-10 610 422)"/>
+    <text x="610" y="417" fill="white" font-size="14" font-weight="bold" text-anchor="middle" transform="rotate(-10 610 422)">SPORTS</text>
+    <text x="610" y="435" fill="white" font-size="11" text-anchor="middle" opacity="0.9" transform="rotate(-10 610 422)">GAME DAY</text>
+  </g>
+
+  <!-- Decorative elements - stars/sparkles -->
+  <g opacity="0.6">
+    <circle cx="80" cy="100" r="3" fill="#FCD34D"/>
+    <circle cx="720" cy="480" r="4" fill="#10B981"/>
+    <circle cx="650" cy="80" r="2.5" fill="#FCD34D"/>
+    <circle cx="120" cy="520" r="3.5" fill="#10B981"/>
+    <path d="M 750 300 L 754 304 L 758 300 L 754 296 Z" fill="#FCD34D"/>
+    <path d="M 50 350 L 55 355 L 60 350 L 55 345 Z" fill="#10B981"/>
+  </g>
+
+  <!-- Animation styles -->
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+    @keyframes floatAlt {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    #ticket1 { animation: float 4s ease-in-out infinite; }
+    #ticket2 { animation: floatAlt 5s ease-in-out infinite 0.5s; }
+    #ticket3 { animation: float 4.5s ease-in-out infinite 1s; }
+    #ticket4 { animation: floatAlt 5.5s ease-in-out infinite 1.5s; }
+    #mainTicket { animation: float 3s ease-in-out infinite; }
+  </style>
+</svg>
