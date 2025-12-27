@@ -15,12 +15,14 @@ export default function MovieCard({ movie }: MovieCardProps) {
         className="h-96 w-full object-cover"
       />
 
-      <div className="p-4">
-        <h3 className="text-lg font-semibold leading-tight">{movie.title}</h3>
+      <div className="p-4 flex flex-col">
+        <h3 className="text-lg font-semibold leading-tight line-clamp-1">
+          {movie.title}
+        </h3>
 
-        <p className="mt-1 text-sm text-text-muted">
+        <p className="mt-1 text-sm text-text-muted line-clamp-1">
           {new Date(movie.releaseDate).toLocaleDateString()} •{" "}
-          {movie.genres.join(", ")}
+          {(movie.genres ?? []).join(", ")}
         </p>
 
         <Button size="sm" className="mt-4 w-full">

@@ -3,7 +3,7 @@ import Hero from "./components/Home/Hero";
 import HowItWorks from "./components/Home/Info/HowItWorksInfo";
 import Navbar from "./components/Home/Navbar";
 import TrendingMovies from "./components/Home/MovieScrollers/TrendingMovies";
-// import NewReleaseMovies from "./components/Home/MovieScrollers/NewRelease";
+import NewReleaseMovies from "./components/Home/MovieScrollers/NewRelease";
 
 function App() {
   return (
@@ -12,7 +12,7 @@ function App() {
       <Hero />
       <TrendingMovies />
       <HowItWorks />
-      {/* <NewReleaseMovies /> */}
+      <NewReleaseMovies />
       <Footer />
     </>
   );
