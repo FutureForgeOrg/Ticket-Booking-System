@@ -3,10 +3,11 @@ import { NavLink } from "../ui/Navlink";
 import Select from "../ui/Select";
 import { useCityStore } from "../../store/cityStore";
 import { popularCities } from "../../utils/data/cities";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const { city, setCity } = useCityStore();
-
+  const navigate = useNavigate();
   return (
     <header className="sticky top-0 z-50 bg-canvas border-b border-border">
       <div className="mx-auto max-w-7xl px-6">
@@ -15,7 +16,12 @@ export default function Navbar() {
           <div className="flex items-center gap-10">
             {/* Logo */}
             <div className="text-xl font-semibold tracking-tight">
-              <div className="flex items-center justify-center gap-2">
+              <div
+                className="flex items-center justify-center gap-2 cursor-pointer"
+                onClick={() => {
+                  navigate("/");
+                }}
+              >
                 <img
                   src="/hero-logo.png"
                   alt="Logo"
