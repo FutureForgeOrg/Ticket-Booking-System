@@ -5,13 +5,39 @@ import { getPublicIdFromUrl, uploadBufferToCloudinary } from "../utils/mediaUtil
 
 
 export const getAllMovies = async (req, res) => {
+    const { genres, year, status } = req.query;
     try {
         const { page, limit, skip } = pagination(req)
 
-        const movies = await Movie.find()
+        const query = {};
+
+        if (genres) {
+            query.genres = genres;
+        }
+
+        if (year) {
+            const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
+            const endDate = new Date(`${parseInt(year) + 1}-01-01T00:00:00.000Z`);
+            query.releaseDate = { $gte: startDate, $lt: endDate };
+        }
+
+        if (status) {
+            query.status = status.toUpperCase();
+        }
+
+        const movies = await Movie.find(query)
             .skip(skip)
             .limit(limit)
             .sort({ createdAt: -1 });  //latest first
+
+        if (!movies) {
+            return res.status(404).json({
+                success: false,
+                message: "No movies found",
+            });
+        }
+
+
 
         const totalMovies = await Movie.countDocuments();
         let totalPages = Math.ceil(totalMovies / limit);
@@ -58,85 +84,49 @@ export const getMovieById = async (req, res) => {
     }
 };
 
-export const getMoviesByGenre = async (req, res) => {
-    try {
-        const { genre } = req.params;
+// export const getMoviesByGenre = async (req, res) => {
+//     try {
+//         const { genre } = req.params;
 
-        const { skip, limit, page } = pagination(req);
-
-
-        const movies = await Movie.find({ genres: genre }).
-            skip(skip).
-            limit(limit).
-            sort({ createdAt: -1 });  //latest first
-
-        const totalMovies = await Movie.countDocuments({ genres: genre });
-        let totalPages = Math.ceil(totalMovies / limit);
+//         const { skip, limit, page } = pagination(req);
 
 
-        res.status(200).json({
-            success: true,
-            count: movies.length,
-            data: movies,
-            totalPages,
-            currentPage: page,
-            limit,
-            totalMovies
+//         const movies = await Movie.find({ genres: genre }).
+//             skip(skip).
+//             limit(limit).
+//             sort({ createdAt: -1 });  //latest first
 
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Failed to fetch movies by genre",
-            error: error.message,
-        });
-    }
-};
-
-export const getMoviesByYear = async (req, res) => {
-    try {
-
-        const { skip, limit, page } = pagination(req);
-        const { year } = req.params;
-
-        const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
-        const endDate = new Date(`${parseInt(year) + 1}-01-01T00:00:00.000Z`);
-
-        const movies = await Movie.find({
-            releaseDate: { $gte: startDate, $lt: endDate }
-        }).
-            skip(skip).
-            limit(limit).
-            sort({ createdAt: -1 });
-
-        const totalMovies = await Movie.countDocuments({
-            releaseDate: { $gte: startDate, $lt: endDate }
-        });
-        let totalPages = Math.ceil(totalMovies / limit);
+//         const totalMovies = await Movie.countDocuments({ genres: genre });
+//         let totalPages = Math.ceil(totalMovies / limit);
 
 
-        res.status(200).json({
-            success: true,
-            count: movies.length,
-            data: movies,
-            totalPages,
-            currentPage: page,
-            limit,
-            totalMovies
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Failed to fetch movies by year",
-            error: error.message,
-        });
-    }
-};
+//         res.status(200).json({
+//             success: true,
+//             count: movies.length,
+//             data: movies,
+//             totalPages,
+//             currentPage: page,
+//             limit,
+//             totalMovies
+
+//         });
+//     } catch (error) {
+//         res.status(500).json({
+//             success: false,
+//             message: "Failed to fetch movies by genre",
+//             error: error.message,
+//         });
+//     }
+// };
+
 
 export const createMovie = async (req, res) => {
     try {
         if (!req.files?.poster || !req.files?.banner) {
-            return res.status(400).json({ message: "Poster and banner image are required" });
+            return res.status(400).json({
+                success: false,
+                message: "Poster and banner image are required"
+            });
         }
 
         const [posterResult, bannerResult] = await Promise.all([
@@ -164,10 +154,13 @@ export const createMovie = async (req, res) => {
             trailerUrl: req.body.trailerUrl
         });
 
-        res.status(201).json(movie);
+        res.status(201).json({
+            success: true,
+            data: movie
+        });
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ success: false, message: error.message });
     }
 }
 
@@ -176,7 +169,10 @@ export const updateMovie = async (req, res) => {
         const movie = await Movie.findById(req.params.id)
 
         if (!movie) {
-            return res.status(404).json({ message: "movie not found" })
+            return res.status(404).json({
+                success: false,
+                message: "movie not found"
+            })
         }
 
         let posterUrl = movie.posterUrl;  //older poster url
@@ -227,9 +223,15 @@ export const updateMovie = async (req, res) => {
 
         await movie.save();
 
-        res.status(200).json(movie);
+        res.status(200).json({
+            success: true,
+            data: movie
+        });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
 
     }
 }
@@ -238,7 +240,10 @@ export const deleteMovie = async (req, res) => {
     try {
         const movie = await Movie.findById(req.params.id);
         if (!movie) {
-            return res.status(404).json({ message: "Movie not found" });
+            return res.status(404).json({
+                success: false,
+                message: "Movie not found"
+            });
         }
         // Delete poster from Cloudinary
         const publicId = getPublicIdFromUrl(movie.posterUrl);
@@ -253,10 +258,16 @@ export const deleteMovie = async (req, res) => {
         }
 
         await Movie.findByIdAndDelete(req.params.id);
-        res.status(200).json({ message: "Movie deleted successfully" });
+        res.status(200).json({
+            success: true,
+            message: "Movie deleted successfully"
+        });
     }
     catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
 }
 
@@ -281,7 +292,7 @@ export const mostLikedMovies = async (req, res) => {
 export const getMovieByStatus = async (req, res) => {
     try {
         const { status } = req.params;
-        const movies = await Movie.find({ status : status.toUpperCase()});
+        const movies = await Movie.find({ status: status.toUpperCase() });
 
         res.status(200).json({
             success: true,
@@ -296,3 +307,43 @@ export const getMovieByStatus = async (req, res) => {
         });
     }
 };
+
+// export const getMoviesByYear = async (req, res) => {
+//     try {
+
+//         const { skip, limit, page } = pagination(req);
+//         const { year } = req.params;
+
+//         const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
+//         const endDate = new Date(`${parseInt(year) + 1}-01-01T00:00:00.000Z`);
+
+//         const movies = await Movie.find({
+//             releaseDate: { $gte: startDate, $lt: endDate }
+//         }).
+//             skip(skip).
+//             limit(limit).
+//             sort({ createdAt: -1 });
+
+//         const totalMovies = await Movie.countDocuments({
+//             releaseDate: { $gte: startDate, $lt: endDate }
+//         });
+//         let totalPages = Math.ceil(totalMovies / limit);
+
+
+//         res.status(200).json({
+//             success: true,
+//             count: movies.length,
+//             data: movies,
+//             totalPages,
+//             currentPage: page,
+//             limit,
+//             totalMovies
+//         });
+//     } catch (error) {
+//         res.status(500).json({
+//             success: false,
+//             message: "Failed to fetch movies by year",
+//             error: error.message,
+//         });
+//     }
+// };

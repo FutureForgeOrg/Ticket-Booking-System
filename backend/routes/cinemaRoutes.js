@@ -5,7 +5,8 @@ import {
     addScreenToCinema,
     getAllCinemas,
     getCinemaById,
-    deleteCinema
+    deleteCinema,
+   
 } from "../controllers/cinemaController.js"
 
 const router=express.Router();
@@ -19,5 +20,6 @@ router.delete("/:id",deleteCinema)
 //public
 router.get("/",getAllCinemas)
 router.get("/:id",getCinemaById)
+
 
 export default router;

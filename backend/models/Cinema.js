@@ -38,10 +38,23 @@ const cinemaSchema = mongoose.Schema({
         trim: true
     },
     location: {
-        type: String,
-        required: true,
-        trim: true
+        name: {
+            type: String,
+            required: true,
+            trim: true
+        },
+        city: {
+            type: String,
+            required: true,
+            trim: true
+        },
+        state: {
+            type: String,
+            required: true,
+            trim: true
+        },
     },
+
     screens: {
         type: [screenSchema],
         required: true
