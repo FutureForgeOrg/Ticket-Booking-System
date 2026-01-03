@@ -8,7 +8,6 @@ import cinemaRoutes from './routes/cinemaRoutes.js'
 import showRoutes from './routes/showRoutes.js'
 import ticketRoutes from './routes/ticketRoutes.js'
 import movieLikeRoutes from './routes/movieLikeRoutes.js'
-// import "./jobs/expireTickets.job.js"
 import connectDB from './config/db.js';
 
 
@@ -21,6 +20,22 @@ app.use(express.json());
 
 // connect to db
 connectDB();
+
+//seed cinema data
+// const seedCinemas = async () => {
+//     try {
+//         const count = await Cinema.countDocuments();
+//         if (count === 0) {
+//             await Cinema.insertMany(cinemaData);
+//             console.log("Cinema data seeded");
+//         }
+
+//     } catch (error) {
+//         console.log("Error seeding cinema data:", error.message);
+//     }
+// };
+
+// seedCinemas();
 
 
 
