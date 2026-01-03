@@ -1,21 +1,21 @@
 import dotenv from "dotenv";
 dotenv.config();
-import express from "express";
-import cors from "cors";
-import authRoutes from "./routes/authRoutes.js";
-import movieRoutes from "./routes/movieRoutes.js";
-import cinemaRoutes from "./routes/cinemaRoutes.js";
-import showRoutes from "./routes/showRoutes.js";
-import ticketRoutes from "./routes/ticketRoutes.js";
-import movieLikeRoutes from "./routes/movieLikeRoutes.js";
-// import "./jobs/expireTickets.job.js"
-import connectDB from "./config/db.js";
+import express from 'express';
+import cors from 'cors';
+import authRoutes from './routes/authRoutes.js';
+import movieRoutes from './routes/movieRoutes.js';
+import cinemaRoutes from './routes/cinemaRoutes.js'
+import showRoutes from './routes/showRoutes.js'
+import ticketRoutes from './routes/ticketRoutes.js'
+import movieLikeRoutes from './routes/movieLikeRoutes.js'
+import connectDB from './config/db.js';
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: process.env.FRONTEND_URL || "http://localhost:5173" || "http://localhost:3001",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -26,12 +26,31 @@ app.use(express.json());
 // connect to db
 connectDB();
 
-app.use("/api/auth", authRoutes);
-app.use("/api/movies", movieRoutes);
-app.use("/api/cinemas", cinemaRoutes);
-app.use("/api/shows", showRoutes);
-app.use("/api/tickets", ticketRoutes);
-app.use("/api/movieLikes", movieLikeRoutes);
+//seed cinema data
+// const seedCinemas = async () => {
+//     try {
+//         const count = await Cinema.countDocuments();
+//         if (count === 0) {
+//             await Cinema.insertMany(cinemaData);
+//             console.log("Cinema data seeded");
+//         }
+
+//     } catch (error) {
+//         console.log("Error seeding cinema data:", error.message);
+//     }
+// };
+
+// seedCinemas();
+
+
+
+
+app.use('/api/auth', authRoutes);
+app.use('/api/movies', movieRoutes);
+app.use('/api/cinemas', cinemaRoutes);
+app.use('/api/shows', showRoutes)
+app.use('/api/tickets', ticketRoutes)
+app.use('/api/movieLikes', movieLikeRoutes)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

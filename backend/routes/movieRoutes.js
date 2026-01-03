@@ -4,8 +4,6 @@ import upload from "../middlewares/multer.js";
 import {
   getAllMovies,
   getMovieById,
-  getMoviesByGenre,
-  getMoviesByYear,
   createMovie,
   updateMovie,
   deleteMovie,
@@ -19,8 +17,8 @@ const router = express.Router();
 router.get("/", getAllMovies);
 router.get("/trending", mostLikedMovies);
 router.get("/:id", getMovieById);
-router.get("/genre/:genre", getMoviesByGenre);
-router.get("/year/:year", getMoviesByYear);
+// router.get("/genre/:genre", getMoviesByGenre);
+// router.get("/year/:year", getMoviesByYear);
 router.get("/status/:status", getMovieByStatus);
 
 // Protected route to create a new movie
