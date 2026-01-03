@@ -18,7 +18,7 @@ function EditMovie() {
 
   const submit = async (data) => {
     await updateMovie(id, data);
-    navigate("/Movie");
+    navigate("/movie");
   }
 
   if (!current) {

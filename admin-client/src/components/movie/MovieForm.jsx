@@ -114,12 +114,14 @@ function MovieForm({ initialData = {}, onSubmit }) {
                     label="Poster Image"
                     name="poster"
                     onChange={handleFileChange}
+                    value={form.posterUrl}
                 />
 
                 <FileInput
                     label="Banner Image"
                     name="banner"
                     onChange={handleFileChange}
+                    value={form.bannerUrl}
                 />
 
                 <Button type="submit">Save Movie</Button>
