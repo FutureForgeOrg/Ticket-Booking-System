@@ -14,7 +14,7 @@ const movieSchema = new mongoose.Schema({
 
     status: {
         type: String,
-        enum: ["UPCOMING", "RELEASED"],
+        enum: ["UPCOMING", "RELEASED", "ARCHIVED"],
         default: "UPCOMING",
         index: true
     },
