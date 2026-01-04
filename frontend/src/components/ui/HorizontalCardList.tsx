@@ -6,6 +6,9 @@ interface HorizontalCardListProps<T> {
   items: T[];
   renderItem: (item: T) => ReactNode;
   scrollAmount?: number;
+
+  loading?: boolean;
+  error?: Error | null;
 }
 
 export default function HorizontalCardList<T>({
@@ -13,6 +16,8 @@ export default function HorizontalCardList<T>({
   items,
   renderItem,
   scrollAmount = 500,
+  loading = false,
+  error = null,
 }: HorizontalCardListProps<T>) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -51,6 +56,42 @@ export default function HorizontalCardList<T>({
     };
   }, []);
 
+  // ERROR UI
+  if (error) {
+    return (
+      <section className="bg-canvas">
+        <div className="mx-auto max-w-7xl px-6 py-6">
+          <h2 className="mb-4 text-2xl font-semibold">{title}</h2>
+
+          <div className="rounded-xl border border-red-400/30 bg-red-500/10 p-6 text-red-400">
+            <p>{error.message}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // LOADING UI
+  if (loading) {
+    return (
+      <section className="bg-canvas">
+        <div className="mx-auto max-w-7xl px-6 py-6">
+          <h2 className="mb-6 text-2xl font-semibold">{title}</h2>
+
+          <div className="grid grid-rows-1 grid-flow-col gap-6 overflow-hidden pb-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-48 w-40 animate-pulse rounded-xl bg-neutral-400"
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // nothing to show
   if (!items.length) return null;
 
   return (
@@ -59,48 +100,27 @@ export default function HorizontalCardList<T>({
         <h2 className="mb-6 text-2xl font-semibold">{title}</h2>
 
         <div className="relative">
-          {/* LEFT ARROW */}
           {showLeft && (
             <button
               onClick={() => scroll("left")}
-              className="
-                absolute left-0 top-1/2 z-10
-                -translate-y-1/2
-                rounded-full bg-black/60 p-3
-                text-white
-                hover:bg-black/80
-              "
+              className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/60 p-3 text-white hover:bg-black/80"
             >
               <ArrowLeft size={14} />
             </button>
           )}
 
-          {/* RIGHT ARROW */}
           {showRight && (
             <button
               onClick={() => scroll("right")}
-              className="
-                absolute right-0 top-1/2 z-10
-                -translate-y-1/2
-                rounded-full bg-black/60 p-3
-                text-white
-                hover:bg-black/80
-              "
+              className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/60 p-3 text-white hover:bg-black/80"
             >
               <ArrowRight size={14} />
             </button>
           )}
 
-          {/* SCROLL CONTAINER */}
           <div
             ref={scrollRef}
-            className="
-              grid grid-rows-1 grid-flow-col
-              gap-6
-              overflow-x-auto
-              pb-4
-              scrollbar-hide
-            "
+            className="grid grid-rows-1 grid-flow-col gap-6 overflow-x-auto pb-4 scrollbar-hide"
           >
             {items.map(renderItem)}
           </div>

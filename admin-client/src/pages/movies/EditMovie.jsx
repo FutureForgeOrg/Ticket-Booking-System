@@ -18,7 +18,7 @@ function EditMovie() {
 
   const submit = async (data) => {
     await updateMovie(id, data);
-    navigate("/Movie");
+    navigate("/movie");
   }
 
   if (!current) {
@@ -27,7 +27,7 @@ function EditMovie() {
 
   return (
     <> <div className="p-6">
-      <MovieForm initialData={current} onSubmit={submit} />
+      <MovieForm key={current?._id} initialData={current} onSubmit={submit} />
     </div>
     </>
   )

@@ -1,14 +1,17 @@
+import { useAllMoviesQuery } from "../../../hooks/getAllMoviesQuery";
 import HorizontalCardList from "../../ui/HorizontalCardList";
 import MovieCard from "../../ui/MovieCard";
-import { trendingMovies } from "./mockdata";
 
 export default function NewReleaseMovies() {
+  const { data: allMovies, isLoading, error } = useAllMoviesQuery();
   return (
     <HorizontalCardList
       title="New Releases"
-      items={trendingMovies}
-      scrollAmount={400} // tweak per row
-      renderItem={(movie) => <MovieCard key={movie.id} movie={movie} />}
+      items={allMovies ?? []}
+      scrollAmount={400}
+      renderItem={(movie) => <MovieCard key={movie._id} movie={movie} />}
+      loading={isLoading}
+      error={error as Error | null}
     />
   );
 }

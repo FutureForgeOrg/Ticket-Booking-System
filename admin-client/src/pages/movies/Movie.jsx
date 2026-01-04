@@ -19,7 +19,7 @@ function Movie() {
         <PageHeader
           title="Movies"
           actionText="Add Movie"
-          onAction={() => navigate("/CreateMovie")}
+          onAction={() => navigate("/createMovie")}
         />
         <DataTable
           columns={["title", "status", "runtime", "releaseDate"]}
