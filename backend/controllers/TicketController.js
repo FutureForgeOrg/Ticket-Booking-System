@@ -1,9 +1,9 @@
 import Show from '../models/Show.js';
 import Ticket from '../models/Ticket.js';
-
+import { updateExpiredShows } from '../utils/updateExpiredShows.js';
 export const bookSeats = async (req, res) => {
     try {
-
+        await updateExpiredShows();
         const { showId, seats, userId } = req.body;
 
         // Validate input
@@ -18,6 +18,11 @@ export const bookSeats = async (req, res) => {
         const show = await Show.findById(showId);
         if (!show) {
             return res.status(404).json({ message: "Show not found" });
+        }
+
+        //find show is active
+        if (!show || show.status === "CANCELLED") {
+            return res.status(404).json({ message: "Show is cancelled" });
         }
 
         //unlock expired seats
