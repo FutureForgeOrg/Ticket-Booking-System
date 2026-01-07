@@ -7,7 +7,9 @@ import EditMovie from "./pages/movies/EditMovie";
 import CinemaList from "./pages/cinema/CinemaList";
 import CinemaDetails from "./pages/cinema/CinemaDetails"
 import CreateCinema from "./pages/cinema/CreateCinema"
-import Show from "./pages/Show";
+import ShowPage from "./pages/show/ShowPage";
+import CreateShowForm from "./pages/show/CreateShowForm";
+import EditShowForm from "./pages/show/EditShowForm";
 import User from "./pages/User";
 import Payment from "./pages/Payment";
 import System from "./pages/System";
@@ -30,7 +32,9 @@ function App() {
             <Route path="/CreateCinema" element={<CreateCinema />} />
             <Route path="/CinemaDetails/:id" element={<CinemaDetails />} />
 
-            <Route path="/Show" element={<Show />} />
+            <Route path="/ShowPage" element={<ShowPage/>} />
+            <Route path="/CreateShowForm" element={<CreateShowForm/>} />
+            <Route path="/EditShowForm/:id" element={<EditShowForm/>} />
             <Route path="/User" element={<User />} />
             <Route path="/Payment" element={<Payment />} />
             <Route path="/System" element={<System />} />
