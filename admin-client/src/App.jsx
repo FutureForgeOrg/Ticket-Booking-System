@@ -23,22 +23,22 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route element={<Layout />}>
-            <Route path="/Dashboard" element={<Dashboard />} />
-            <Route path="/Movie" element={<Movie />} />
-            <Route path="/CreateMovie" element={<CreateMovie />} />
-            <Route path="/EditMovie/:id" element={<EditMovie />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/movie" element={<Movie />} />
+            <Route path="/createMovie" element={<CreateMovie />} />
+            <Route path="/editMovie/:id" element={<EditMovie />} />
 
-            <Route path="/CinemaList" element={<CinemaList />} />
-            <Route path="/CreateCinema" element={<CreateCinema />} />
-            <Route path="/CinemaDetails/:id" element={<CinemaDetails />} />
+            <Route path="/cinemaList" element={<CinemaList />} />
+            <Route path="/createCinema" element={<CreateCinema />} />
+            <Route path="/cinemaDetails/:id" element={<CinemaDetails />} />
 
-            <Route path="/ShowPage" element={<ShowPage/>} />
-            <Route path="/CreateShowForm" element={<CreateShowForm/>} />
-            <Route path="/EditShowForm/:id" element={<EditShowForm/>} />
-            <Route path="/User" element={<User />} />
-            <Route path="/Payment" element={<Payment />} />
-            <Route path="/System" element={<System />} />
-            <Route path="/Rating" element={<Rating />} />
+            <Route path="/showPage" element={<ShowPage />} />
+            <Route path="/createShowForm" element={<CreateShowForm />} />
+            <Route path="/editShowForm/:id" element={<EditShowForm />} />
+            <Route path="/user" element={<User />} />
+            <Route path="/payment" element={<Payment />} />
+            <Route path="/system" element={<System />} />
+            <Route path="/rating" element={<Rating />} />
 
           </Route>
         </Routes>

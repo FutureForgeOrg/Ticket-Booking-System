@@ -29,7 +29,7 @@ function CinemaList() {
         <PageHeader
           title="Cinemas"
           actionText="Add Cinema"
-          onAction={() => navigate("/CreateCinema")}
+          onAction={() => navigate("/createCinema")}
         />
 
         <DataTable
@@ -41,7 +41,7 @@ function CinemaList() {
           data={tableData}
           renderActions={(row) => (
             <div className="flex gap-2">
-              <button onClick={() => navigate(`/CinemaDetails/${row._id}`)}>
+              <button onClick={() => navigate(`/cinemaDetails/${row._id}`)}>
                 View
               </button>
               <ConfirmButton

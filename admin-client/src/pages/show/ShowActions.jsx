@@ -15,7 +15,7 @@ function ShowActions({ show }) {
       <div className="flex gap-2">
 
         <button className="btn btn-sm btn-primary"
-          onClick={() => navigate(`/EditShowForm/${show._id}`, { state: { show } })}>
+          onClick={() => navigate(`/editShowForm/${show._id}`, { state: { show } })}>
           Edit
         </button>
 

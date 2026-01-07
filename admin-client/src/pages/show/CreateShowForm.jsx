@@ -22,10 +22,7 @@ const CreateShowForm = () => {
   useEffect(() => {
     async function fetchMoviesAndCinemas() {
       const moviesRes = await movieApi.getAllMovies();
-      // Map API data to { label, value } format
-      setMovies(
-        moviesRes.data.data.map((m) => ({ label: m.title, value: m._id }))
-      );
+      setMovies(moviesRes.data.data.map((m) => ({ label: m.title, value: m._id })));
 
       const cinemasRes = await cinemaApi.getAllCinemas();
       setCinemas(
@@ -35,26 +32,13 @@ const CreateShowForm = () => {
     fetchMoviesAndCinemas();
   }, []);
 
-  const update = (key, value) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  };
+  const update = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
+  const updatePrice = (key, value) =>
+    setForm((prev) => ({ ...prev, price: { ...prev.price, [key]: value } }));
 
-  const updatePrice = (key, value) => {
-    setForm((prev) => ({
-      ...prev,
-      price: { ...prev.price, [key]: value }
-    }));
-  };
-
-  // Find selected cinema to get screens
   const selectedCinema = cinemas.find((c) => c.value === form.cinemaId);
   const screens = selectedCinema?.screens || [];
-
-  // Map screen objects to { label, value } for select
-  const screenOptions = screens.map((screen) => ({
-    label: screen.name, // display name
-    value: screen.name, // store name in form
-  }));
+  const screenOptions = screens.map((screen) => ({ label: screen.name, value: screen.name }));
 
   const handleSubmit = async () => {
     addShow({
@@ -71,61 +55,79 @@ const CreateShowForm = () => {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-3">
-      {/* MOVIE */}
-      <ReusableSelect
-        label="Movie"
-        options={movies}
-        value={form.movieId}
-        onChange={(v) => update("movieId", v)}
-      />
+    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+      <h2 className="text-2xl font-semibold mb-6 text-gray-700">Create New Show</h2>
 
-      {/* CINEMA */}
-      <ReusableSelect
-        label="Cinema"
-        options={cinemas}
-        value={form.cinemaId}
-        onChange={(v) => update("cinemaId", v)}
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* MOVIE */}
+        <ReusableSelect
+          label="Movie"
+          options={movies}
+          value={form.movieId}
+          onChange={(v) => update("movieId", v)}
+          className="w-full"
+        />
 
-      {/* SCREEN */}
-      <ReusableSelect
-        label="Screen"
-        options={screenOptions}
-        value={form.screenName}
-        onChange={(v) => update("screenName", v)}
-      />
+        {/* CINEMA */}
+        <ReusableSelect
+          label="Cinema"
+          options={cinemas}
+          value={form.cinemaId}
+          onChange={(v) => update("cinemaId", v)}
+          className="w-full"
+        />
 
-      <TextInput
-        type="datetime-local"
-        label="Show Time"
-        value={form.showTime}
-        onChange={(e) => update("showTime", e.target.value)}
-      />
+        {/* SCREEN */}
+        <ReusableSelect
+          label="Screen"
+          options={screenOptions}
+          value={form.screenName}
+          onChange={(v) => update("screenName", v)}
+          className="w-full"
+        />
 
-      <TextInput
-        type="number"
-        label="Regular Price"
-        value={form.price.regular}
-        onChange={(e) => updatePrice("regular", e.target.value)}
-      />
+        {/* SHOW TIME */}
+        <TextInput
+          type="datetime-local"
+          label="Show Time"
+          value={form.showTime}
+          onChange={(e) => update("showTime", e.target.value)}
+          className="w-full"
+        />
 
-      <TextInput
-        type="number"
-        label="Premium Price"
-        value={form.price.premium}
-        onChange={(e) => updatePrice("premium", e.target.value)}
-      />
+        {/* PRICE FIELDS */}
+        <TextInput
+          type="number"
+          label="Regular Price"
+          value={form.price.regular}
+          onChange={(e) => updatePrice("regular", e.target.value)}
+          className="w-full"
+        />
 
-      <TextInput
-        type="number"
-        label="VIP Price"
-        value={form.price.vip}
-        onChange={(e) => updatePrice("vip", e.target.value)}
-      />
+        <TextInput
+          type="number"
+          label="Premium Price"
+          value={form.price.premium}
+          onChange={(e) => updatePrice("premium", e.target.value)}
+          className="w-full"
+        />
 
-      <div className="col-span-2">
-        <ConfirmButton onConfirm={handleSubmit}>Create Show</ConfirmButton>
+        <TextInput
+          type="number"
+          label="VIP Price"
+          value={form.price.vip}
+          onChange={(e) => updatePrice("vip", e.target.value)}
+          className="w-full"
+        />
+      </div>
+
+      <div className="mt-6 flex justify-end">
+        <ConfirmButton
+          onConfirm={handleSubmit}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-md shadow"
+        >
+          Create Show
+        </ConfirmButton>
       </div>
     </div>
   );

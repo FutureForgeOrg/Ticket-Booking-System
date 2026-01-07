@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import TextInput from "@/components/common/TextInput";
 import ConfirmButton from "@/components/common/ConfirmButton";
 import useShowStore from "@/store/show.store";
@@ -9,12 +8,10 @@ function EditShowForm() {
   const navigate = useNavigate();
   const location = useLocation();
   const { show } = location.state || {};
-  const { id } = useParams();
-
   const { editShow } = useShowStore();
 
   // Show loading if show is not passed
-  if (!show) return <div>Loading...</div>;
+  if (!show) return <div className="text-center mt-20 text-gray-500">Loading...</div>;
 
   const [form, setForm] = useState({
     showTime: new Date(show.showTime).toISOString().slice(0, 16),
@@ -27,39 +24,59 @@ function EditShowForm() {
   };
 
   return (
-    <div className="space-y-4 max-w-md mx-auto mt-10">
-      <h1 className="text-xl font-bold">Edit Show</h1>
+    <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
+      <h1 className="text-2xl font-semibold text-gray-700 mb-6">Edit Show</h1>
 
+      {/* Show Time */}
       <TextInput
         label="Show Time"
         type="datetime-local"
-        min={new Date().toISOString().slice(0, 16)} 
+        min={new Date().toISOString().slice(0, 16)}
         value={form.showTime}
         onChange={(e) => setForm({ ...form, showTime: e.target.value })}
+        className="w-full"
       />
 
-      <TextInput
-        label="regular Price"
-        type="number"
-        value={form.price.regular}
-        onChange={(e) => setForm({ ...form, price: { ...form.price, regular: e.target.value } })}
-      />
-      <TextInput
-        label="premium Price"
-        type="number"
-        value={form.price.premium}
-        onChange={(e) => setForm({ ...form, price: { ...form.price, premium: e.target.value } })}
-      />
-      <TextInput
-        label="vip Price"
-        type="number"
-        value={form.price.vip}
-        onChange={(e) => setForm({ ...form, price: { ...form.price, vip: e.target.value } })}
-      />
+      {/* Price Fields in a Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+        <TextInput
+          label="Regular Price"
+          type="number"
+          value={form.price.regular}
+          onChange={(e) =>
+            setForm({ ...form, price: { ...form.price, regular: e.target.value } })
+          }
+          className="w-full"
+        />
+        <TextInput
+          label="Premium Price"
+          type="number"
+          value={form.price.premium}
+          onChange={(e) =>
+            setForm({ ...form, price: { ...form.price, premium: e.target.value } })
+          }
+          className="w-full"
+        />
+        <TextInput
+          label="VIP Price"
+          type="number"
+          value={form.price.vip}
+          onChange={(e) =>
+            setForm({ ...form, price: { ...form.price, vip: e.target.value } })
+          }
+          className="w-full"
+        />
+      </div>
 
-      <ConfirmButton onConfirm={handleSubmit}>
-        Update Show
-      </ConfirmButton>
+      {/* Submit Button */}
+      <div className="mt-6 flex justify-end">
+        <ConfirmButton
+          onConfirm={handleSubmit}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-md shadow"
+        >
+          Update Show
+        </ConfirmButton>
+      </div>
     </div>
   );
 }
