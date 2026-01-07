@@ -47,6 +47,10 @@ const showSchema = mongoose.Schema({
         type: Date,
         required: true
     },
+    endTime: {
+        type: Date,
+       
+    },
     seats: {
         type: [showSeatSchema],
         required: true
@@ -65,6 +69,16 @@ const showSchema = mongoose.Schema({
         type: Date,
         default: null
     },
+
+    cancelledAt: {
+        type: Date,
+        default: null
+    },
+
+    expiresAt: {
+        type: Date,
+        default: null
+    },
     isActive: {
         type: Boolean,
         default: true
@@ -73,7 +87,7 @@ const showSchema = mongoose.Schema({
 }, { timestamps: true })
 
 showSchema.index(
-    { completedAt: 1 },
+    { expiresAt: 1 },
     {
         expireAfterSeconds: 30,
 

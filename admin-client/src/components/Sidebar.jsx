@@ -9,14 +9,14 @@ function Sidebar() {
                 </div>
 
                 <nav className="flex flex-col gap-9 p-4">
-                    <NavItem to="/Dashboard">Dashboard</NavItem>
-                    <NavItem to="/Movie">Movie</NavItem>
-                    <NavItem to="/CinemaList">CinemaList</NavItem>
-                    <NavItem to="/ShowPage">Show</NavItem>
-                    <NavItem to="/User">User</NavItem>
-                    <NavItem to="/Payment">Payment</NavItem>
-                    <NavItem to="/System">System</NavItem>
-                    <NavItem to="/Rating">Rating</NavItem>
+                    <NavItem to="/dashboard">Dashboard</NavItem>
+                    <NavItem to="/movie">Movie</NavItem>
+                    <NavItem to="/cinemaList">CinemaList</NavItem>
+                    <NavItem to="/showPage">Show</NavItem>
+                    <NavItem to="/user">User</NavItem>
+                    <NavItem to="/payment">Payment</NavItem>
+                    <NavItem to="/system">System</NavItem>
+                    <NavItem to="/rating">Rating</NavItem>
                 </nav>
 
             </aside>

@@ -23,7 +23,7 @@ function ShowPage() {
         <PageHeader
           title="Shows"
           actionText="createShow"
-          onAction={() => navigate("/CreateShowForm")}
+          onAction={() => navigate("/createShowForm")}
         />
 
         <ShowFilters />

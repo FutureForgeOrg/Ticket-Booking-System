@@ -10,7 +10,8 @@ export const updateExpiredShows = async () => {
         }, {
         $set: {
             status: "COMPLETED",
-            completedAt: now
+            completedAt: now,
+            expiresAt: new Date(now.getTime() + 30 * 1000)
         }
     }
     )

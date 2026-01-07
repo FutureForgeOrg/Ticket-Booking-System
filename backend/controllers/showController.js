@@ -21,6 +21,7 @@ export const createShow = async (req, res) => {
             return res.status(404).json({ message: "movie not found" });
 
         }
+        const movieDuration = movie.runtime * 60 * 1000;
 
         //validate cinema
         const cinema = await Cinema.findById(cinemaId);
@@ -47,21 +48,24 @@ export const createShow = async (req, res) => {
             bookedBy: null
         }));
 
-
-
-
         const showDate = new Date(showTime);
         if (isNaN(showDate.getTime())) {
             return res.status(400).json({ message: "Invalid show time format" });
+        }
+        const endTime = new Date(showDate.getTime() + movieDuration);
+
+        if (showDate < new Date()) {
+            return res.status(400).json({ message: "Show time cannot be in the past" });
         }
 
 
         //prevent duplicate show
         const existingShow = await Show.findOne({
-            movie: movieId,
             cinema: cinemaId,
             screenName,
-            showTime: showDate
+            status: { $ne: "CANCELLED" },
+            showTime: { $lt: endTime },
+            endTime: { $gt: showDate }
         });
 
         if (existingShow) {
@@ -74,6 +78,7 @@ export const createShow = async (req, res) => {
             cinema: cinemaId,
             screenName,
             showTime: showDate,
+            endTime,
             seats: showSeats,
             price
         })
@@ -91,11 +96,11 @@ export const createShow = async (req, res) => {
 export const getAllShowsAdmin = async (req, res) => {
 
     try {
-         
-       await updateExpiredShows();
-      
+
+        await updateExpiredShows();
+
         const { movieId, cinemaId, status } = req.query;
-        
+
         const { page, limit, skip } = pagination(req);
 
         const filter = {};
@@ -112,7 +117,7 @@ export const getAllShowsAdmin = async (req, res) => {
         const shows = await Show.find(filter)
             .populate('movie', 'title duration genres')
             .populate('cinema', 'name location')
-            .sort({ showTime: -1 }) 
+            .sort({ status: 1, showTime: -1 })
             .skip(skip)
             .limit(limit);
 
@@ -205,6 +210,8 @@ export const cancelShow = async (req, res) => {
         }
         show.status = "CANCELLED";
         show.isActive = false;
+        show.cancelledAt = new Date();
+        show.expiresAt = new Date(Date.now() + 60 * 60 * 24 * 2); // Expires in 2 days
         await show.save();
         res.status(200).json({ success: true, message: "Show cancelled successfully" });
     } catch (error) {
@@ -218,7 +225,7 @@ export const updateShow = async (req, res) => {
         const id = req.params.id;
 
 
-        const show = await Show.findById(id);
+        const show = await Show.findById(id).populate('movie');
         if (!show) {
             return res.status(404).json({
                 success: false,
@@ -226,6 +233,8 @@ export const updateShow = async (req, res) => {
             });
         }
 
+        const movieDuration = show.movie.runtime * 60 * 1000;
+        const endTime = new Date(new Date(showTime).getTime() + movieDuration);
 
         if (show.status === "CANCELLED") {
             return res.status(400).json({
@@ -251,6 +260,22 @@ export const updateShow = async (req, res) => {
                 return res.status(400).json({
                     success: false,
                     message: "Show time cannot be in the past"
+                });
+            }
+
+            const existingShow = await Show.findOne({
+                _id: { $ne: id }, // exclude current show
+                cinema: show.cinema,
+                screenName: show.screenName,
+                status: { $ne: "CANCELLED" },
+                showTime: { $lt: endTime },
+                endTime: { $gt: showDate }
+            });
+
+            if (existingShow) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Another show already exists on this screen and time range"
                 });
             }
 

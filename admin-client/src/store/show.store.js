@@ -7,7 +7,7 @@ const useShowStore = create((set, get) => ({
     loading: false,
     page: 1,
     limit: 8,
-    totalPages:1,
+    totalPages: 1,
     total: 0,
     movies: [],
     cinemas: [],
@@ -49,18 +49,38 @@ const useShowStore = create((set, get) => ({
     },
 
     addShow: async (payload) => {
-        await createShow(payload);
-        await get().fetchShows();
+        try {
+            await createShow(payload);
+            toast.success("Show created successfully");
+            await get().fetchShows();
+        }
+        catch (error) {
+            toast.error(error.response?.data?.message || "Failed to create show");
+        }
+
     },
 
     editShow: async (id, payload) => {
-        await updateShow(id, payload);
-        await get().fetchShows();
+        try {
+            await updateShow(id, payload);
+            toast.success("Show updated successfully");
+            await get().fetchShows();
+        }
+        catch (error) {
+            toast.error(error.response?.data?.message || "Failed to update show");
+        }
     },
 
     cancelShowById: async (id) => {
-        await cancelShow(id);
-        await get().fetchShows();
+
+        try {
+            await cancelShow(id);
+            toast.success("Show cancelled successfully");
+            await get().fetchShows();
+        }
+        catch (error) {
+            toast.error(error.response?.data?.message || "Failed to cancel show");
+        }
     }
 }))
 

@@ -48,7 +48,7 @@ function Movie() {
             <>
               <button
                 className="text-blue-600 mr-4"
-                onClick={() => navigate(`/EditMovie/${movie._id}`)}
+                onClick={() => navigate(`/editMovie/${movie._id}`)}
               >
                 Edit
               </button>
