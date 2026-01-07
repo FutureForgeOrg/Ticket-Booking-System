@@ -12,7 +12,7 @@ function Sidebar() {
                     <NavItem to="/Dashboard">Dashboard</NavItem>
                     <NavItem to="/Movie">Movie</NavItem>
                     <NavItem to="/CinemaList">CinemaList</NavItem>
-                    <NavItem to="/Show">Show</NavItem>
+                    <NavItem to="/ShowPage">Show</NavItem>
                     <NavItem to="/User">User</NavItem>
                     <NavItem to="/Payment">Payment</NavItem>
                     <NavItem to="/System">System</NavItem>

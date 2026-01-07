@@ -22,7 +22,27 @@ function Movie() {
           onAction={() => navigate("/createMovie")}
         />
         <DataTable
-          columns={["title", "status", "runtime", "releaseDate"]}
+          columns={[
+            {
+              header: "Title",
+              accessorKey: "title",
+            },
+            {
+              header: "Status",
+              accessorKey: "status",
+            },
+            {
+              header: "Runtime",
+              accessorKey: "runtime",
+              cell: ({ row}) => `${row.original.runtime} mins`, 
+            },
+            {
+              header: "Release Date",
+              accessorKey: "releaseDate",
+              cell: ({ row }) =>
+                new Date(row.original.releaseDate).toLocaleDateString(),
+            },
+          ]}
           data={movie}
           renderActions={(movie) => (
             <>

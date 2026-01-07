@@ -14,7 +14,6 @@ function CinemaList() {
     getAllCinemas();
   }, []);
 
-  const columns = ["name", "city", "state", "screens"];
 
   const tableData = cinemas.map(cinema => ({
     _id: cinema._id,
@@ -34,7 +33,11 @@ function CinemaList() {
         />
 
         <DataTable
-          columns={columns}
+          columns={[
+            { header: "Name", accessorKey: "name" },
+            { header: "City", accessorKey: "city" },
+            { header: "State", accessorKey: "state" },
+            { header: "Screens", accessorKey: "screens" },]}
           data={tableData}
           renderActions={(row) => (
             <div className="flex gap-2">
