@@ -2,7 +2,7 @@ import Show from "../models/Show.js";
 import Cinema from "../models/Cinema.js";
 import Movie from "../models/Movie.js";
 import pagination from "../utils/pagination.js";
-
+import { updateExpiredShows } from "../utils/updateExpiredShows.js";
 
 export const createShow = async (req, res) => {
 
@@ -88,12 +88,14 @@ export const createShow = async (req, res) => {
     }
 }
 
-export const getAllShows = async (req, res) => {
+export const getAllShowsAdmin = async (req, res) => {
 
     try {
-
-        const { movieId, cinemaId } = req.query;
-
+         
+       await updateExpiredShows();
+      
+        const { movieId, cinemaId, status } = req.query;
+        
         const { page, limit, skip } = pagination(req);
 
         const filter = {};
@@ -103,11 +105,14 @@ export const getAllShows = async (req, res) => {
         if (cinemaId) {
             filter.cinema = cinemaId;
         }
+        if (status) {
+            filter.status = status;
+        }
 
         const shows = await Show.find(filter)
             .populate('movie', 'title duration genres')
             .populate('cinema', 'name location')
-            .sort({ showTime: 1 })
+            .sort({ showTime: -1 }) 
             .skip(skip)
             .limit(limit);
 
@@ -129,8 +134,50 @@ export const getAllShows = async (req, res) => {
     }
 }
 
+export const getAllShows = async (req, res) => {
+
+    try {
+        await updateExpiredShows();
+        const { movieId, cinemaId } = req.query;
+        const { page, limit, skip } = pagination(req);
+
+        const filter = {
+            isActive: true,
+            status: "ACTIVE"
+        };
+        if (movieId) {
+            filter.movie = movieId;
+        }
+        if (cinemaId) {
+            filter.cinema = cinemaId;
+        }
+
+        const shows = await Show.find(filter)
+            .populate('movie', 'title duration genres')
+            .populate('cinema', 'name location')
+            .sort({ showTime: 1 })
+            .skip(skip)
+            .limit(limit);
+
+        const totalShows = await Show.countDocuments(filter);
+
+        res.status(200).json({
+            success: true,
+            count: shows.length,
+            total: totalShows,
+            page,
+            limit,
+            totalPages: Math.ceil(totalShows / limit),
+            data: shows
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
+
 export const getShowById = async (req, res) => {
     try {
+        await updateExpiredShows();
         const show = await Show.findById(req.params.id)
             .populate('movie', 'title duration genres')
             .populate('cinema', 'name location');
@@ -148,3 +195,89 @@ export const getShowById = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+
+export const cancelShow = async (req, res) => {
+    try {
+        const showId = req.params.id;
+        const show = await Show.findById(showId);
+        if (!show) {
+            return res.status(404).json({ success: false, message: "Show not found" });
+        }
+        show.status = "CANCELLED";
+        show.isActive = false;
+        await show.save();
+        res.status(200).json({ success: true, message: "Show cancelled successfully" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
+
+export const updateShow = async (req, res) => {
+    try {
+        const { showTime, price } = req.body;
+        const id = req.params.id;
+
+
+        const show = await Show.findById(id);
+        if (!show) {
+            return res.status(404).json({
+                success: false,
+                message: "Show not found"
+            });
+        }
+
+
+        if (show.status === "CANCELLED") {
+            return res.status(400).json({
+                success: false,
+                message: "Cannot update a cancelled show"
+            });
+        }
+
+
+        const updateData = {};
+
+        if (showTime) {
+            const showDate = new Date(showTime);
+            if (isNaN(showDate.getTime())) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid show time format"
+                });
+            }
+
+
+            if (showDate < new Date()) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Show time cannot be in the past"
+                });
+            }
+
+            updateData.showTime = showDate;
+        }
+
+        if (price !== undefined) {
+            updateData.price = price;
+        }
+
+
+        const updatedShow = await Show.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true }
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Show updated successfully",
+            data: updatedShow
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
