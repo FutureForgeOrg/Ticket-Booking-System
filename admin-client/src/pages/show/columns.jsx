@@ -22,7 +22,18 @@ const columns = [
   },
   {
     header: "Status",
-    accessorKey: "status"
+    accessorKey: "status",
+    cell: ({ row }) => {
+      let statusValue = row.original.status;
+
+      let colorClass = "";
+      if (statusValue === "ACTIVE") colorClass = "bg-green-600 font-semibold";
+      else if (statusValue === "COMPLETED") colorClass = "bg-yellow-500 font-semibold";
+      else if (statusValue === "CANCELLED") colorClass = "bg-red-600 font-semibold";
+      else colorClass = "text-gray-500";
+      return       <span className={`${colorClass} text-white px-3 py-1 rounded-full text-center text-sm`}> 
+      {statusValue}</span>;
+    }
   },
   {
     header: "Actions",

@@ -49,7 +49,7 @@ const showSchema = mongoose.Schema({
     },
     endTime: {
         type: Date,
-       
+
     },
     seats: {
         type: [showSeatSchema],
@@ -89,11 +89,10 @@ const showSchema = mongoose.Schema({
 showSchema.index(
     { expiresAt: 1 },
     {
-        expireAfterSeconds: 30,
-
+        expireAfterSeconds: 0,
     }
 );
 
-const show = mongoose.model("show", showSchema);
+const Show = mongoose.model("Show", showSchema);
 
-export default show;
+export default Show;

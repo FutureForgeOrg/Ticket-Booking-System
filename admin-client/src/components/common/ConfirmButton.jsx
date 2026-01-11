@@ -1,8 +1,8 @@
 import { Button } from "../ui/button";
 
-function ConfirmButton({onConfirm,children}) {
+function ConfirmButton({ onConfirm, children }) {
     const handleClick = () => {
-        if (confirm("Are you sure?")) onConfirm();
+        onConfirm();
     };
 
     return (

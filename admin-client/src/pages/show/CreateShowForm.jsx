@@ -16,7 +16,7 @@ const CreateShowForm = () => {
     cinemaId: "",
     screenName: "",
     showTime: "",
-    price: { regular: "", premium: "", vip: "" }
+    price: { regular: "10", premium: "20", vip: "30" }
   });
 
   useEffect(() => {
