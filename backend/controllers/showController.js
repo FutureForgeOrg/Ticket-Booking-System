@@ -211,7 +211,7 @@ export const cancelShow = async (req, res) => {
         show.status = "CANCELLED";
         show.isActive = false;
         show.cancelledAt = new Date();
-        show.expiresAt = new Date(Date.now() + 60 * 60 * 24 * 2); // Expires in 2 days
+        show.expiresAt = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000); // Expires in 2 days
         await show.save();
         res.status(200).json({ success: true, message: "Show cancelled successfully" });
     } catch (error) {

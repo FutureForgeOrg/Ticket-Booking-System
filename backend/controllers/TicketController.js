@@ -1,6 +1,8 @@
 import Show from '../models/Show.js';
 import Ticket from '../models/Ticket.js';
 import { updateExpiredShows } from '../utils/updateExpiredShows.js';
+import pagination from "../utils/pagination.js"
+
 export const bookSeats = async (req, res) => {
     try {
         await updateExpiredShows();
@@ -216,3 +218,86 @@ export const cancelTicket = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 }
+
+
+export const adminCancelTicket = async (req, res) => {
+    try {
+        const { ticketId } = req.body;
+
+        if (!ticketId) {
+            return res.status(400).json({ message: "missing ticketId" })
+        }
+        const ticket = await Ticket.findById(ticketId);
+        if (!ticket) {
+            return res.status(404).json({ message: "Ticket not found" });
+        }
+        const show = await Show.findById(ticket.show);
+        if (!show) {
+            return res.status(404).json({ message: "Show not found" })
+        }
+        show.seats.forEach(seat => {
+            ticket.seats.forEach(tSeat => {
+                if (
+                    seat.row === tSeat.row &&
+                    seat.number === tSeat.number &&
+                    seat.bookedBy?.toString() === ticket.user.toString()
+                ) {
+                    seat.isBooked = false;
+                    seat.bookedBy = null;
+                }
+            });
+        });
+        await show.save();
+        ticket.status = "CANCELLED";
+        ticket.cancelledBy = "ADMIN";
+
+        await ticket.save();
+        res.status(200).json({ message: "Ticket cancelled by admin" });
+
+
+    } catch (error) {
+        res.status(500).json({ status: false, message: error.message });
+    }
+}
+
+export const getAllTickets = async (req, res) => {
+
+    try {
+        const { status, movieId, cinemaId } = req.query;
+        const { limit, skip, page } = pagination(req)
+
+        const query = {};
+        if (status) query.status = status;
+
+        const showMatch = {};
+        if (movieId) showMatch.movie = movieId;
+        if (cinemaId) showMatch.cinema = cinemaId;
+
+        const tickets = await Ticket.find(query)
+            .populate("user", "name email")
+            .populate({
+                path: "show",
+                match:showMatch,
+                
+                populate: [
+                    { path: "movie", select: "title" },
+                    { path: "cinema", select: "name" }
+                ]
+            })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+        const total = await Ticket.countDocuments(query);
+        const filteredTickets = movieId || cinemaId
+            ? tickets.filter(ticket => ticket.show !== null)
+            : tickets;
+
+        res.json({
+            tickets: filteredTickets,
+            total: filteredTickets.length,
+        });
+    } catch (error) {
+        res.status(500).json({ status: false, message: error.message });
+    }
+}
+

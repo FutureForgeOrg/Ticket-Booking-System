@@ -19,7 +19,7 @@ export default function ReusableSelect({
   return (
     <div className="space-y-2">
       {label && (
-        <label className="text-sm font-medium" htmlFor={name}>
+        <label className="text-sm font-medium ml-3" htmlFor={name}>
           {label}
         </label>
       )}
@@ -29,7 +29,7 @@ export default function ReusableSelect({
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
 
-        <SelectContent className="z-50 bg-white">
+        <SelectContent className="z-50 bg-white max-h-[380px]">
           {options.map((opt) => (
             <SelectItem key={opt.value} value={opt.value}>
               {opt.label}

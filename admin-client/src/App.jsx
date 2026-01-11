@@ -10,7 +10,7 @@ import CreateCinema from "./pages/cinema/CreateCinema"
 import ShowPage from "./pages/show/ShowPage";
 import CreateShowForm from "./pages/show/CreateShowForm";
 import EditShowForm from "./pages/show/EditShowForm";
-import User from "./pages/User";
+import BookingList from "./pages/Bookings/bookingList";
 import Payment from "./pages/Payment";
 import System from "./pages/System";
 import Rating from "./pages/Rating";
@@ -35,7 +35,7 @@ function App() {
             <Route path="/showPage" element={<ShowPage />} />
             <Route path="/createShowForm" element={<CreateShowForm />} />
             <Route path="/editShowForm/:id" element={<EditShowForm />} />
-            <Route path="/user" element={<User />} />
+            <Route path="/booking" element={<BookingList />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/system" element={<System />} />
             <Route path="/rating" element={<Rating />} />

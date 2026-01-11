@@ -32,8 +32,12 @@ const ticketSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ["PENDING", "CONFIRMED", "CANCELLED", "FAILED", "EXPIRED"],
-        default: "PENDING"  
-    }
+        default: "PENDING"
+    },
+    cancelledBy: {
+        type: String,
+        enum: ["USER", "ADMIN"],
+    },
 }, { timestamps: true })
 
 const Ticket = mongoose.model("Ticket", ticketSchema)
