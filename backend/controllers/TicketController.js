@@ -52,14 +52,8 @@ export const bookSeats = async (req, res) => {
             ticket.status = "EXPIRED";
             await ticket.save();
         }
-
-
         await show.save();
-
-
-
-
-
+        
         //check if seat exists
         const invalidSeats = seats.filter(s => !show.seats.find(seat => seat.row === s.row && seat.number === s.number));
 
