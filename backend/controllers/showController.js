@@ -426,7 +426,7 @@ export const getShowsByMovieAndDate = async (req, res) => {
           status: "ACTIVE",
           isActive: true,
           showTime: { $gte: start, $lte: end },
-        }
+        },
       },
 
       {
@@ -434,17 +434,37 @@ export const getShowsByMovieAndDate = async (req, res) => {
           from: "cinemas",
           localField: "cinema",
           foreignField: "_id",
-          as: "cinema"
-        }
+          as: "cinema",
+        },
       },
       { $unwind: "$cinema" },
 
-      //  Group by cinema + screen
+      {
+        $addFields: {
+          totalSeats: { $size: "$seats" },
+          bookedSeats: {
+            $size: {
+              $filter: {
+                input: "$seats",
+                as: "s",
+                cond: { $eq: ["$$s.isBooked", true] },
+              },
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          availableSeats: { $subtract: ["$totalSeats", "$bookedSeats"] },
+        },
+      },
+
+      //  Group by cinema + screen : one doc per screen + cinema
       {
         $group: {
           _id: {
             cinemaId: "$cinema._id",
-            screenName: "$screenName"
+            screenName: "$screenName",
           },
           cinema: { $first: "$cinema" },
           shows: {
@@ -453,13 +473,15 @@ export const getShowsByMovieAndDate = async (req, res) => {
               showTime: "$showTime",
               endTime: "$endTime",
               price: "$price",
-              seats: "$seats"
-            }
-          }
-        }
-      },
+              //seats: "$seats",  // no need to send all seats for listing of shows
+              availableSeats: "$availableSeats",
+              totalSeats: "$totalSeats",
+            },
+          },
+        },
+    },
 
-      //  Group by cinema
+      //  Group by cinema: all screens under one cinema and their shows
       {
         $group: {
           _id: "$_id.cinemaId",
@@ -467,28 +489,28 @@ export const getShowsByMovieAndDate = async (req, res) => {
           screens: {
             $push: {
               screenName: "$_id.screenName",
-              shows: "$shows"
-            }
-          }
-        }
+              shows: "$shows",
+            },
+          },
+        },
       },
 
       // project final shape of data for frontend
       {
         $project: {
-          _id: 1,   // cinema + screen id for uniqueness
+          _id: 1, // cinema id : test case
           cinema: {
             _id: "$cinema._id",
             name: "$cinema.name",
-            location: "$cinema.location"
+            location: "$cinema.location",
           },
-          screens: 1
-        }
+          screens: 1,
+        },
       },
 
       //  Pagination AFTER grouping
       { $skip: skip },
-      { $limit: limit }
+      { $limit: limit },
     ];
 
     const data = await Show.aggregate(pipeline);
@@ -520,6 +542,10 @@ export const getShowsByMovieAndDate = async (req, res) => {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      filters: {  // for debugging
+        startDate: start, 
+        endDate: end
+      },
       data
     });
   } catch (error) {
