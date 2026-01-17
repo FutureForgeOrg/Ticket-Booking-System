@@ -378,20 +378,46 @@ export const getShowsByMovieAndDate = async (req, res) => {
     await updateExpiredShows();
 
     const { movieId } = req.params;
-    const { startDate } = req.query;
+    const { startDate, endDate } = req.query;
     const { page, limit, skip } = pagination(req);
 
     
     let start = new Date();
+    start.setHours(0, 0, 0, 0); // start of today
+
+    const end = new Date(start);
+    end.setDate(end.getDate() + 2); // next 2 days
+    end.setHours(23, 59, 59, 999); // end of day
+
     if (startDate) {
-      start = new Date(startDate);
-      if (isNaN(start.getTime())) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid startDate format"
-        });
+      const parsedStart = new Date(startDate);
+        if (isNaN(parsedStart.getTime())) {
+            return res.status(400).json({
+            success: false,
+            message: "Invalid startDate format",
+            });
       }
+      start.setTime(parsedStart.getTime());
     }
+
+    if (endDate) {
+      const parsedEnd = new Date(endDate);
+      if (isNaN(parsedEnd.getTime())) {
+            return res.status(400).json({
+            success: false,
+            message: "Invalid endDate format",
+            });
+      }
+      end.setTime(parsedEnd.getTime());
+    }
+
+    if (start > end) {
+      return res.status(400).json({
+        success: false,
+        message: "startDate cannot be after endDate",
+      });
+    }
+
 
     const pipeline = [
       {
@@ -399,7 +425,7 @@ export const getShowsByMovieAndDate = async (req, res) => {
           movie: new mongoose.Types.ObjectId(movieId),
           status: "ACTIVE",
           isActive: true,
-          showTime: { $gte: start }
+          showTime: { $gte: start, $lte: end },
         }
       },
 
@@ -447,9 +473,10 @@ export const getShowsByMovieAndDate = async (req, res) => {
         }
       },
 
+      // project final shape of data for frontend
       {
         $project: {
-          _id: 0,
+          _id: 1,   // cinema + screen id for uniqueness
           cinema: {
             _id: "$cinema._id",
             name: "$cinema.name",
@@ -473,7 +500,7 @@ export const getShowsByMovieAndDate = async (req, res) => {
           movie: new mongoose.Types.ObjectId(movieId),
           status: "ACTIVE",
           isActive: true,
-          showTime: { $gte: start }
+          showTime: { $gte: start, $lte: end }
         }
       },
       {

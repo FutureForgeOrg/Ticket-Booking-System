@@ -84,6 +84,7 @@ const CreateShowForm = () => {
           value={form.screenName}
           onChange={(v) => update("screenName", v)}
           className="w-full"
+          emptyMessage="Select Cinema first for available screens"
         />
 
         {/* SHOW TIME */}
