@@ -306,3 +306,67 @@ export const updateShow = async (req, res) => {
         });
     }
 };
+
+export const getShowsByMovieAndDate = async (req, res) => {
+    try {
+        await updateExpiredShows();
+
+        const { movieId } = req.params;
+        const { startDate } = req.query;
+        const { page, limit, skip } = pagination(req);
+
+        const movie = await Movie.findById(movieId);
+        if (!movie) {
+            return res.status(404).json({
+                success: false,
+                message: "Movie not found"
+            });
+        }
+
+        let start;
+        if (startDate) {
+            start = new Date(startDate);
+            if (isNaN(start.getTime())) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid startDate format"
+                });
+            }
+        } else {
+
+            start = new Date();
+        }
+
+        const filter = {
+            movie: movieId,
+            isActive: true,
+            status: "ACTIVE",
+            showTime: { $gte: start }
+        };
+
+        const shows = await Show.find(filter)
+            .populate("movie", "title duration genres")
+            .populate("cinema", "name location")
+            .sort({ showTime: 1 })
+            .skip(skip)
+            .limit(limit);
+
+        const totalShows = await Show.countDocuments(filter);
+
+        res.status(200).json({
+            success: true,
+            count: shows.length,
+            total: totalShows,
+            page,
+            limit,
+            totalPages: Math.ceil(totalShows / limit),
+            data: shows
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
