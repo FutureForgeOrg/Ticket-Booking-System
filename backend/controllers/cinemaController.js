@@ -165,4 +165,3 @@ export const deleteCinema = async (req, res) => {
     }
 };
 
-
