@@ -20,8 +20,8 @@ function EditShowForm() {
       regular: show.price?.regular || "",
       premium: show.price?.premium || "",
       vip: show.price?.vip || ""
-    },
-    status: show.status || "ACTIVE"
+    }
+    // status: show.status || "ACTIVE"
   });
 
   const handleSubmit = async () => {
