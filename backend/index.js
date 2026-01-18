@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 import movieRoutes from "./routes/movieRoutes.js";
 import cinemaRoutes from "./routes/cinemaRoutes.js";
@@ -23,6 +24,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use(cookieParser());
 
 // connect to db
 connectDB();

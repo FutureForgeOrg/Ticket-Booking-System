@@ -6,10 +6,11 @@ import pagination from "../utils/pagination.js"
 export const bookSeats = async (req, res) => {
     try {
         await updateExpiredShows();
-        const { showId, seats, userId } = req.body;
+        const { showId, seats } = req.body;
+        const userId = req.user._id;
 
         // Validate input
-        if (!showId || !userId || !seats) {
+        if (!showId || !seats) {
             return res.status(400).json({ message: "Missing required fields" });
         }
 
@@ -53,7 +54,7 @@ export const bookSeats = async (req, res) => {
             await ticket.save();
         }
         await show.save();
-        
+
         //check if seat exists
         const invalidSeats = seats.filter(s => !show.seats.find(seat => seat.row === s.row && seat.number === s.number));
 
@@ -125,11 +126,16 @@ export const bookSeats = async (req, res) => {
 
 export const confirmTicket = async (req, res) => {
     const { ticketId } = req.params;
+    const userId = req.user._id;
 
     // Fetch the ticket first
     const ticket = await Ticket.findById(ticketId);
     if (!ticket) {
         return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    if (ticket.user.toString() !== userId.toString()) {
+        return res.status(403).json({ message: "Unauthorized" });
     }
 
     // If ticket is pending but expired
@@ -174,9 +180,10 @@ export const confirmTicket = async (req, res) => {
 
 export const cancelTicket = async (req, res) => {
     try {
-        const { ticketId, userId } = req.body;
+        const { ticketId } = req.body;
+        const userId = req.user._id;
 
-        if (!ticketId || !userId) {
+        if (!ticketId) {
             return res.status(400).json({ message: "Missing required fields" });
         }
 
@@ -184,6 +191,11 @@ export const cancelTicket = async (req, res) => {
         if (!ticket) {
             return res.status(404).json({ message: "Ticket not found" });
         }
+
+        if (ticket.user.toString() !== userId.toString()) {
+            return res.status(403).json({ message: "Unauthorized" });
+        }
+
 
         const show = await Show.findById(ticket.show);
         if (!show) {
@@ -271,8 +283,8 @@ export const getAllTickets = async (req, res) => {
             .populate("user", "name email")
             .populate({
                 path: "show",
-                match:showMatch,
-                
+                match: showMatch,
+
                 populate: [
                     { path: "movie", select: "title" },
                     { path: "cinema", select: "name" }

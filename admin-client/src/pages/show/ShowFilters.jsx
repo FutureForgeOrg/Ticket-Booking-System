@@ -14,7 +14,9 @@ function ShowFilters() {
       const moviesRes = await movieApi.getAllMovies();
 
       setMovies(moviesRes.data.data);
-      const cinemasRes = await cinemaApi.getAllCinemas();
+      const cinemasRes = await cinemaApi.getAllCinemas({
+         isSeatsIncluded: false
+      });
       setCinemas(cinemasRes.data.data);
     }
     fetchMoviesAndCinemas();
