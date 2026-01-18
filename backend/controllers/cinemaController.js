@@ -86,7 +86,7 @@ export const addScreenToCinema = async (req, res) => {
 
 //get all cinema
 export const getAllCinemas = async (req, res) => {
-    const { city, state, isIncluded } = req.query;
+    const { city, state, isSeatsIncluded } = req.query;
     try {
 
         const query = {};
@@ -100,7 +100,7 @@ export const getAllCinemas = async (req, res) => {
         let cinemas;
 
 
-        if (isIncluded === "true") {
+        if (isSeatsIncluded === "false") {
             cinemas = await Cinema.find(query).select(
                 "_id name screens.name"
             );
