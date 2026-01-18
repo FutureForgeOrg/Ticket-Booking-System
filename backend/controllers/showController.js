@@ -378,20 +378,46 @@ export const getShowsByMovieAndDate = async (req, res) => {
     await updateExpiredShows();
 
     const { movieId } = req.params;
-    const { startDate } = req.query;
+    const { startDate, endDate } = req.query;
     const { page, limit, skip } = pagination(req);
 
     
     let start = new Date();
+    start.setHours(0, 0, 0, 0); // start of today
+
+    const end = new Date(start);
+    end.setDate(end.getDate() + 2); // next 2 days
+    end.setHours(23, 59, 59, 999); // end of day
+
     if (startDate) {
-      start = new Date(startDate);
-      if (isNaN(start.getTime())) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid startDate format"
-        });
+      const parsedStart = new Date(startDate);
+        if (isNaN(parsedStart.getTime())) {
+            return res.status(400).json({
+            success: false,
+            message: "Invalid startDate format",
+            });
       }
+      start.setTime(parsedStart.getTime());
     }
+
+    if (endDate) {
+      const parsedEnd = new Date(endDate);
+      if (isNaN(parsedEnd.getTime())) {
+            return res.status(400).json({
+            success: false,
+            message: "Invalid endDate format",
+            });
+      }
+      end.setTime(parsedEnd.getTime());
+    }
+
+    if (start > end) {
+      return res.status(400).json({
+        success: false,
+        message: "startDate cannot be after endDate",
+      });
+    }
+
 
     const pipeline = [
       {
@@ -399,8 +425,8 @@ export const getShowsByMovieAndDate = async (req, res) => {
           movie: new mongoose.Types.ObjectId(movieId),
           status: "ACTIVE",
           isActive: true,
-          showTime: { $gte: start }
-        }
+          showTime: { $gte: start, $lte: end },
+        },
       },
 
       {
@@ -408,17 +434,37 @@ export const getShowsByMovieAndDate = async (req, res) => {
           from: "cinemas",
           localField: "cinema",
           foreignField: "_id",
-          as: "cinema"
-        }
+          as: "cinema",
+        },
       },
       { $unwind: "$cinema" },
 
-      //  Group by cinema + screen
+      {
+        $addFields: {
+          totalSeats: { $size: "$seats" },
+          bookedSeats: {
+            $size: {
+              $filter: {
+                input: "$seats",
+                as: "s",
+                cond: { $eq: ["$$s.isBooked", true] },
+              },
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          availableSeats: { $subtract: ["$totalSeats", "$bookedSeats"] },
+        },
+      },
+
+      //  Group by cinema + screen : one doc per screen + cinema
       {
         $group: {
           _id: {
             cinemaId: "$cinema._id",
-            screenName: "$screenName"
+            screenName: "$screenName",
           },
           cinema: { $first: "$cinema" },
           shows: {
@@ -427,13 +473,15 @@ export const getShowsByMovieAndDate = async (req, res) => {
               showTime: "$showTime",
               endTime: "$endTime",
               price: "$price",
-              seats: "$seats"
-            }
-          }
-        }
-      },
+              //seats: "$seats",  // no need to send all seats for listing of shows
+              availableSeats: "$availableSeats",
+              totalSeats: "$totalSeats",
+            },
+          },
+        },
+    },
 
-      //  Group by cinema
+      //  Group by cinema: all screens under one cinema and their shows
       {
         $group: {
           _id: "$_id.cinemaId",
@@ -441,27 +489,28 @@ export const getShowsByMovieAndDate = async (req, res) => {
           screens: {
             $push: {
               screenName: "$_id.screenName",
-              shows: "$shows"
-            }
-          }
-        }
+              shows: "$shows",
+            },
+          },
+        },
       },
 
+      // project final shape of data for frontend
       {
         $project: {
-          _id: 0,
+          _id: 1, // cinema id : test case
           cinema: {
             _id: "$cinema._id",
             name: "$cinema.name",
-            location: "$cinema.location"
+            location: "$cinema.location",
           },
-          screens: 1
-        }
+          screens: 1,
+        },
       },
 
       //  Pagination AFTER grouping
       { $skip: skip },
-      { $limit: limit }
+      { $limit: limit },
     ];
 
     const data = await Show.aggregate(pipeline);
@@ -473,7 +522,7 @@ export const getShowsByMovieAndDate = async (req, res) => {
           movie: new mongoose.Types.ObjectId(movieId),
           status: "ACTIVE",
           isActive: true,
-          showTime: { $gte: start }
+          showTime: { $gte: start, $lte: end }
         }
       },
       {
@@ -493,6 +542,10 @@ export const getShowsByMovieAndDate = async (req, res) => {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      filters: {  // for debugging
+        startDate: start, 
+        endDate: end
+      },
       data
     });
   } catch (error) {

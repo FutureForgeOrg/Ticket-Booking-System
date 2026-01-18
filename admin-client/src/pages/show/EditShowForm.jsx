@@ -3,6 +3,7 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 import TextInput from "@/components/common/TextInput";
 import ConfirmButton from "@/components/common/ConfirmButton";
 import useShowStore from "@/store/show.store";
+// import ReusableSelect from "@/components/common/ReuableSelect";
 
 function EditShowForm() {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ function EditShowForm() {
       premium: show.price?.premium || "",
       vip: show.price?.vip || ""
     }
+    // status: show.status || "ACTIVE"
   });
 
   const handleSubmit = async () => {
@@ -70,6 +72,18 @@ function EditShowForm() {
           }
           className="w-full"
         />
+        {/* <ReusableSelect
+            label="Status"
+            options={[
+              { value: "ACTIVE", label: "Active" },
+              { value: "COMPLETED", label: "Completed" },
+              { value: "CANCELLED", label: "Cancelled" }
+            ]}
+            value={form.status}
+            onChange={(v) => setForm({ ...form, status: v })}
+            className="w-full"
+            emptyMessage="Select Cinema first for available screens"
+        /> */}
       </div>
 
       {/* Submit Button */}

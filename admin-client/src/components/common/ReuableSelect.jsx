@@ -15,6 +15,7 @@ export default function ReusableSelect({
   disabled = false,
   className = "bg-white",
   name,
+  emptyMessage = "No options available",
 }) {
   return (
     <div className="space-y-2">
@@ -30,6 +31,11 @@ export default function ReusableSelect({
         </SelectTrigger>
 
         <SelectContent className="z-50 bg-white max-h-[380px]">
+          {options.length === 0 && (
+            <SelectItem value="no-options" disabled className="">
+              {emptyMessage}
+            </SelectItem>
+          )}
           {options.map((opt) => (
             <SelectItem key={opt.value} value={opt.value}>
               {opt.label}
