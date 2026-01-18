@@ -9,7 +9,7 @@ export const generateToken = (user, res) => {
             email: user.email,
         },
         process.env.JWT_SECRET,
-        { expiresIn: '10d' }
+        { expiresIn:'900s' }
     );
 
     res.cookie('jwt', token, {
