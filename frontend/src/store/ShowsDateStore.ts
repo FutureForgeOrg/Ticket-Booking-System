@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { makeNextDaysTabs } from "../utils/showsDateHelper";
 
-type Tab = { key: string; dow: string; day: string; mon: string };
+export type Tab = { key: string; dow: string; day: string; mon: string };
 
 type State = {
   tabs: Tab[];
