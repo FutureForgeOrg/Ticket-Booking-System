@@ -30,6 +30,8 @@ const config: Config = {
         },
 
         danger: "#EF4444",
+
+        skeleton : "#334155",
       },
 
       borderRadius: {

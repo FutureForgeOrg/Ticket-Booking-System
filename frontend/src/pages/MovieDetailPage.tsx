@@ -1,10 +1,11 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetMovieById } from "../hooks/getMovieByIdQuery";
 import Button from "../components/ui/Button";
 
 export default function MovieDetail() {
   const { movieId } = useParams();
   const { data: movie, isLoading, error } = useGetMovieById(movieId as string);
+  const navigate = useNavigate();
 
   if (isLoading) return <p>Loading...</p>;
   if (error || !movie) return <p>Something went wrong</p>;
@@ -61,7 +62,14 @@ export default function MovieDetail() {
               <span>{new Date(movie.releaseDate).toDateString()}</span>
             </div>
 
-            <Button variant="primary" className="mt-3" size="lg">
+            <Button
+              variant="primary"
+              className="mt-3"
+              size="lg"
+              onClick={() => {
+                navigate(`/movies/${movie._id}/shows`);
+              }}
+            >
               Book Tickets
             </Button>
           </div>

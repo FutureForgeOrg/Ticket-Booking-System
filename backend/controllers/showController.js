@@ -418,6 +418,13 @@ export const getShowsByMovieAndDate = async (req, res) => {
       });
     }
 
+    const movie = await Movie.findById(movieId)
+      .select("_id title posterUrl bannerUrl releaseDate runtime genres language certificate")
+      .lean();
+
+    if (!movie) {
+      return res.status(404).json({ success: false, message: "Movie not found" });
+    }
 
     const pipeline = [
       {
@@ -428,6 +435,8 @@ export const getShowsByMovieAndDate = async (req, res) => {
           showTime: { $gte: start, $lte: end },
         },
       },
+
+      { $sort: { "cinema.name": 1, screenName: 1, showTime: 1 } }, // sort showtime asc within screen within cinema
 
       {
         $lookup: {
@@ -545,8 +554,9 @@ export const getShowsByMovieAndDate = async (req, res) => {
       filters: {  // for debugging
         startDate: start, 
         endDate: end
-      },
-      data
+    },
+    movie,  // movie details
+    data
     });
   } catch (error) {
     res.status(500).json({
