@@ -1,5 +1,5 @@
 import Cinema from "../models/Cinema.js";
-
+import generateSeatsFromRows from '../utils/generateSeatsFromRows.js'
 export const createCinema = async (req, res) => {
     try {
         const { name, location, screens } = req.body;
@@ -10,9 +10,19 @@ export const createCinema = async (req, res) => {
                 message: "Name, location and screens are required"
             });
         }
+        const formattedScreens = screens.map(screen => {
+            if (!screen.name || !screen.rows?.length) {
+                throw new Error("Each screen must have name and rows");
+            }
+
+            return {
+                name: screen.name,
+                seats: generateSeatsFromRows(screen.rows)
+            };
+        });
 
         const cinema = await Cinema.create({
-            name, location, screens
+            name, location, screens: formattedScreens
         })
 
         res.status(201).json({
@@ -34,12 +44,12 @@ export const createCinema = async (req, res) => {
 export const addScreenToCinema = async (req, res) => {
     try {
         const { cinemaId } = req.params;
-        const { name, seats } = req.body;
+        const { name, rows } = req.body;
 
-        if (!name || !seats?.length) {
+        if (!name || !rows?.length) {
             return res.status(400).json({
                 success: false,
-                message: "Screen name and seats are required"
+                message: "Screen name and rows are required"
             });
         }
 
@@ -63,6 +73,7 @@ export const addScreenToCinema = async (req, res) => {
                 message: "screen already exists"
             })
         }
+        const seats = generateSeatsFromRows(rows);
 
         cinema.screens.push({ name, seats });
         await cinema.save()
@@ -70,7 +81,10 @@ export const addScreenToCinema = async (req, res) => {
         res.status(201).json({
             success: true,
             message: "screen added successfully",
-            screens: cinema.screens
+            screens: {
+                name,
+                totalSeats: seats.length
+            }
 
         });
 

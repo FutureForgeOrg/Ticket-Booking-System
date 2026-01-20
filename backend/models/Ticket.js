@@ -12,18 +12,9 @@ const ticketSchema = new mongoose.Schema({
         required: true
     },
 
-    seats: [
-        {
-            row: {
-                type: String,
-                required: true
-            },
-            number: {
-                type: Number,
-                required: true
-            }
-        }
-    ],
+    seats: [{
+        type: mongoose.Schema.Types.ObjectId
+    }],
 
     totalPrice: {
         type: Number,
