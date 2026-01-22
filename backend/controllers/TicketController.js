@@ -168,7 +168,7 @@ export const cancelTicket = async (req, res) => {
 export const adminCancelTicket = async (req, res) => {
     try {
         const { ticketId } = req.body;
-
+        // console.log(ticketId)
         if (!ticketId) {
             return res.status(400).json({ message: "missing ticketId" })
         }
@@ -176,7 +176,8 @@ export const adminCancelTicket = async (req, res) => {
         if (!ticket) {
             return res.status(404).json({ message: "Ticket not found" });
         }
-        const show = await Show.findById(ticket.show);
+        const show = await Show.findById(ticket.show).lean();
+
         if (!show) {
             return res.status(404).json({ message: "Show not found" })
         }
@@ -193,11 +194,51 @@ export const adminCancelTicket = async (req, res) => {
     }
 }
 
-export const getAllTickets = async (req, res) => {
+// export const getAllTickets = async (req, res) => {
 
+//     try {
+//         const { status, movieId, cinemaId } = req.query;
+//         const { limit, skip, page } = pagination(req)
+
+//         const query = {};
+//         if (status) query.status = status;
+
+//         const showMatch = {};
+//         if (movieId) showMatch.movie = movieId;
+//         if (cinemaId) showMatch.cinema = cinemaId;
+
+//         const tickets = await Ticket.find(query)
+//             .populate("user", "name email")
+//             .populate({
+//                 path: "show",
+//                 match: showMatch,
+
+//                 populate: [
+//                     { path: "movie", select: "title" },
+//                     { path: "cinema", select: "name" }
+//                 ]
+//             })
+//             .sort({ createdAt: -1 })
+//             .skip(skip)
+//             .limit(limit);
+//         const total = await Ticket.countDocuments(query);
+//         const filteredTickets = movieId || cinemaId
+//             ? tickets.filter(ticket => ticket.show !== null)
+//             : tickets;
+
+//         res.json({
+//             tickets: filteredTickets,
+//             total: filteredTickets.length,
+//         });
+//     } catch (error) {
+//         res.status(500).json({ status: false, message: error.message });
+//     }
+// }
+
+export const getAllTickets = async (req, res) => {
     try {
         const { status, movieId, cinemaId } = req.query;
-        const { limit, skip, page } = pagination(req)
+        const { limit, skip, page } = pagination(req);
 
         const query = {};
         if (status) query.status = status;
@@ -211,7 +252,6 @@ export const getAllTickets = async (req, res) => {
             .populate({
                 path: "show",
                 match: showMatch,
-
                 populate: [
                     { path: "movie", select: "title" },
                     { path: "cinema", select: "name" }
@@ -220,17 +260,37 @@ export const getAllTickets = async (req, res) => {
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
-        const total = await Ticket.countDocuments(query);
-        const filteredTickets = movieId || cinemaId
-            ? tickets.filter(ticket => ticket.show !== null)
-            : tickets;
+
+        const ticketsWithSeatNames = tickets.map(ticket => {
+            if (!ticket.show) return ticket;
+
+            const seatNames = ticket.seats.map(seatId => {
+                const seat = ticket.show.seats.find(
+                    s => s.seatId.toString() === seatId.toString()
+                );
+                // console.log(`${seat.row}${seat.number}`)
+                return seat ? `${seat.row}${seat.number}` : null;
+            }).filter(Boolean);
+
+            return {
+                ...ticket.toObject(),
+                seatNames
+            };
+        });
+
+        const filteredTickets =
+            movieId || cinemaId
+                ? ticketsWithSeatNames.filter(ticket => ticket.show !== null)
+                : ticketsWithSeatNames;
 
         res.json({
             tickets: filteredTickets,
-            total: filteredTickets.length,
+            total: filteredTickets.length
         });
+
     } catch (error) {
-        res.status(500).json({ status: false, message: error.message });
+        res.status(500).json({ success: false, message: error.message });
     }
-}
+};
+
 
