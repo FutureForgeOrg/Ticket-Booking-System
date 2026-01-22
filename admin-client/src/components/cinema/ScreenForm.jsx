@@ -13,11 +13,11 @@ const ScreenForm = ({ onSubmit }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const seats = generateSeats(rows);
+        // const seats = generateSeats(rows);
 
         onSubmit({
             name,
-            seats
+            rows
         });
     };
 

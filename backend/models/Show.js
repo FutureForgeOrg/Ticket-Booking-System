@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const showSeatSchema = new mongoose.Schema({
+    seatId: { type: mongoose.Schema.Types.ObjectId, required: true },
     row: {
         type: String,
         required: true
@@ -9,6 +10,7 @@ const showSeatSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+
     type: {
         type: String,
         enum: ["regular", "premium", "vip"],

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import { capitalizeFirst } from "../utils/formatText.js";
 const seatSchema = mongoose.Schema({
     row: {
         type: String,
@@ -21,7 +21,8 @@ const seatSchema = mongoose.Schema({
 const screenSchema = mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        set:capitalizeFirst,
     },
     seats: {
         type: [seatSchema],
@@ -35,23 +36,27 @@ const cinemaSchema = mongoose.Schema({
     name: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        set:capitalizeFirst,
     },
     location: {
         name: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
+            set:capitalizeFirst,
         },
         city: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
+            set:capitalizeFirst,
         },
         state: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
+            set:capitalizeFirst,
         },
     },
 
