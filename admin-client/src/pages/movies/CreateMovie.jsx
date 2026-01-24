@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import useMovieStore from "../../store/movie.store.js"
-import MovieForm from "../../components/movie/MovieForm.jsx"
+import { CreateMovieForm } from "@/components/movie/CreateMovieForm.jsx"
 
 function CreateMovie() {
   const navigate = useNavigate()
@@ -13,7 +13,7 @@ function CreateMovie() {
   return (
     <>
       <div className="p-6">
-        <MovieForm onSubmit={submit} />
+        <CreateMovieForm onSubmit={submit} />
       </div>
     </>
   )
