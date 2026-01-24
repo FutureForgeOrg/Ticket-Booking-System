@@ -4,63 +4,43 @@ import Movie from "../models/Movie.js";
 import pagination from "../utils/pagination.js";
 import { updateExpiredShows } from "../utils/updateExpiredShows.js";
 import mongoose from "mongoose";
-export const createShow = async (req, res) => {
+import generateSeatsFromLayout from '../utils/generateSeatsFromLayout.js'
 
+export const createShow = async (req, res) => {
     try {
         const { movieId, cinemaId, screenName, showTime, price } = req.body;
 
-
         if (!movieId || !cinemaId || !screenName || !showTime || !price) {
-            return res.status(400).json({ message: "All fields are required" })
+            return res.status(400).json({ message: "All fields are required" });
         }
 
-
-        //validate movie
         const movie = await Movie.findById(movieId);
         if (!movie) {
-            return res.status(404).json({ message: "movie not found" });
-
+            return res.status(404).json({ message: "Movie not found" });
         }
-        const movieDuration = movie.runtime * 60 * 1000;
 
-        //validate cinema
         const cinema = await Cinema.findById(cinemaId);
         if (!cinema) {
-            return res.status(404).json({ message: "cinema not found" });
+            return res.status(404).json({ message: "Cinema not found" });
         }
 
-
-        //find screen
-        const screen = cinema.screens.find(
-            (s) => s.name === screenName
-        );
-
+        const screen = cinema.screens.find(s => s.name === screenName);
         if (!screen) {
-            return res.status(404).json({ message: "screen not found in cinema" })
+            return res.status(404).json({ message: "Screen not found in cinema" });
         }
-
-        //copy seats 
-        const showSeats = screen.seats.map(seat => ({
-            seatId: new mongoose.Types.ObjectId(),
-            row: seat.row,
-            number: seat.number,
-            type: seat.type,
-            isBooked: false,
-            bookedBy: null
-        }));
 
         const showDate = new Date(showTime);
         if (isNaN(showDate.getTime())) {
             return res.status(400).json({ message: "Invalid show time format" });
         }
-        const endTime = new Date(showDate.getTime() + movieDuration);
 
         if (showDate < new Date()) {
             return res.status(400).json({ message: "Show time cannot be in the past" });
         }
 
+        const movieDuration = movie.runtime * 60 * 1000;
+        const endTime = new Date(showDate.getTime() + movieDuration);
 
-        //prevent duplicate show
         const existingShow = await Show.findOne({
             cinema: cinemaId,
             screenName,
@@ -70,10 +50,12 @@ export const createShow = async (req, res) => {
         });
 
         if (existingShow) {
-            return res.status(400).json({ message: "Show already exists for the given movie, cinema, screen and time" });
+            return res.status(400).json({ message: "Show timing conflict" });
         }
 
-        //create show
+        // generate seats from layout
+        const showSeats = generateSeatsFromLayout(screen.layout);
+
         const show = await Show.create({
             movie: movieId,
             cinema: cinemaId,
@@ -82,7 +64,7 @@ export const createShow = async (req, res) => {
             endTime,
             seats: showSeats,
             price
-        })
+        });
 
         res.status(201).json({
             message: "Show created successfully",
@@ -92,7 +74,7 @@ export const createShow = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-}
+};
 
 export const getAllShowsAdmin = async (req, res) => {
 

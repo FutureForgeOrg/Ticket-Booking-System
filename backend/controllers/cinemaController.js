@@ -1,104 +1,7 @@
 import Cinema from "../models/Cinema.js";
-import generateSeatsFromRows from '../utils/generateSeatsFromRows.js'
-export const createCinema = async (req, res) => {
-    try {
-        const { name, location, screens } = req.body;
+import getFinalLayoutConfig from "../config/layout/layoutConfig.js"
+import generateLayout from "../config/layout/generateLayout.js"
 
-        if (!name || !location || !screens?.length) {
-            return res.status(400).json({
-                success: false,
-                message: "Name, location and screens are required"
-            });
-        }
-        const formattedScreens = screens.map(screen => {
-            if (!screen.name || !screen.rows?.length) {
-                throw new Error("Each screen must have name and rows");
-            }
-
-            return {
-                name: screen.name,
-                seats: generateSeatsFromRows(screen.rows)
-            };
-        });
-
-        const cinema = await Cinema.create({
-            name, location, screens: formattedScreens
-        })
-
-        res.status(201).json({
-            success: true,
-            message: "cinema created succesfully",
-            cinema
-        })
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-
-    }
-}
-
-//add screen to existing Cinema
-
-export const addScreenToCinema = async (req, res) => {
-    try {
-        const { cinemaId } = req.params;
-        const { name, rows } = req.body;
-
-        if (!name || !rows?.length) {
-            return res.status(400).json({
-                success: false,
-                message: "Screen name and rows are required"
-            });
-        }
-
-        const cinema = await Cinema.findById(cinemaId)
-        if (!cinema) {
-            return res.status(404).json({
-                success: false,
-                message: "Cinema not found"
-            });
-        }
-
-
-        //prevent duplicate scrren name
-        const exists = cinema.screens.find(
-            (screen) => screen.name === name
-        )
-
-        if (exists) {
-            return res.status(409).json({
-                success: false,
-                message: "screen already exists"
-            })
-        }
-        const seats = generateSeatsFromRows(rows);
-
-        cinema.screens.push({ name, seats });
-        await cinema.save()
-
-        res.status(201).json({
-            success: true,
-            message: "screen added successfully",
-            screens: {
-                name,
-                totalSeats: seats.length
-            }
-
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-
-
-}
-
-//get all cinema
 export const getAllCinemas = async (req, res) => {
     const { city, state, isSeatsIncluded } = req.query;
     try {
@@ -137,8 +40,6 @@ export const getAllCinemas = async (req, res) => {
     }
 };
 
-//get cinema by id
-
 export const getCinemaById = async (req, res) => {
     try {
         const cinema = await Cinema.findById(req.params.id);
@@ -163,9 +64,6 @@ export const getCinemaById = async (req, res) => {
     }
 }
 
-
-//delete cinema
-
 export const deleteCinema = async (req, res) => {
     try {
         const cinema = await Cinema.findByIdAndDelete(req.params.id);
@@ -182,6 +80,108 @@ export const deleteCinema = async (req, res) => {
             message: "Cinema deleted successfully"
         });
 
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+export const createCinema = async (req, res) => {
+    try {
+        const { name, location, screens } = req.body;
+
+        if (!name || !location || !screens?.length) {
+            return res.status(400).json({
+                success: false,
+                message: "Name, location and screens are required"
+            });
+        }
+
+        const formattedScreens = screens.map(screen => {
+            const { name, preset, rowGap, rows } = screen;
+
+            if (!name || !preset || !rows?.length) {
+                throw new Error("Each screen must have name, preset and rows");
+            }
+
+            // preset defaults only
+            const presetConfig = getFinalLayoutConfig(preset);
+
+            // hierarchical resolution inside generateLayout
+            const layout = generateLayout({
+                preset: presetConfig,
+                rowGapOverride: rowGap,
+                rows
+            });
+
+            return { name, layout };
+        });
+
+        const cinema = await Cinema.create({
+            name,
+            location,
+            screens: formattedScreens
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "Cinema created successfully",
+            cinema
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+export const addScreenToCinema = async (req, res) => {
+    try {
+        const { cinemaId } = req.params;
+        const { name, preset, rowGap, rows } = req.body;
+
+        if (!name || !preset || !rows?.length) {
+            return res.status(400).json({
+                success: false,
+                message: "Screen name, preset and rows are required"
+            });
+        }
+
+        const cinema = await Cinema.findById(cinemaId);
+        if (!cinema) {
+            return res.status(404).json({
+                success: false,
+                message: "Cinema not found"
+            });
+        }
+
+        const exists = cinema.screens.find(screen => screen.name === name);
+        if (exists) {
+            return res.status(409).json({
+                success: false,
+                message: "Screen already exists"
+            });
+        }
+
+        const presetConfig = getFinalLayoutConfig(preset);
+
+        const layout = generateLayout({
+            preset: presetConfig,
+            rowGapOverride: rowGap,
+            rows
+        });
+
+        cinema.screens.push({ name, layout });
+        await cinema.save();
+
+        res.status(201).json({
+            success: true,
+            message: "Screen added successfully",
+            screen: { name, totalRows: rows.length }
+        });
     } catch (error) {
         res.status(500).json({
             success: false,
