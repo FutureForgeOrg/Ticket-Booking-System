@@ -29,7 +29,7 @@ function CinemaForm({ onSubmit, loading }) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const seats = generateSeats(form.rows);
+        // const seats = generateSeats(form.rows);
 
         onSubmit({
             name: form.name,
@@ -38,7 +38,7 @@ function CinemaForm({ onSubmit, loading }) {
                 city: form.city,
                 state: form.state
             },
-            screens: [{ name: form.screenName, seats }]
+            screens: [{ name: form.screenName,  rows: form.rows }]
         });
     };
 
@@ -51,7 +51,7 @@ function CinemaForm({ onSubmit, loading }) {
                 <TextInput label="Location Name" name="locationName" value={form.locationName} onChange={handleChange} />
                 <TextInput label="City" name="city" value={form.city} onChange={handleChange} />
                 <TextInput label="State" name="state" value={form.state} onChange={handleChange} />
-
+                <TextInput label="Screen Name" name="screenName" value={form.screenName} onChange={handleChange} />
                 {/* Screen Info */}
                 <SeatRowBuilder rows={form.rows} setRows={setRows} />
 

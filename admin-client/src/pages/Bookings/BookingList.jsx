@@ -32,10 +32,8 @@ export default function BookingList() {
     {
       header: "Seats",
       cell: ({ row }) => {
-        const seats = row.original.seats || [];
-        return seats.length
-          ? seats.map(s => `${s.row}${s.number}`).join(", ")
-          : "—";
+        const seatNames = row.original.seatNames || [];
+        return seatNames.length ? seatNames.join(", ") : "—";
       },
     },
     { header: "Total", accessorKey: "totalPrice" },
