@@ -4,6 +4,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import MovieDetail from "./pages/MovieDetailPage";
 import Layout from "./layout/layout";
 import MovieShows from "./pages/MovieShows";
+import MovieShowSeats from "./pages/MovieShowSeats";
 
 function App() {
   return (
@@ -17,10 +18,8 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
               <Route path="/movies/:movieId/:city" element={<MovieDetail />} />
-              <Route
-                path="/movies/:movieId/shows"
-                element={<MovieShows />}
-              />
+              <Route path="/movies/:movieId/shows" element={<MovieShows />} />
+              <Route path="/show/:showId" element={<MovieShowSeats />} />
             </Route>
           </Route>
         </Route>

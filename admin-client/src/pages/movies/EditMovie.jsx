@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom"
 import useMovieStore from "@/store/movie.store";
-import MovieForm from "../../components/movie/MovieForm";
+import { EditMovieForm } from "@/components/movie/EditMovieForm";
 
 function EditMovie() {
 
@@ -14,7 +14,7 @@ function EditMovie() {
     return () => {
       clearCurrent();
     }
-  }, [id]);
+  }, [id, fetchMovie, clearCurrent]);
 
   const submit = async (data) => {
     await updateMovie(id, data);
@@ -27,7 +27,7 @@ function EditMovie() {
 
   return (
     <> <div className="p-6">
-      <MovieForm key={current?._id} initialData={current} onSubmit={submit} />
+      <EditMovieForm key={current?._id} initialData={current} onSubmit={submit} />
     </div>
     </>
   )

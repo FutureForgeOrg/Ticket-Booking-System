@@ -25,7 +25,7 @@ const showSeatSchema = new mongoose.Schema({
         ref: "BaseUser",
         default: null
     }
-}, { _id: false });
+});
 
 
 const showSchema = mongoose.Schema({

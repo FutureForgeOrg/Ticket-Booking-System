@@ -14,7 +14,7 @@ const useMovieStore = create((set) => ({
     },
 
     fetchMovie: async (id) => {
-        set({ loading: true });
+        set({ loading: true, current: null });
         const { data } = await movieApi.getMovieById(id)
         set({ current: data.data, loading: false });
     },

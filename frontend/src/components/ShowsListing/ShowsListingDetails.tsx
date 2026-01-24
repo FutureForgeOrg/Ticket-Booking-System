@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import type { CinemaListingItem } from "../../types/showListing.type";
 import { formatLocalTime } from "../../utils/showsDateHelper";
 import { availabilityMetaBadge } from "./availabilityMetaBadge";
@@ -6,6 +7,7 @@ export interface ShowsListingDetailsProps {
   data: CinemaListingItem[];
 }
 export const ShowsListingDetails = ({ data }: ShowsListingDetailsProps) => {
+  const navigate = useNavigate();
   return (
     <>
       {data?.length ? (
@@ -51,8 +53,8 @@ export const ShowsListingDetails = ({ data }: ShowsListingDetailsProps) => {
                             "focus:outline-none focus:shadow-focus",
                           ].join(" ")}
                           onClick={() => {
-                            // navigate(`/shows/${s._id}`)
                             console.log("showId:", s._id);
+                            navigate(`/show/${s._id}`);
                           }}
                         >
                           {/* time */}
