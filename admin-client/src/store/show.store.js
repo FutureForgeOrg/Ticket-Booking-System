@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 const useShowStore = create((set, get) => ({
     shows: [],
     loading: false,
+    isCreatingShow: false,
     page: 1,
     limit: 8,
     totalPages: 1,
@@ -39,7 +40,7 @@ const useShowStore = create((set, get) => ({
             limit,
             page
         });
-        console.log("filtered data", res);
+        // console.log("filtered data", res);
         set({
             shows: res.data,
             totalPages: res.totalPages,
@@ -49,16 +50,27 @@ const useShowStore = create((set, get) => ({
     },
 
     addShow: async (payload) => {
+        const { isCreatingShow } = get();
+
+        //  Block duplicate call
+        if (isCreatingShow) return;
+
         try {
+            set({ isCreatingShow: true });
+
             await createShow(payload);
             toast.success("Show created successfully");
             await get().fetchShows();
-        }
-        catch (error) {
-            toast.error(error.response?.data?.message || "Failed to create show");
-        }
 
+        } catch (error) {
+            toast.error(
+                error.response?.data?.message || "Failed to create show"
+            );
+        } finally {
+            set({ isCreatingShow: false });
+        }
     },
+
 
     editShow: async (id, payload) => {
         try {

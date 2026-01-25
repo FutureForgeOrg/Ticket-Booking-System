@@ -14,7 +14,7 @@ function CinemaForm({ onSubmit, loading }) {
         name: "",
         preset: "STANDARD",
         rowGap: undefined, // screen-level only
-        rows: [{ row: "A", count: 10, seatType: "regular", columnGap: undefined, startGap: undefined }]
+        rows: [{ row: "A", count: 10, seatType: "regular", columnGap: undefined, startGap: 210 }]
       }
     ]
   });

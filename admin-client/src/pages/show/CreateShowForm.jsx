@@ -9,7 +9,7 @@ import { movieApi } from "@/services/movie.service";
 
 const CreateShowForm = () => {
   const navigate = useNavigate();
-  const { addShow, movies, cinemas, setMovies, setCinemas, fetchShows } = useShowStore();
+  const { addShow,isCreatingShow, movies, cinemas, setMovies, setCinemas, fetchShows } = useShowStore();
 
   const [form, setForm] = useState({
     movieId: "",
@@ -127,9 +127,10 @@ const CreateShowForm = () => {
       <div className="mt-6 flex justify-end">
         <ConfirmButton
           onConfirm={handleSubmit}
+          disabled={isCreatingShow}
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-md shadow"
         >
-          Create Show
+          {isCreatingShow ? "Creating..." : "Create Show"}
         </ConfirmButton>
       </div>
     </div>

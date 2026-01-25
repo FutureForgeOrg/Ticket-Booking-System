@@ -95,6 +95,7 @@ showSchema.index(
     }
 );
 
+showSchema.index({ screenName: 1, ShowTime: 1, endTime: 1 }, { unique: true })
 const Show = mongoose.model("Show", showSchema);
 
 export default Show;
