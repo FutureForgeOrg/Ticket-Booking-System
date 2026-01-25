@@ -41,6 +41,16 @@ export const createShow = async (req, res) => {
         const movieDuration = movie.runtime * 60 * 1000;
         const endTime = new Date(showDate.getTime() + movieDuration);
 
+        const sameShow = await Show.findOne({
+            cinema: cinemaId,
+            screenName,
+            endTime,
+            showTime
+        })
+        if (sameShow) {
+            return res.status(400).json({ message: "Show timing conflict" });
+        }
+
         const existingShow = await Show.findOne({
             cinema: cinemaId,
             screenName,
@@ -165,24 +175,125 @@ export const getAllShows = async (req, res) => {
 
 export const getShowById = async (req, res) => {
     try {
-        await updateExpiredShows();
         const show = await Show.findById(req.params.id)
-            .populate('movie', 'title duration genres')
-            .populate('cinema', 'name location');
-
+            .populate("movie", "title duration genres")
+            .populate("cinema", "name location screens");
 
         if (!show) {
             return res.status(404).json({ message: "Show not found" });
         }
-        res.status(200).json({
-            success: true,
-            data: show
+
+        // Find screen
+        const screen = show.cinema.screens.find(
+            s => s.name === show.screenName
+        );
+
+        if (!screen) {
+            return res.status(404).json({ message: "Screen not found" });
+        }
+
+        // Index seats by row-number
+        const seatMap = new Map();
+        show.seats.forEach(seat => {
+            seatMap.set(`${seat.row}-${seat.number}`, seat);
         });
+
+        const rows = [];
+        const rowGap = screen.layout.rowGap;
+
+        // Build rows
+        screen.layout.rows.forEach(rowLayout => {
+            let seatNumber = 1;
+            const cells = [];
+
+            // startGap
+            if (rowLayout.startGap > 0) {
+                cells.push({
+                    kind: "gap",
+                    size: rowLayout.startGap
+                });
+            }
+
+            rowLayout.blocks.forEach((block, blockIndex) => {
+
+                // aisle gap
+                if (block.gap) {
+                    cells.push({
+                        kind: "gap",
+                        size: block.size || 1
+                    });
+                    return;
+                }
+
+                // seat block
+                for (let i = 0; i < block.count; i++) {
+                    const key = `${rowLayout.row}-${seatNumber}`;
+                    const seat = seatMap.get(key);
+
+                    cells.push({
+                        kind: "seat",
+                        seatId: seat?._id || null,
+                        row: rowLayout.row,
+                        number: seatNumber,
+                        type: block.seatType,
+                        isBooked: seat?.isBooked || false
+                    });
+
+                    seatNumber++;
+
+                    // column gap between seats
+                    if (i < block.count - 1) {
+                        cells.push({
+                            kind: "gap",
+                            size: rowLayout.columnGap
+                        });
+                    }
+                }
+
+                // column gap between blocks
+                const nextBlock = rowLayout.blocks[blockIndex + 1];
+                if (nextBlock && !nextBlock.gap) {
+                    cells.push({
+                        kind: "gap",
+                        size: rowLayout.columnGap
+                    });
+                }
+            });
+
+            rows.push({
+                row: rowLayout.row,
+                columnGap: rowLayout.columnGap,
+                cells
+            });
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                showId: show._id,
+                showTime: show.showTime,
+                endTime: show.endTime,
+                status: show.status,
+
+                cinema: {
+                    name: show.cinema.name,
+                    location: show.cinema.location
+                },
+
+                movie: show.movie,
+                screenName: show.screenName,
+                rowGap,
+                rows
+            }
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: error.message });
     }
-    catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-}
+};
+
+
 
 export const cancelShow = async (req, res) => {
     try {

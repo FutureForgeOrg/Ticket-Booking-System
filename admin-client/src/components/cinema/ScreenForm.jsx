@@ -7,7 +7,7 @@ const ScreenForm = ({ onSubmit, onRemove }) => {
   const [name, setName] = useState("");
   const [preset, setPreset] = useState("STANDARD");
   const [rowGap, setRowGap] = useState(undefined); // screen-level only
-  const [rows, setRows] = useState([{ row: "A", count: 10, seatType: "regular" }]);
+  const [rows, setRows] = useState([{ row: "A", count: 10, seatType: "regular" ,startGap: 210}]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

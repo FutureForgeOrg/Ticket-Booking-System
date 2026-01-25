@@ -16,7 +16,7 @@ const generateLayout = ({ preset, rowGapOverride, rows }) => {
         columnGap,   // include columnGap at row level for Mongoose
         blocks: [
           { count: leftSeats, seatType: r.seatType || preset.defaultSeatType },
-          { gap: true, size: columnGap * 2 },
+          { gap: true, size: preset.aisleAfter },
           { count: rightSeats, seatType: r.seatType || preset.defaultSeatType }
         ]
       };

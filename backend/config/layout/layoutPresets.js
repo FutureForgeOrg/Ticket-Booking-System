@@ -1,16 +1,16 @@
 const LAYOUT_PRESETS = {
   STANDARD: {
     startGap: 0,      
-    columnGap: 12,    
-    rowGap: 24,       
-    aisleAfter: 6     
+    columnGap: 6,    
+    rowGap: 16,       
+    aisleAfter: 8     
   },
 
   VIP: {
-    startGap: 50,
-    columnGap: 20,
-    rowGap: 40,      
-    aisleAfter: 4  
+    startGap: 0,
+    columnGap: 6,
+    rowGap: 12,      
+    aisleAfter: 8 
   }
 };
 
