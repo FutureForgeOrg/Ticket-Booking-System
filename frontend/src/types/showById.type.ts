@@ -1,37 +1,50 @@
 export type SeatType = "regular" | "premium" | "vip";
 
-export type ShowSeat = {
-  _id: string;
-  row: string;
-  number: number;
-  type: SeatType;
-  isBooked: boolean;
-  bookedBy: string | null;
-};
-
-export type ShowPrice = {
-  regular: number;
-  premium: number;
-  vip: number;
-};
-
-export type ShowByIdResponse = {
-  success: boolean;
-  data: {
-    _id: string;
-    screenName: string;
-    showTime: string;
-    endTime: string;
-    status: "ACTIVE" | "COMPLETED" | "CANCELLED";
-    price: ShowPrice;
-
-    movie: { _id: string; title: string; genres: string[] };
-    cinema: {
-      _id: string;
-      name: string;
-      location: { name: string; city: string; state: string };
+export type SeatCell =
+  | { kind: "gap"; size?: number }
+  | {
+      kind: "seat";
+      seatId: string;
+      row: string;
+      number: number;
+      type: "regular" | "premium" | "vip";
+      isBooked: boolean;
     };
 
-    seats: ShowSeat[];
+export type SeatRow = {
+  row: string;
+  cells: SeatCell[];
+};
+
+export type CinemaMeta = {
+  _id: string;
+  name: string;
+  location: {
+    name: string;
+    city: string;
+    state: string;
   };
+};
+
+export type MovieMeta = {
+  _id: string;
+  title: string;
+  genres: string[];
+};
+
+export type ShowDetails = {
+  showId: string;
+  showTime: string;
+  endTime: string;
+  status: string;
+  cinema: CinemaMeta;
+  movie: MovieMeta;
+  screenName: string;
+  rowGap: number;
+  rows: SeatRow[];
+};
+
+export type ShowSeatsResponse = {
+  success: boolean;
+  data: ShowDetails;
 };
