@@ -5,14 +5,13 @@ import { capitalizeFirst } from "../utils/formatText.js";
 /* ---------- BLOCK SCHEMA ---------- */
 const blockSchema = new mongoose.Schema({
     count: {
-        type: Number
+        type: Number,
+        required: true,
+        min: 1
     },
     gap: {
         type: Boolean,
         default: false
-    },
-    size: {
-        type: Number
     },
     seatType: {
         type: String,
@@ -21,32 +20,27 @@ const blockSchema = new mongoose.Schema({
     }
 }, { _id: false });
 
+
 /* ---------- ROW SCHEMA ---------- */
 const rowLayoutSchema = new mongoose.Schema({
     row: {
         type: String,
         required: true
     },
-    startGap: {
-        type: Number,
-        default: 0
-    },
-    columnGap: {
-        type: Number,
-        required: true
-    },
     blocks: {
         type: [blockSchema],
-        required: true
+        required: true,
+        validate: v => v.length > 0
     }
 }, { _id: false });
+
 
 /* ---------- LAYOUT SCHEMA ---------- */
 const layoutSchema = new mongoose.Schema({
 
     rowGap: {
         type: Number,
-        required: true
+        
     },
     rows: {
         type: [rowLayoutSchema],

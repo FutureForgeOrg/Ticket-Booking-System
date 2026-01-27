@@ -41,16 +41,6 @@ export const createShow = async (req, res) => {
         const movieDuration = movie.runtime * 60 * 1000;
         const endTime = new Date(showDate.getTime() + movieDuration);
 
-        const sameShow = await Show.findOne({
-            cinema: cinemaId,
-            screenName,
-            endTime,
-            showTime
-        })
-        if (sameShow) {
-            return res.status(400).json({ message: "Show timing conflict" });
-        }
-
         const existingShow = await Show.findOne({
             cinema: cinemaId,
             screenName,
@@ -292,8 +282,6 @@ export const getShowById = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 };
-
-
 
 export const cancelShow = async (req, res) => {
     try {

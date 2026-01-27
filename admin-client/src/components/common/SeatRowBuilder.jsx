@@ -1,100 +1,100 @@
 import { Button } from "../ui/button";
 
-const SeatRowBuilder = ({ rows, setRows }) => {
+function SeatRowBuilder({ rows, setRows }) {
+  const updateRow = (i, row) => {
+    const updated = [...rows];
+    updated[i] = row;
+    setRows(updated);
+  };
+
   const addRow = () => {
     setRows([
       ...rows,
       {
-        row: "",
-        count: undefined,
-        seatType: "regular",
-        columnGap: undefined, // row-level
-        startGap: undefined   // row-level
+        row: String.fromCharCode(65 + rows.length),
+        blocks: [{ count: 5, gap: false, seatType: "regular" }]
       }
     ]);
   };
 
-  const updateRow = (index, key, value) => {
-    const updated = [...rows];
-    if (key === "count" || key === "columnGap" || key === "startGap") {
-      updated[index][key] = value === "" ? undefined : Number(value);
-    } else {
-      updated[index][key] = value;
-    }
-    setRows(updated);
-  };
-
-  const removeRow = (index) => {
-    setRows(rows.filter((_, i) => i !== index));
+  const addBlock = (rowIndex) => {
+    const row = rows[rowIndex];
+    updateRow(rowIndex, {
+      ...row,
+      blocks: [...row.blocks, { count: 1, gap: false, seatType: "regular" }]
+    });
   };
 
   return (
-    <div className="border rounded-lg p-4 space-y-3">
-      <h3 className="font-semibold">Seat Rows</h3>
+    <div className="space-y-4">
+      {rows.map((row, rowIndex) => (
+        <div key={rowIndex} className="border p-3 rounded bg-white">
+          <strong>Row {row.row}</strong>
 
-      {rows.map((r, index) => (
-        <div key={index} className="flex gap-2 items-center flex-wrap">
-          {/* Row label */}
-          <input
-            className="border p-2 w-14"
-            placeholder="Row"
-            value={r.row ?? ""}
-            onChange={(e) => updateRow(index, "row", e.target.value.toUpperCase())}
-          />
+          {row.blocks.map((block, blockIndex) => (
+            <div key={blockIndex} className="flex gap-2 mt-2 items-center">
+              <input
+                type="number"
+                className="w-20 border rounded px-2 py-1"
+                value={block.count}
+                onChange={(e) => {
+                  const blocks = [...row.blocks];
+                  blocks[blockIndex] = { ...block, count: Number(e.target.value) };
+                  updateRow(rowIndex, { ...row, blocks });
+                }}
+              />
 
-          {/* Seat count */}
-          <input
-            type="number"
-            className="border p-2 w-20"
-            placeholder="Seats"
-            value={r.count ?? ""}
-            onChange={(e) => updateRow(index, "count", e.target.value)}
-          />
+              <select
+                value={block.gap ? "gap" : "seat"}
+                onChange={(e) => {
+                  const blocks = [...row.blocks];
+                  blocks[blockIndex] =
+                    e.target.value === "gap"
+                      ? { count: block.count, gap: true }
+                      : { count: block.count, gap: false, seatType: "regular" };
+                  updateRow(rowIndex, { ...row, blocks });
+                }}
+              >
+                <option value="seat">Seats</option>
+                <option value="gap">Gap</option>
+              </select>
 
-          {/* Seat type */}
-          <select
-            className="border p-2"
-            value={r.seatType}
-            onChange={(e) => updateRow(index, "seatType", e.target.value)}
-          >
-            <option value="regular">Regular</option>
-            <option value="premium">Premium</option>
-            <option value="vip">VIP</option>
-          </select>
+              {!block.gap && (
+                <select
+                  value={block.seatType}
+                  onChange={(e) => {
+                    const blocks = [...row.blocks];
+                    blocks[blockIndex] = { ...block, seatType: e.target.value };
+                    updateRow(rowIndex, { ...row, blocks });
+                  }}
+                >
+                  <option value="regular">Regular</option>
+                  <option value="premium">Premium</option>
+                  <option value="vip">VIP</option>
+                </select>
+              )}
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => {
+                  const blocks = row.blocks.filter((_, idx) => idx !== blockIndex);
+                  updateRow(rowIndex, { ...row, blocks });
+                }}
+              >
+                Remove
+              </Button>
+            </div>
+          ))}
 
-          {/* Column Gap override (row-level only) */}
-          <input
-            type="number"
-            className="border p-2 w-24"
-            placeholder="Column Gap"
-            value={r.columnGap ?? ""}
-            onChange={(e) => updateRow(index, "columnGap", e.target.value)}
-          />
-
-          {/* Start Gap override (row-level only) */}
-          <input
-            type="number"
-            className="border p-2 w-24"
-            placeholder="Start Gap"
-            value={r.startGap ?? ""}
-            onChange={(e) => updateRow(index, "startGap", e.target.value)}
-          />
-
-          <button
-            type="button"
-            onClick={() => removeRow(index)}
-            className="text-red-500"
-          >
-            remove
-          </button>
+          <Button type="button" className="mt-2" onClick={() => addBlock(rowIndex)}>
+            + Add Block
+          </Button>
         </div>
       ))}
 
-      <Button type="button" variant="outline" onClick={addRow}>
-        Add Row
-      </Button>
+      <Button type="button" onClick={addRow}>+ Add Row</Button>
     </div>
   );
-};
+}
 
 export default SeatRowBuilder;
