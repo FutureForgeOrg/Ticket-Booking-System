@@ -4,15 +4,15 @@ import PageHeader from "@/components/common/PageHeader";
 import DataTable from "@/components/common/DataTable";
 import ConfirmButton from "@/components/common/ConfirmButton";
 import useCinemaStore from "@/store/cinema.store";
-
+import Pagination from "@/components/common/Pagination";
 
 function CinemaList() {
-  const { cinemas, getAllCinemas, deleteCinema } = useCinemaStore();
+  const { cinemas, getAllCinemas, deleteCinema, page, totalPages, setPage } = useCinemaStore();
   const navigate = useNavigate();
 
   useEffect(() => {
     getAllCinemas();
-  }, []);
+  }, [page]);
 
 
   const tableData = cinemas.map(cinema => ({
@@ -49,6 +49,12 @@ function CinemaList() {
               > Delete</ConfirmButton>
             </div>
           )}
+        />
+
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
         />
       </div>
     </>

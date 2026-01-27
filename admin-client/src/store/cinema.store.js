@@ -2,16 +2,31 @@ import { create } from 'zustand';
 import { cinemaApi } from '@/services/cinema.service';
 import toast from 'react-hot-toast';
 
-const useCinemaStore = create((set) => ({
+const useCinemaStore = create((set, get) => ({
     cinemas: [],
     currentCinema: null,
     loading: false,
+    page: 1,
+    limit: 8,
+    totalPages: 1,
+    total: 0,
+
+    setPage: (page) => set({ page }),
+    setLimit: (limit) => set({ limit }),
 
     getAllCinemas: async () => {
         set({ loading: true });
         try {
-            const response = await cinemaApi.getAllCinemas();
-            set({ cinemas: response.data.data });
+            const { limit, page } = get()
+
+            const response = await cinemaApi.getAllCinemas({
+                limit, page
+            });
+            set({
+                cinemas: response.data.data,
+                totalPages: response.totalPages,
+                total: response.total
+            });
 
         } catch (error) {
             console.error('Failed to fetch cinemas:', error);
@@ -26,7 +41,7 @@ const useCinemaStore = create((set) => ({
         set({ loading: true })
         try {
             const response = await cinemaApi.getCinemaById(id);
-           set({ currentCinema: response.data.data });
+            set({ currentCinema: response.data.data });
 
         } catch (error) {
             console.error("failed to fetch cinema")
@@ -38,6 +53,7 @@ const useCinemaStore = create((set) => ({
 
     createCinema: async (data) => {
         try {
+            console.log(data)
             await cinemaApi.createCinema(data)
             toast.success("cinema created succesfully")
         } catch (error) {
@@ -57,6 +73,7 @@ const useCinemaStore = create((set) => ({
     },
 
     addScreenToCinema: async (id, data) => {
+        console.log(data)
         try {
             await cinemaApi.addScreenToCinema(id, data)
             toast.success("successfully added scrren")

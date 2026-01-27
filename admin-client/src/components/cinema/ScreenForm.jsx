@@ -5,29 +5,46 @@ import SeatRowBuilder from "../common/SeatRowBuilder";
 
 const ScreenForm = ({ onSubmit, onRemove }) => {
   const [name, setName] = useState("");
-  const [preset, setPreset] = useState("STANDARD");
-  const [rowGap, setRowGap] = useState(undefined); // screen-level only
-  const [rows, setRows] = useState([{ row: "A", count: 10, seatType: "regular" ,startGap: 210}]);
+
+
+  //  screen-level
+  const [rowGap, setRowGap] = useState(undefined);
+
+  //  block-based rows
+  const [rows, setRows] = useState([
+    {
+      row: "A",
+      blocks: [{ count: 5, gap: false, seatType: "regular" }]
+    }
+  ]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!name || !rows.length) {
       alert("Screen name and at least one row are required");
       return;
     }
 
+  
     onSubmit({
       name,
-      preset,
-      overrides: rowGap !== undefined ? { rowGap } : {}, // only rowGap at screen-level
-      rows
+      layout: {
+        rowGap,
+        rows
+      }
     });
 
     // Reset
     setName("");
-    setPreset("STANDARD");
+
     setRowGap(undefined);
-    setRows([{ row: "A", count: 10, seatType: "regular" }]);
+    setRows([
+      {
+        row: "A",
+        blocks: [{ count: 5, gap: false, seatType: "regular" }]
+      }
+    ]);
   };
 
   return (
@@ -38,6 +55,7 @@ const ScreenForm = ({ onSubmit, onRemove }) => {
       {/* Header */}
       <div className="p-4 border-b flex justify-between items-center">
         <h3 className="font-semibold text-lg">Screen</h3>
+
         {onRemove && (
           <button
             type="button"
@@ -57,27 +75,18 @@ const ScreenForm = ({ onSubmit, onRemove }) => {
           onChange={(e) => setName(e.target.value)}
         />
 
-        <label className="block">
-          <span className="text-gray-700">Preset</span>
-          <select
-            className="mt-1 block w-full border rounded px-2 py-1"
-            value={preset}
-            onChange={(e) => setPreset(e.target.value)}
-          >
-            <option value="STANDARD">STANDARD</option>
-            <option value="VIP">VIP</option>
-          </select>
-        </label>
-
-        {/* Row Gap (screen-level override only) */}
+      
+        {/* Row gap */}
         <TextInput
           label="Row Gap (optional)"
           type="number"
           value={rowGap ?? ""}
-          onChange={(e) => setRowGap(e.target.value === "" ? undefined : Number(e.target.value))}
+          onChange={(e) =>
+            setRowGap(e.target.value === "" ? undefined : Number(e.target.value))
+          }
         />
 
-        {/* Seat Rows (columnGap & startGap per row) */}
+        {/* Rows + blocks */}
         <SeatRowBuilder rows={rows} setRows={setRows} />
       </div>
 
