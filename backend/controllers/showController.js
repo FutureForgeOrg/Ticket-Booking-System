@@ -173,7 +173,7 @@ export const getShowById = async (req, res) => {
             return res.status(404).json({ message: "Show not found" });
         }
 
-        // Find screen
+        // Find the screen for this show
         const screen = show.cinema.screens.find(
             s => s.name === show.screenName
         );
@@ -182,40 +182,28 @@ export const getShowById = async (req, res) => {
             return res.status(404).json({ message: "Screen not found" });
         }
 
-        // Index seats by row-number
+        // Map booked seats
         const seatMap = new Map();
         show.seats.forEach(seat => {
             seatMap.set(`${seat.row}-${seat.number}`, seat);
         });
 
         const rows = [];
-        const rowGap = screen.layout.rowGap;
 
-        // Build rows
         screen.layout.rows.forEach(rowLayout => {
             let seatNumber = 1;
             const cells = [];
 
-            // startGap
-            if (rowLayout.startGap > 0) {
-                cells.push({
-                    kind: "gap",
-                    size: rowLayout.startGap
-                });
-            }
+            rowLayout.blocks.forEach(block => {
 
-            rowLayout.blocks.forEach((block, blockIndex) => {
-
-                // aisle gap
                 if (block.gap) {
-                    cells.push({
-                        kind: "gap",
-                        size: block.size || 1
-                    });
+                    for (let i = 0; i < block.count; i++) {
+                        cells.push({ kind: "gap" });
+                    }
                     return;
                 }
 
-                // seat block
+                // SEAT block
                 for (let i = 0; i < block.count; i++) {
                     const key = `${rowLayout.row}-${seatNumber}`;
                     const seat = seatMap.get(key);
@@ -230,29 +218,11 @@ export const getShowById = async (req, res) => {
                     });
 
                     seatNumber++;
-
-                    // column gap between seats
-                    if (i < block.count - 1) {
-                        cells.push({
-                            kind: "gap",
-                            size: rowLayout.columnGap
-                        });
-                    }
-                }
-
-                // column gap between blocks
-                const nextBlock = rowLayout.blocks[blockIndex + 1];
-                if (nextBlock && !nextBlock.gap) {
-                    cells.push({
-                        kind: "gap",
-                        size: rowLayout.columnGap
-                    });
                 }
             });
 
             rows.push({
                 row: rowLayout.row,
-                columnGap: rowLayout.columnGap,
                 cells
             });
         });
@@ -265,15 +235,18 @@ export const getShowById = async (req, res) => {
                 endTime: show.endTime,
                 status: show.status,
 
+                movie: show.movie,
+
                 cinema: {
                     name: show.cinema.name,
                     location: show.cinema.location
                 },
 
-                movie: show.movie,
-                screenName: show.screenName,
-                rowGap,
-                rows
+                screen: {
+                    name: screen.name,
+                    rowGap: screen.layout.rowGap,
+                    rows
+                }
             }
         });
 

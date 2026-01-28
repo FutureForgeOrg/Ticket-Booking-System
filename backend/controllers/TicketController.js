@@ -1,5 +1,7 @@
 import Show from '../models/Show.js';
 import Ticket from '../models/Ticket.js';
+import Movie from '../models/Movie.js';
+import Cinema from '../models/Cinema.js';
 import { updateExpiredShows } from '../utils/updateExpiredShows.js';
 import pagination from "../utils/pagination.js"
 import { unlockSeats } from '../utils/unlockSeats.js';
@@ -194,47 +196,6 @@ export const adminCancelTicket = async (req, res) => {
     }
 }
 
-// export const getAllTickets = async (req, res) => {
-
-//     try {
-//         const { status, movieId, cinemaId } = req.query;
-//         const { limit, skip, page } = pagination(req)
-
-//         const query = {};
-//         if (status) query.status = status;
-
-//         const showMatch = {};
-//         if (movieId) showMatch.movie = movieId;
-//         if (cinemaId) showMatch.cinema = cinemaId;
-
-//         const tickets = await Ticket.find(query)
-//             .populate("user", "name email")
-//             .populate({
-//                 path: "show",
-//                 match: showMatch,
-
-//                 populate: [
-//                     { path: "movie", select: "title" },
-//                     { path: "cinema", select: "name" }
-//                 ]
-//             })
-//             .sort({ createdAt: -1 })
-//             .skip(skip)
-//             .limit(limit);
-//         const total = await Ticket.countDocuments(query);
-//         const filteredTickets = movieId || cinemaId
-//             ? tickets.filter(ticket => ticket.show !== null)
-//             : tickets;
-
-//         res.json({
-//             tickets: filteredTickets,
-//             total: filteredTickets.length,
-//         });
-//     } catch (error) {
-//         res.status(500).json({ status: false, message: error.message });
-//     }
-// }
-
 export const getAllTickets = async (req, res) => {
     try {
         const { status, movieId, cinemaId } = req.query;
@@ -293,4 +254,77 @@ export const getAllTickets = async (req, res) => {
     }
 };
 
+export const getMyTickets = async (req, res) => {
+    try {
+        const userId = req.user._id;
+
+        const tickets = await Ticket.find({ user: userId })
+            .populate({
+                path: "show",
+                populate: [
+                    { path: "movie", select: "title" },
+                    { path: "cinema", select: "name location" }
+                ]
+            })
+            .sort({ createdAt: -1 })
+            .lean();
+
+        const grouped = {};
+
+        tickets.forEach(ticket => {
+            const show = ticket.show;
+            const showId = show._id.toString();
+
+            if (!grouped[showId]) {
+                grouped[showId] = {
+                    show: {
+                        id: showId,
+                        movieTitle: show.movie.title,
+                        cinemaName: show.cinema.name,
+                        location: `${show.cinema.location.city}, ${show.cinema.location.state}`,
+                        screen: show.screenName,
+                        showTime: show.showTime,
+                        endTime: show.endTime
+                    },
+                    tickets: []
+                };
+            }
+            const bookedSeats = show.seats
+                .filter(seat =>
+                    ticket.seats.some(
+                        seatId => seat.seatId.toString() === seatId.toString()
+                    )
+                )
+                .map(seat => ({
+                    name: `${seat.row}${seat.number}`,
+                    row: seat.row,
+                    number: seat.number,
+                    type: seat.type
+                }));
+
+            grouped[showId].tickets.push({
+                ticketId: ticket._id,
+                seats: bookedSeats,
+                seatType: ticket.seats[0]?.type,
+                totalPrice: ticket.totalPrice,
+                status: ticket.status,
+                bookedAt: ticket.createdAt
+            });
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Tickets fetched successfully",
+            count: tickets.length,
+            data: Object.values(grouped)   //convert object into array so it return only 
+                                         //value of perticulare keys of object as a array
+        });
+
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch tickets"
+        });
+    }
+};
 
