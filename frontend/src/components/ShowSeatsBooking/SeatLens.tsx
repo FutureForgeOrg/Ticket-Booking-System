@@ -4,6 +4,14 @@ function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
 }
 
+function LegendDot({ label, className }: { label: string; className: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className={`h-4 w-4 rounded-sm border ${className}`} />
+      <span>{label}</span>
+    </div>
+  );
+}
 export function ZoomableLayout({
   title,
   children,
@@ -30,6 +38,19 @@ export function ZoomableLayout({
           <div className="flex-1 items-center">
             {" "}
             <p className="text-center font-bold text-xl">{title}</p>
+            <div className="pt-2 pl-2 flex flex-wrap gap-4 text-xs text-gray-600">
+              <LegendDot label="Available" className="border-gray-400" />
+              <LegendDot
+                label="Selected"
+                className="bg-green-600 border-green-700"
+              />
+              <LegendDot
+                label="Booked"
+                className="bg-gray-200 border-gray-300 opacity-60"
+              />
+              <LegendDot label="Premium" className="border-yellow-500" />
+              <LegendDot label="VIP" className="border-purple-500" />
+            </div>
           </div>
 
           <div className="flex items-center justify-end gap-2">

@@ -1,84 +1,119 @@
-import type { SeatCell, SeatRow } from "../../types/showById.type";
 import Seat from "./Seats";
+import type { LayoutRow, SeatType } from "../../types/showById.type";
 
-function getGapWidthPx({
-  isFirst,
-  isBetweenSeats,
-}: {
-  isFirst: boolean;
-  isBetweenSeats: boolean;
-}) {
-  if (isFirst) return 40;        // left padding
-  if (isBetweenSeats) return 10; // seat spacing
-  return 20;                    // fallback / aisle
+const SEAT_SIZE = 28;
+const SEAT_GAP = 8;
+const CELL_WIDTH = SEAT_SIZE + SEAT_GAP;
+
+function Gap({ count }: { count: number }) {
+  return <div style={{ width: count * CELL_WIDTH }} />;
 }
 
+function SeatTypeDivider({
+  type,
+  price,
+}: {
+  type: "vip" | "premium" | "regular";
+  price: number;
+}) {
+  const labelMap = {
+    vip: "Platinum",
+    premium: "Gold",
+    regular: "Silver",
+  };
+
+  return (
+    <div className="my-6 flex-col justify-center items-center gap-4">
+      <div className="text-sm text-center font-normal italic text-gray-200 whitespace-nowrap">
+        ₹{price} {labelMap[type]}
+      </div>
+      <div className="h-[0.5px] flex-1 bg-gray-400" />  
+    </div>
+  );
+}
 
 export default function SeatGrid({
   rows,
   rowGap,
+  price,
 }: {
-  rows: SeatRow[];
+  rows: LayoutRow[];
   rowGap: number;
+  price: Record<SeatType, number>;
 }) {
+  const renderedTypes = new Set<string>();
   return (
     <div className="w-full overflow-x-auto">
-      <div className="inline-block min-w-max p-4">
-        {/* Screen indicator */}
-        {/* Legend */}
-        <div className="mb-6 flex flex-wrap gap-4 text-xs text-gray-600">
-          <LegendDot label="Available" className="border-gray-400" />
-          <LegendDot
-            label="Selected"
-            className="bg-green-600 border-green-700"
-          />
-          <LegendDot
-            label="Booked"
-            className="bg-gray-200 border-gray-300 opacity-60"
-          />
-          <LegendDot label="Premium" className="border-yellow-500" />
-          <LegendDot label="VIP" className="border-purple-500" />
-        </div>
+      <div className="inline-block min-w-max p-4">  
 
+        {/* Rows */}
         <div className="flex flex-col" style={{ gap: rowGap }}>
-          {rows.map((row) => (
-            <div key={row.row} className="flex items-center">
-              {/* Row label */}
-              <div className="mr-3 w-5 text-sm text-gray-600">{row.row}</div>
+          {rows.map((row) => {
+            const firstSeatBlock = row.blocks.find((b) => !b.gap);
 
-              {/* Seats */}
-              <div className="flex items-center">
-                {row.cells.map((cell: SeatCell, index) => {
-                  if (cell.kind === "gap") {
-                    const prev = row.cells[index - 1];
-                    const next = row.cells[index + 1];
+            const seatType =
+              firstSeatBlock && !firstSeatBlock.gap
+                ? firstSeatBlock.seatType
+                : undefined;
 
-                    const width = getGapWidthPx({
-                      isFirst: index === 0,
-                      isBetweenSeats:
-                        prev?.kind === "seat" && next?.kind === "seat",
-                    });
+            const showDivider = seatType && !renderedTypes.has(seatType);
 
-                    return <div key={`gap-${index}`} style={{ width }} />;
-                  }
+            if (showDivider) {
+              renderedTypes.add(seatType);
+            }
 
-                  return (
-                    <Seat
-                      key={cell.seatId}
-                      seatId={cell.seatId}
-                      row={cell.row}
-                      number={cell.number}
-                      type={cell.type}
-                      isBooked={cell.isBooked}
-                    />
-                  );
-                })}
+            return (
+              <div key={row.row}>
+                {/* Seat Type Divider */}
+                {showDivider && (
+                  <SeatTypeDivider type={seatType} price={price[seatType]} />
+                )}
+
+                {/* Actual Row */}
+                <div className="flex items-center">
+                  <div className="mr-3 w-5 text-sm font-medium text-gray-600">
+                    {row.row}
+                  </div>
+
+                  <div className="flex items-center">
+                    {row.blocks.map((block, blockIndex) => {
+                      if (block.gap) {
+                        return (
+                          <Gap
+                            key={`gap-${row.row}-${blockIndex}`}
+                            count={block.count}
+                          />
+                        );
+                      }
+
+                      return (
+                        <div
+                          key={`block-${row.row}-${blockIndex}`}
+                          className="flex items-center"
+                        >
+                          {block.seats.map((seat) => (
+                            <div
+                              key={seat.seatId}
+                              style={{
+                                width: CELL_WIDTH,
+                                display: "flex",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Seat {...seat} />
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* Screen preview */}
+        {/* Screen */}
         <div className="my-10 flex justify-center">
           <img
             className="w-52 opacity-40"
@@ -87,15 +122,6 @@ export default function SeatGrid({
           />
         </div>
       </div>
-    </div>
-  );
-}
-
-function LegendDot({ label, className }: { label: string; className: string }) {
-  return (
-    <div className="flex items-center gap-2">
-      <span className={`h-4 w-4 rounded-sm border ${className}`} />
-      <span>{label}</span>
     </div>
   );
 }

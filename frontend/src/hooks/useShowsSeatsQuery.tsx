@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "../lib/axiosInstance";
-import type { ShowSeatsResponse } from "../types/showById.type";
+import type { ShowByIdResponse } from "../types/showById.type";
 
-async function fetchShowSeatsDetails(showId : string): Promise<ShowSeatsResponse> {
+async function fetchShowSeatsDetails(showId : string): Promise<ShowByIdResponse> {
     const res = await axiosInstance.get(`/shows/${showId}`,{
         withCredentials: true
     });
@@ -10,7 +10,7 @@ async function fetchShowSeatsDetails(showId : string): Promise<ShowSeatsResponse
 }
 
 export function useShowSeatsQuery(showId : string) {
-    return useQuery<ShowSeatsResponse, Error>({
+    return useQuery<ShowByIdResponse, Error>({
         queryKey: ["show-seats", showId],
         queryFn: () => fetchShowSeatsDetails(showId),
         enabled: !!showId,

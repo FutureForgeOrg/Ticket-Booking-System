@@ -1,50 +1,63 @@
 export type SeatType = "regular" | "premium" | "vip";
 
-export type SeatCell =
-  | { kind: "gap"; size?: number }
+export type ShowSeat = {
+  seatId: string;
+  row: string;
+  number: number;
+  type: SeatType;
+  isBooked: boolean;
+};
+
+export type LayoutBlock =
   | {
-      kind: "seat";
-      seatId: string;
-      row: string;
-      number: number;
-      type: "regular" | "premium" | "vip";
-      isBooked: boolean;
+      gap: true;
+      count: number;
+    }
+  | {
+      gap: false;
+      count: number;
+      seatType: SeatType;
+      seats: ShowSeat[];
     };
 
-export type SeatRow = {
+export type LayoutRow = {
   row: string;
-  cells: SeatCell[];
+  blocks: LayoutBlock[];
 };
 
-export type CinemaMeta = {
-  _id: string;
-  name: string;
-  location: {
-    name: string;
-    city: string;
-    state: string;
-  };
-};
-
-export type MovieMeta = {
-  _id: string;
-  title: string;
-  genres: string[];
-};
-
-export type ShowDetails = {
-  showId: string;
-  showTime: string;
-  endTime: string;
-  status: string;
-  cinema: CinemaMeta;
-  movie: MovieMeta;
-  screenName: string;
+export type ScreenLayout = {
   rowGap: number;
-  rows: SeatRow[];
+  rows: LayoutRow[];
 };
 
-export type ShowSeatsResponse = {
+export type ShowByIdData = {
+    show: {
+      id: string;
+      showTime: string;
+      endTime: string;
+      status: string;
+      price: Record<SeatType, number>;
+    };
+    movie: {
+      title: string;
+      genres: string[];
+      posterUrl: string;
+      runtime: number;
+    };
+    cinema: {
+      name: string;
+      location: {
+        city: string;
+        state: string;
+      };
+    };
+    screen: {
+      name: string;
+      layout: ScreenLayout;
+    };
+  }
+
+export type ShowByIdResponse = {
   success: boolean;
-  data: ShowDetails;
+  data: ShowByIdData;
 };

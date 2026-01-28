@@ -24,9 +24,9 @@ export default function ShowSeatPage() {
       <MovieCinemaSeatHeader show={show} />
 
       {/* seats grid */}
-      <div className="px-16 py-4">
+      <div className="py-4">
         <ZoomableLayout>
-          <SeatGrid rows={show.rows} rowGap={show.rowGap} />
+          <SeatGrid rows={show.screen.layout.rows} rowGap={show.screen.layout.rowGap} price={show.show.price} />
         </ZoomableLayout>
       </div>
 
@@ -45,7 +45,6 @@ export default function ShowSeatPage() {
             className="rounded-md bg-black px-4 py-2 text-white disabled:opacity-40"
             disabled={selectedList.length === 0}
             onClick={() => {
-              // call your booking API
               // payload: seatIds: selectedList.map(s => s.seatId)
               console.log("Book seats:", selectedList);
             }}
