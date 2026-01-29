@@ -1,60 +1,57 @@
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "../lib/axiosInstance";
-import type { ShowByIdResponse } from "../types/showById.type";
-import { formatLocalTime } from "../utils/showsDateHelper";
-import SeatMap from "../components/ShowSeatsBooking/SeatMap";
-import SeatSummary from "../components/ShowSeatsBooking/SeatSummary";
+import { useSeatStore } from "../store/seatStore";
+import { useShowSeatsQuery } from "../hooks/useShowsSeatsQuery";
+import SeatGrid from "../components/ShowSeatsBooking/SeatGrid";
+import { ZoomableLayout } from "../components/ShowSeatsBooking/SeatLens";
+import MovieCinemaSeatHeader from "../components/ShowSeatsBooking/MovieCinemaSeatHeader";
 
-async function fetchShowById(showId: string) {
-  const res = await axiosInstance.get<ShowByIdResponse>(`/shows/${showId}`);
-  return res.data;
-}
+export default function ShowSeatPage() {
+  const { showId = "" } = useParams();
+  const { data, isLoading, error } = useShowSeatsQuery(showId);
 
-export default function MovieShowSeats() {
-  const { showId } = useParams();
+  const selected = useSeatStore((s) => s.selected);
+  const selectedList = Object.values(selected);
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["showById", showId],
-    queryFn: () => fetchShowById(showId!),
-    enabled: !!showId,
-    staleTime: 10_000,
-  });
-
-  if (isLoading) {
-    return (
-      <div className="rounded-xl border border-border bg-surface p-4 text-sm text-text-muted shadow-soft">
-        Loading seats...
-      </div>
-    );
-  }
-
-  if (error || !data?.success) {
-    return (
-      <div className="rounded-xl border border-danger/40 bg-surface p-4 text-sm text-danger shadow-soft">
-        Failed to load seats.
-      </div>
-    );
-  }
+  if (isLoading) return <div className="p-6">Loading seats...</div>;
+  if (error || !data?.success)
+    return <div className="p-6">Failed to load.</div>;
 
   const show = data.data;
 
   return (
-    <div className="space-y-4 bg-canvas text-text-primary">
-      {/* Header */}
-      <div className="rounded-2xl border border-border bg-surface p-4 shadow-soft">
-        <div className="text-lg font-bold">{show.movie.title}</div>
-        <div className="text-sm text-text-secondary">
-          {show.cinema.name} • {show.screenName}
-        </div>
-        <div className="text-xs text-text-muted">
-          {formatLocalTime(show.showTime)} – {formatLocalTime(show.endTime)}
-        </div>
+    <div className="max-w-7xl mx-auto p-6 space-y-4">
+      {/* header */}
+      <MovieCinemaSeatHeader show={show} />
+
+      {/* seats grid */}
+      <div className="py-4">
+        <ZoomableLayout>
+          <SeatGrid rows={show.screen.layout.rows} rowGap={show.screen.layout.rowGap} price={show.show.price} />
+        </ZoomableLayout>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
-        <SeatMap seats={show.seats} />
-        <SeatSummary price={show.price} />
+      <div className="mt-4 rounded-lg border p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium">
+              Selected: {selectedList.length}
+            </p>
+            <p className="text-xs text-gray-500">
+              {selectedList.map((s) => `${s.row}${s.number}`).join(", ") || "—"}
+            </p>
+          </div>
+
+          <button
+            className="rounded-md bg-black px-4 py-2 text-white disabled:opacity-40"
+            disabled={selectedList.length === 0}
+            onClick={() => {
+              // payload: seatIds: selectedList.map(s => s.seatId)
+              console.log("Book seats:", selectedList);
+            }}
+          >
+            Proceed
+          </button>
+        </div>
       </div>
     </div>
   );
