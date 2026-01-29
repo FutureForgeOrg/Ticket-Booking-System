@@ -164,96 +164,114 @@ export const getAllShows = async (req, res) => {
 }
 
 export const getShowById = async (req, res) => {
-    try {
-        const show = await Show.findById(req.params.id)
-            .populate("movie", "title duration genres")
-            .populate("cinema", "name location screens");
+  try {
+    const show = await Show.findById(req.params.id)
+      .populate("movie", "title genres posterUrl runtime")
+      .populate("cinema", "name location screens");
 
-        if (!show) {
-            return res.status(404).json({ message: "Show not found" });
-        }
-
-        // Find the screen for this show
-        const screen = show.cinema.screens.find(
-            s => s.name === show.screenName
-        );
-
-        if (!screen) {
-            return res.status(404).json({ message: "Screen not found" });
-        }
-
-        // Map booked seats
-        const seatMap = new Map();
-        show.seats.forEach(seat => {
-            seatMap.set(`${seat.row}-${seat.number}`, seat);
-        });
-
-        const rows = [];
-
-        screen.layout.rows.forEach(rowLayout => {
-            let seatNumber = 1;
-            const cells = [];
-
-            rowLayout.blocks.forEach(block => {
-
-                if (block.gap) {
-                    for (let i = 0; i < block.count; i++) {
-                        cells.push({ kind: "gap" });
-                    }
-                    return;
-                }
-
-                // SEAT block
-                for (let i = 0; i < block.count; i++) {
-                    const key = `${rowLayout.row}-${seatNumber}`;
-                    const seat = seatMap.get(key);
-
-                    cells.push({
-                        kind: "seat",
-                        seatId: seat?._id || null,
-                        row: rowLayout.row,
-                        number: seatNumber,
-                        type: block.seatType,
-                        isBooked: seat?.isBooked || false
-                    });
-
-                    seatNumber++;
-                }
-            });
-
-            rows.push({
-                row: rowLayout.row,
-                cells
-            });
-        });
-
-        return res.status(200).json({
-            success: true,
-            data: {
-                showId: show._id,
-                showTime: show.showTime,
-                endTime: show.endTime,
-                status: show.status,
-
-                movie: show.movie,
-
-                cinema: {
-                    name: show.cinema.name,
-                    location: show.cinema.location
-                },
-
-                screen: {
-                    name: screen.name,
-                    rowGap: screen.layout.rowGap,
-                    rows
-                }
-            }
-        });
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: error.message });
+    if (!show) {
+      return res.status(404).json({ success: false, message: "Show not found" });
     }
+
+    /* ------------------ FIND SCREEN ------------------ */
+    const screen = show.cinema.screens.find(
+      (s) => s.name === show.screenName
+    );
+
+    if (!screen) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Screen not found" });
+    }
+
+    /* ------------------ INDEX SHOW SEATS ------------------ */
+    // key = A-1, B-12, etc.
+    const seatMap = new Map();
+    show.seats.forEach((seat) => {
+      seatMap.set(`${seat.row}-${seat.number}`, seat);
+    });
+
+    /* ------------------ BUILD LAYOUT (BLOCK-BASED) ------------------ */
+    const layoutRows = screen.layout.rows.map((rowLayout) => {
+      let seatNumber = 1;
+
+      const blocks = rowLayout.blocks.map((block) => {
+        // GAP BLOCK (aisle / padding)
+        if (block.gap) {
+          return {
+            count: block.count,
+            gap: true,
+          };
+        }
+
+        // SEAT BLOCK
+        const seats = [];
+
+        for (let i = 0; i < block.count; i++) {
+          const key = `${rowLayout.row}-${seatNumber}`;
+          const seat = seatMap.get(key);
+
+          seats.push({
+            seatId: seat?._id || null,
+            row: rowLayout.row,
+            number: seatNumber,
+            type: block.seatType,
+            isBooked: seat?.isBooked || false,
+          });
+
+          seatNumber++;
+        }
+
+        return {
+          count: block.count,
+          gap: false,
+          seatType: block.seatType,
+          seats,
+        };
+      });
+
+      return {
+        row: rowLayout.row,
+        blocks,
+      };
+    });
+
+    /* ------------------ FINAL RESPONSE ------------------ */
+    return res.status(200).json({
+      success: true,
+      data: {
+        show: {
+          id: show._id,
+          showTime: show.showTime,
+          endTime: show.endTime,
+          status: show.status,
+          price: show.price,
+        },
+
+        movie: show.movie,
+
+        cinema: {
+          _id: show.cinema._id,
+          name: show.cinema.name,
+          location: show.cinema.location,
+        },
+
+        screen: {
+          name: show.screenName,
+          layout: {
+            rowGap: screen.layout.rowGap,
+            rows: layoutRows,
+          },
+        },
+      },
+    });
+    } catch (error) {
+    console.error("getShowById error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
 };
 
 export const cancelShow = async (req, res) => {

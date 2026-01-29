@@ -1,37 +1,27 @@
 import { create } from "zustand";
-import type { ShowSeat } from "../types/showById.type";
+import type { SeatType } from "../types/showById.type";
 
-type State = {
-  selected: Record<string, ShowSeat>; // key = seat._id  // {seatId : {...seat data}}
-  toggle: (seat: ShowSeat) => void;
+type SelectedSeat = {
+  seatId: string;
+  row: string;
+  number: number;
+  type: SeatType;
+};
+
+type SeatState = {
+  selected: Record<string, SelectedSeat>;       // key = seat._id  // {seatId : {...seat data}}
+  toggleSeat: (seat: SelectedSeat) => void;
   clear: () => void;
 };
 
-export const useSeatStore = create<State>((set, get) => ({
+export const useSeatStore = create<SeatState>((set) => ({
   selected: {},
-
-  toggle: (seat: ShowSeat) => {
-    if (seat.isBooked) return; // cannot select already booked seat
-
-    const currSelectedSeats = get().selected;
-
-    if (currSelectedSeats[seat._id]) {
-      // seat is already selected, unselect it
-      const copy = { ...currSelectedSeats };
-      delete copy[seat._id];
-      set({ selected: copy });
-    } else {
-      // seat is not selected, select it
-      set({
-        selected: {
-          ...currSelectedSeats,
-          [seat._id]: seat,
-        },
-      });
-    }
-  },
-
-  clear: () => {
-    set({ selected: {} });
-  },
+  toggleSeat: (seat) =>
+    set((s) => {
+      const next = { ...s.selected };
+      if (next[seat.seatId]) delete next[seat.seatId];
+      else next[seat.seatId] = seat;
+      return { selected: next };
+    }),
+  clear: () => set({ selected: {} }),
 }));
