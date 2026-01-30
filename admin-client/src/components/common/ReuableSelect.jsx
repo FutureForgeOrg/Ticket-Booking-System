@@ -30,7 +30,7 @@ export default function ReusableSelect({
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
 
-        <SelectContent className="z-50 bg-white max-h-[380px]">
+        <SelectContent className="z-50 bg-white max-h-[380px] overflow-y-auto">
           {options.length === 0 && (
             <SelectItem value="no-options" disabled className="">
               {emptyMessage}

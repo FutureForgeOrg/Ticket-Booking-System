@@ -25,7 +25,8 @@ const CreateShowForm = () => {
       setMovies(moviesRes.data.data.map((m) => ({ label: m.title, value: m._id })));
 
       const cinemasRes = await cinemaApi.getAllCinemas({
-         isSeatsIncluded: false
+         isSeatsIncluded: false,
+         limit : 1000
       });
       setCinemas(
         cinemasRes.data.data.map((c) => ({ label: c.name, value: c._id, screens: c.screens }))

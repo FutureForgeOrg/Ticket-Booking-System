@@ -5,6 +5,8 @@ import MovieDetail from "./pages/MovieDetailPage";
 import Layout from "./layout/layout";
 import MovieShows from "./pages/MovieShows";
 import MovieShowSeats from "./pages/MovieShowSeats";
+import Login from "./pages/Login";
+import Signup from "./pages/SignUp";
 
 function App() {
   return (
@@ -15,6 +17,9 @@ function App() {
 
         {/* PROTECTED WRAPPER */}
         <Route>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
               <Route path="/movies/:movieId/:city" element={<MovieDetail />} />
