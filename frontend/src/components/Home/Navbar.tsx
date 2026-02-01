@@ -20,7 +20,7 @@ export default function Navbar() {
             {/* Logo */}
             <div className="text-xl font-semibold tracking-tight">
               <div
-                className="flex items-center justify-center gap-2 cursor-pointer"
+                className="flex items-center justify-center gap-0.5 cursor-pointer"
                 onClick={() => {
                   navigate("/");
                 }}

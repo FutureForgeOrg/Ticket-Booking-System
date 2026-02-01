@@ -36,7 +36,7 @@ export default function Footer() {
                     <div>
                         <div className="text-lg font-semibold tracking-tight">
                             <div className="flex justify-start">
-                                <div className="flex items-center justify-center gap-2">
+                                <div className="flex items-center justify-center gap-0.5">
                                     <img
                                         src="/hero-logo.png"
                                         alt="Logo"

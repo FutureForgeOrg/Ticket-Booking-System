@@ -8,7 +8,7 @@ export default function AppInitializer({
   children: React.ReactNode;
 }) {
   const setUser = useAuthStore((s) => s.setUser);
-
+  const setAuthInitialized = useAuthStore((s) => s.setAuthInitialized);
   const { isLoading, data, isError } = useGetUserAuth();
 
   useEffect(() => {
@@ -18,7 +18,11 @@ export default function AppInitializer({
     } else if (isError) {
       setUser(null); // not logged in or invalid cookie
     }
-  }, [data, isError, setUser]);
+
+    if (!isLoading) {
+      setAuthInitialized(true);
+    }
+  }, [data, isError, setUser, setAuthInitialized, isLoading]);
 
   if (isLoading) {
     return (
