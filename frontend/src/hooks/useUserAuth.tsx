@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { getMeApi, loginApi, logoutApi, signupApi } from "../api/auth";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
@@ -40,14 +40,14 @@ export function useLogin() {
 export function useLogout() {
   const navigate = useNavigate();
   const setUser = useAuthStore((s) => s.setUser);
+  const queryClient = new QueryClient();
 
   return useMutation({
     mutationFn: logoutApi,
     onSuccess: () => {
+      queryClient.clear(); // clear all cached queries
       setUser(null);
       navigate("/login");
     },
   });
 }
-
-

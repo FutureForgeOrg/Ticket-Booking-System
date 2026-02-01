@@ -13,8 +13,8 @@ export default function AppInitializer({
 
   useEffect(() => {
     if (data) {
-      setUser(data);
-      console.log("AppInitializer user:", data);
+      setUser(data.data);
+      console.log("AppInitializer user:", data.data);
     } else if (isError) {
       setUser(null); // not logged in or invalid cookie
     }

@@ -64,14 +64,15 @@ export const register = async (req, res) => {
             //generate token and set cookie
             generateToken(newUser, res);
 
+            Object.keys(newUser._doc).forEach(key => {
+                if (key === 'password') {
+                    delete newUser._doc[key];
+                }
+            });
+
             return res.status(201).json({
                 message: "User registered successfully",
-                user: {
-                    id: newUser._id,
-                    name: newUser.name,
-                    email: newUser.email,
-                    phone: newUser.phone,   
-                }
+                user: newUser
             })
         } else {
             return res.status(400).json({ message: "Invalid user data" });
@@ -117,13 +118,12 @@ export const login = async (req, res) => {
 
         generateToken(user, res);
 
+        const userData = user.toObject();
+        delete userData.password;
+
         res.status(200).json({
             message: "Login successful",
-            user: {
-                id: user._id,
-                name: user.name,
-
-            }
+            user: userData
         });
 
     }

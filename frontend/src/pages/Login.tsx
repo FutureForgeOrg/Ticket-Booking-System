@@ -1,14 +1,10 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { loginSchema, type LoginFormData } from "../schemas/auth.schema";
-import { loginApi } from "../api/auth";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/authStore";
+import { Link } from "react-router-dom";
+import { useLogin } from "../hooks/useUserAuth";
 
 export default function Login() {
-  const navigate = useNavigate();
-  const setUser = useAuthStore((s) => s.setUser);
 
   const {
     register,
@@ -18,13 +14,7 @@ export default function Login() {
     resolver: zodResolver(loginSchema),
   });
 
-  const loginMutation = useMutation({
-    mutationFn: loginApi,
-    onSuccess: (data) => {
-      setUser(data.user);
-      navigate("/dashboard");
-    },
-  });
+  const loginMutation = useLogin();
 
   const onSubmit = (data: LoginFormData) => {
     loginMutation.mutate(data);
@@ -58,7 +48,9 @@ export default function Login() {
               className="w-full p-3 rounded-xl bg-canvas border border-border text-text-primary focus:outline-none focus:ring-2 focus:ring-primary"
             />
             {errors.password && (
-              <p className="text-danger text-sm mt-1">{errors.password.message}</p>
+              <p className="text-danger text-sm mt-1">
+                {errors.password.message}
+              </p>
             )}
           </div>
 

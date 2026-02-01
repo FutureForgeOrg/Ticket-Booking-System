@@ -1,10 +1,11 @@
-import Button from "../ui/Button";
-import { NavLink } from "../ui/Navlink";
-import Select from "../ui/Select";
-import { useCityStore } from "../../store/cityStore";
-import { popularCities } from "../../utils/data/cities";
+import Button from "../../ui/Button";
+import { NavLink } from "../../ui/Navlink";
+import Select from "../../ui/Select";
+import { useCityStore } from "../../../store/cityStore";
+import { popularCities } from "../../../utils/data/cities";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../store/authStore";
+import { useAuthStore } from "../../../store/authStore";
+import UserMenu from "./UserMenu";
 
 export default function Navbar() {
   const { city, setCity } = useCityStore();
@@ -55,13 +56,7 @@ export default function Navbar() {
             />
 
             {user ? (
-              <div>
-                <img
-                  src="/new-user.png"
-                  alt="pfp image"
-                  className="size-8 rounded-full object-cover border-1 border-primary cursor-pointer"
-                />
-              </div>
+              <UserMenu />
             ) : (
               <Button
                 variant="primary"
