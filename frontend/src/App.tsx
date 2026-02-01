@@ -14,22 +14,19 @@ function App() {
       <Routes>
         {/* PUBLIC */}
         <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
 
-        {/* PROTECTED WRAPPER */}
-        <Route>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-
-          <Route element={<ProtectedRoute />}>
-            <Route element={<Layout />}>
-              <Route path="/movies/:movieId/:city" element={<MovieDetail />} />
-              <Route path="/movies/:movieId/shows" element={<MovieShows />} />
-              <Route path="/show/:showId" element={<MovieShowSeats />} />
-            </Route>
+        {/* PROTECTED */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<Layout />}>
+            <Route path="/movies/:movieId/:city" element={<MovieDetail />} />
+            <Route path="/movies/:movieId/shows" element={<MovieShows />} />
+            <Route path="/show/:showId" element={<MovieShowSeats />} />
           </Route>
         </Route>
 
-        <Route path="/*" element={<HomePage />} />
+        <Route path="*" element={<HomePage />} />
       </Routes>
     </BrowserRouter>
   );

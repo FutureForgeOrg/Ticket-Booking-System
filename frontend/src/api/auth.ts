@@ -11,6 +11,11 @@ export const signupApi = async (data: SignupFormData) => {
   return res.data;
 };
 
+export const getMeApi = async () => {
+  const res = await axiosInstance.get("/auth/user");
+  return res.data;
+}
+
 export const logoutApi = async () => {
   await axiosInstance.post("/auth/logout");
 };

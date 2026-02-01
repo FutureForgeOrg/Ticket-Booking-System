@@ -1,15 +1,10 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { signupSchema, type SignupFormData } from "../schemas/auth.schema";
-import { signupApi } from "../api/auth";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/authStore";
+import { Link } from "react-router-dom";
+import { useSignup } from "../hooks/useUserAuth";
 
 export default function Signup() {
-  const navigate = useNavigate();
-  const setUser = useAuthStore((s) => s.setUser);
-
   const {
     register,
     handleSubmit,
@@ -18,13 +13,7 @@ export default function Signup() {
     resolver: zodResolver(signupSchema),
   });
 
-  const signupMutation = useMutation({
-    mutationFn: signupApi,
-    onSuccess: (data) => {
-      setUser(data.user);
-      navigate("/dashboard");
-    },
-  });
+  const signupMutation = useSignup();
 
   const onSubmit = (data: SignupFormData) => {
     signupMutation.mutate(data);

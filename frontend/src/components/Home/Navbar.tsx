@@ -4,9 +4,12 @@ import Select from "../ui/Select";
 import { useCityStore } from "../../store/cityStore";
 import { popularCities } from "../../utils/data/cities";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore";
 
 export default function Navbar() {
   const { city, setCity } = useCityStore();
+  const { user } = useAuthStore();
+  // console.log("Navbar user:", user);
   const navigate = useNavigate();
   return (
     <header className="sticky top-0 z-50 bg-canvas border-b border-border">
@@ -50,7 +53,25 @@ export default function Navbar() {
               placeholder="Select city"
               onChange={setCity}
             />
-            <Button variant="primary">Sign In</Button>
+
+            {user ? (
+              <div>
+                <img
+                  src="/new-user.png"
+                  alt="pfp image"
+                  className="size-8 rounded-full object-cover border-1 border-primary cursor-pointer"
+                />
+              </div>
+            ) : (
+              <Button
+                variant="primary"
+                onClick={() => {
+                  navigate("/login");
+                }}
+              >
+                Sign In
+              </Button>
+            )}
           </div>
         </div>
       </div>
