@@ -1,6 +1,6 @@
 import SeatBadge from "./SeatBadge";
 
-const SEAT_SIZE = 36;
+const SEAT_SIZE = 44;
 const SEAT_GAP = 8;
 
 const ScreenSeatLayout = ({ screen }) => {
