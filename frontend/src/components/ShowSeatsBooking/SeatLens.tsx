@@ -38,7 +38,7 @@ export function ZoomableLayout({
           <div className="flex-1 items-center">
             {" "}
             <p className="text-center font-bold text-xl">{title}</p>
-            <div className="pt-2 pl-2 flex flex-wrap gap-4 text-xs text-gray-600">
+            <div className="pt-2 pl-2 flex flex-wrap gap-4 text-xs text-gray-200">
               <LegendDot label="Available" className="border-gray-400" />
               <LegendDot
                 label="Selected"

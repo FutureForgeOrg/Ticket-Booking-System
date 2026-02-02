@@ -64,14 +64,15 @@ export const register = async (req, res) => {
             //generate token and set cookie
             generateToken(newUser, res);
 
+            Object.keys(newUser._doc).forEach(key => {
+                if (key === 'password') {
+                    delete newUser._doc[key];
+                }
+            });
+
             return res.status(201).json({
                 message: "User registered successfully",
-                user: {
-                    id: newUser._id,
-                    name: newUser.name,
-                    email: newUser.email,
-                    phone: newUser.phone,   
-                }
+                user: newUser
             })
         } else {
             return res.status(400).json({ message: "Invalid user data" });
@@ -117,13 +118,12 @@ export const login = async (req, res) => {
 
         generateToken(user, res);
 
+        const userData = user.toObject();
+        delete userData.password;
+
         res.status(200).json({
             message: "Login successful",
-            user: {
-                id: user._id,
-                name: user.name,
-
-            }
+            user: userData
         });
 
     }
@@ -145,6 +145,25 @@ export const logout = async (req, res) => {
         return res.status(200).json({
             message: "Logout successful"
         });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+export const getMe = async (req, res) => {
+    try {
+        console.log("Fetching user data for user ID:", req.user);
+        const userId = req.user._id;
+        const user = await BaseUser.findById(userId).select("-password");
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json({ 
+            success: true,  
+            data: user 
+        });
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });

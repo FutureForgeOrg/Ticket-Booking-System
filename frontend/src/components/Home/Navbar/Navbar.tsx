@@ -1,12 +1,16 @@
-import Button from "../ui/Button";
-import { NavLink } from "../ui/Navlink";
-import Select from "../ui/Select";
-import { useCityStore } from "../../store/cityStore";
-import { popularCities } from "../../utils/data/cities";
+import Button from "../../ui/Button";
+import { NavLink } from "../../ui/Navlink";
+import Select from "../../ui/Select";
+import { useCityStore } from "../../../store/cityStore";
+import { popularCities } from "../../../utils/data/cities";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../../store/authStore";
+import UserMenu from "./UserMenu";
 
 export default function Navbar() {
   const { city, setCity } = useCityStore();
+  const { user } = useAuthStore();
+  // console.log("Navbar user:", user);
   const navigate = useNavigate();
   return (
     <header className="sticky top-0 z-50 bg-canvas border-b border-border">
@@ -17,7 +21,7 @@ export default function Navbar() {
             {/* Logo */}
             <div className="text-xl font-semibold tracking-tight">
               <div
-                className="flex items-center justify-center gap-2 cursor-pointer"
+                className="flex items-center justify-center gap-0.5 cursor-pointer"
                 onClick={() => {
                   navigate("/");
                 }}
@@ -50,7 +54,19 @@ export default function Navbar() {
               placeholder="Select city"
               onChange={setCity}
             />
-            <Button variant="primary">Sign In</Button>
+
+            {user ? (
+              <UserMenu />
+            ) : (
+              <Button
+                variant="primary"
+                onClick={() => {
+                  navigate("/login");
+                }}
+              >
+                Sign In
+              </Button>
+            )}
           </div>
         </div>
       </div>
