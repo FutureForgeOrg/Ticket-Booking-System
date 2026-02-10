@@ -212,7 +212,7 @@ export const getShowById = async (req, res) => {
           const seat = seatMap.get(key);
 
           seats.push({
-            seatId: seat?._id || null,
+            seatId: seat?.seatId || null,
             row: rowLayout.row,
             number: seatNumber,
             type: block.seatType,

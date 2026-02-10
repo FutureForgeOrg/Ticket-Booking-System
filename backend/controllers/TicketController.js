@@ -60,6 +60,7 @@ export const bookSeats = async (req, res) => {
                 seats: unavailable.map(s => s.seatId)
             });
         }
+        // console.log("unavailable seats:", unavailable);
 
         //lock seats
         show.seats.forEach(seat => {

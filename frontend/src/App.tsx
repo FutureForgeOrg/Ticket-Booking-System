@@ -23,6 +23,12 @@ function App() {
             <Route path="/movies/:movieId/:city" element={<MovieDetail />} />
             <Route path="/movies/:movieId/shows" element={<MovieShows />} />
             <Route path="/show/:showId" element={<MovieShowSeats />} />
+            <Route
+              path="/booking-success/:ticketId"
+              element={
+                <h1>Booking Success (later will create api from backend)</h1>
+              }
+            />
           </Route>
         </Route>
 
