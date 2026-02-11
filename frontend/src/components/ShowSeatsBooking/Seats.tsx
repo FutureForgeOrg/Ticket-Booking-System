@@ -2,6 +2,7 @@
 import clsx from "clsx";
 import { useSeatStore } from "../../store/seatStore";
 import type { SeatType } from "../../types/showById.type";
+import { useAuthStore } from "../../store/authStore";
 
 type Props = {
   seatId: string;
@@ -9,11 +10,13 @@ type Props = {
   number: number;
   type: SeatType;
   isBooked: boolean;
+  bookedBy?: string | null;
 };
 
-export default function Seat({ seatId, row, number, type, isBooked }: Props) {
+export default function Seat({ seatId, row, number, type, isBooked, bookedBy }: Props) {
   const selected = useSeatStore((s) => s.selected);
   const toggleSeat = useSeatStore((s) => s.toggleSeat);
+  const user = useAuthStore((s) => s.user);
 
   const isSelected = !!selected[seatId];
 
@@ -25,6 +28,7 @@ export default function Seat({ seatId, row, number, type, isBooked }: Props) {
       className={clsx(
         "h-7 w-7 rounded-sm border text-[10px] leading-none transition",
         "flex items-center justify-center",
+        isBooked && bookedBy === user?._id && "bg-blue-600 text-white cursor-not-allowed opacity-40",
         isBooked && "cursor-not-allowed opacity-40 line-through",
         !isBooked && !isSelected && "hover:scale-[1.06]",
         isSelected && "bg-green-600 text-white border-green-700",

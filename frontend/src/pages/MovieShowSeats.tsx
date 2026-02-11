@@ -9,6 +9,8 @@ import { useVerifyPayment } from "../hooks/useVerifyPayment";
 import { useCreateOrder } from "../hooks/useCreateOrder";
 import { useConfirmTicket } from "../hooks/useConfirmTicker";
 import { loadRazorpay } from "../lib/razorPay";
+import { useEffect } from "react";
+import Button from "../components/ui/Button";
 
 export default function ShowSeatPage() {
   const { showId = "" } = useParams();
@@ -17,6 +19,7 @@ export default function ShowSeatPage() {
   const navigate = useNavigate();
 
   const selected = useSeatStore((s) => s.selected);
+  const clearSeats = useSeatStore((s) => s.clear);
   const selectedList = Object.values(selected);
   const seatIds = selectedList.map((s) => s.seatId);
 
@@ -24,6 +27,11 @@ export default function ShowSeatPage() {
   const createOrder = useCreateOrder();
   const verifyPayment = useVerifyPayment();
   const confirmTicket = useConfirmTicket();
+
+  // clear selected seats when showId changes
+  useEffect(() => {
+    clearSeats();
+  }, [showId, clearSeats]);
 
   const handleProceed = async () => {
     try {
@@ -56,6 +64,8 @@ export default function ShowSeatPage() {
           // 5 confirm ticket
           await confirmTicket.mutateAsync(booking.ticketId);
 
+          clearSeats(); // from store clear selected seats
+
           navigate(`/booking-success/${booking.ticketId}`, {
             replace: true,
           });
@@ -65,6 +75,7 @@ export default function ShowSeatPage() {
       rzp.open();
     } catch (err: any) {
       alert(err?.message || "Booking failed");
+      clearSeats();
     }
   };
 
@@ -74,8 +85,13 @@ export default function ShowSeatPage() {
 
   const show = data.data;
 
+  const totalPrice = selectedList.reduce((sum, seat) => {
+    const seatPrice = show.show.price[seat.type] || 0;
+    return sum + seatPrice;
+  }, 0);
+
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-4">
+    <div className="relative max-w-7xl mx-auto p-6 space-y-4">
       {/* header */}
       <MovieCinemaSeatHeader show={show} />
 
@@ -90,29 +106,35 @@ export default function ShowSeatPage() {
         </ZoomableLayout>
       </div>
 
-      <div className="mt-4 rounded-lg border p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium">
-              Selected: {selectedList.length}
-            </p>
-            <p className="text-xs text-gray-500">
-              {selectedList.map((s) => `${s.row}${s.number}`).join(", ") || "—"}
-            </p>
-          </div>
+      {selectedList.length > 0 && (
+        <div className="sticky bottom-4 z-20 mx-auto max-w-6xl">
+          <div className="mx-4 rounded-2xl bg-canvas shadow-lg px-5 py-4">
+            <div className="flex items-center justify-between gap-4">
+              {/* Seat Info */}
+              <div>
+                <p className="text-sm font-semibold">
+                  {selectedList.length} Seat{selectedList.length !== 1 && "s"}{" "}
+                  Selected
+                </p>
 
-          <button
-            className="rounded-md bg-black px-4 py-2 text-white disabled:opacity-40"
-            disabled={selectedList.length === 0}
-            onClick={() => {
-              console.log("Book seats:", selectedList);
-              handleProceed();
-            }}
-          >
-            Proceed
-          </button>
+                <p className="mt-1 text-xs text-gray-200 truncate max-w-[220px]">
+                  {selectedList.map((s) => `${s.row}${s.number}`).join(", ") ||
+                    "—"}
+                </p>
+              </div>
+
+              {/* CTA */}
+              <Button
+                disabled={selectedList.length === 0}
+                onClick={handleProceed}
+                className="text-lg leading-6 font-bold rounded-xl px-16 py-2 disabled:opacity-40"
+              >
+                Pay ₹ {totalPrice} & Book →
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

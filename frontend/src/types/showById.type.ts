@@ -6,6 +6,7 @@ export type ShowSeat = {
   number: number;
   type: SeatType;
   isBooked: boolean;
+  bookedBy: string | null;
 };
 
 export type LayoutBlock =
