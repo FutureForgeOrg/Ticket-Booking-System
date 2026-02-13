@@ -153,7 +153,6 @@ export const logout = async (req, res) => {
 
 export const getMe = async (req, res) => {
     try {
-        console.log("Fetching user data for user ID:", req.user);
         const userId = req.user._id;
         const user = await BaseUser.findById(userId).select("-password");
         if (!user) {

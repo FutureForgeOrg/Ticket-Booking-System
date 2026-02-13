@@ -1,6 +1,6 @@
 import express from 'express';
 import {
-    bookSeats, cancelTicket, confirmTicket, adminCancelTicket,getAllTickets,getMyTickets
+    bookSeats, cancelTicket, confirmTicket, adminCancelTicket,getAllTickets,getMyTickets,getTicketById
 } from '../controllers/TicketController.js';
 
 import {authenticateToken} from "../middlewares/authmiddleware.js"
@@ -12,4 +12,6 @@ router.post('/confirm-ticket/:ticketId',authenticateToken, confirmTicket);
 router.post('/admin/cancel-ticket', adminCancelTicket)
 router.get('/admin/fetchTickets',getAllTickets)
 router.get('/my-tickets',authenticateToken, getMyTickets)
+router.get('/:ticketId',authenticateToken, getTicketById)
+
 export default router;
