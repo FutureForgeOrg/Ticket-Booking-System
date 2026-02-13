@@ -329,3 +329,82 @@ export const getMyTickets = async (req, res) => {
     }
 };
 
+export const getTicketById = async (req, res) => {
+    try {
+        const { ticketId } = req.params;
+        const userId = req.user._id;
+
+        const ticket = await Ticket.findById(ticketId)
+            .populate({
+                path: "show",
+                populate: [
+                    { path: "movie", select: "title posterUrl runtime genres" },
+                    { path: "cinema", select: "name location" }
+                ]
+            })
+            .lean();
+
+        if (!ticket) {
+            return res.status(404).json({ message: "Ticket not found" });
+        }
+
+        // Only owner can view
+        if (ticket.user.toString() !== userId.toString()) {
+            return res.status(403).json({ message: "Unauthorized" });
+        }
+
+        if (ticket.status !== "CONFIRMED") {
+            return res.status(400).json({ message: "Ticket not confirmed yet" });
+        }
+
+        const show = ticket.show;
+
+        // Format seat details
+        const bookedSeats = show.seats
+            .filter(seat =>
+                ticket.seats.some(
+                    seatId => seat.seatId.toString() === seatId.toString()
+                )
+            )
+            .map(seat => ({
+                seatName: `${seat.row}${seat.number}`,
+                row: seat.row,
+                number: seat.number,
+                type: seat.type
+            }));
+
+        return res.status(200).json({
+            success: true,
+            message: "Ticket fetched successfully",
+            data: {
+                ticketId: ticket._id,
+                movie: {
+                    title: show.movie.title,
+                    poster: show.movie.posterUrl,
+                    runtime: show.movie.runtime,
+                    genres: show.movie.genres
+                },
+                cinema: {
+                    name: show.cinema.name,
+                    location: `${show.cinema.location.city}, ${show.cinema.location.state}`
+                },
+                show: {
+                    screen: show.screenName,
+                    showTime: show.showTime,
+                    endTime: show.endTime
+                },
+                seats: bookedSeats,
+                totalPrice: ticket.totalPrice,
+                status: ticket.status,
+                bookedAt: ticket.createdAt
+            }
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
