@@ -217,6 +217,7 @@ export const getShowById = async (req, res) => {
             number: seatNumber,
             type: block.seatType,
             isBooked: seat?.isBooked || false,
+            bookedBy: seat?.bookedBy || null,
           });
 
           seatNumber++;
