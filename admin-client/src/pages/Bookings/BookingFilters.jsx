@@ -52,7 +52,7 @@ export default function BookingFilters() {
         onChange={(value) =>
           setFilters({ status: value })
         }
-        className="ml-3 max-w-40 mb-3 font-semibold"
+        className="max-w-40 mb-3 font-semibold"
       />
       <ReusableSelect
         placeholder="Movie"

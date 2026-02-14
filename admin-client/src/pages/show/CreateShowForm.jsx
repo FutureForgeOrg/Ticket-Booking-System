@@ -58,6 +58,7 @@ const CreateShowForm = () => {
   };
 
   return (
+    <div className="flex items-center justify-between w-full h-screen">
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
       <h2 className="text-2xl font-semibold mb-6 text-gray-700">Create New Show</h2>
 
@@ -135,6 +136,7 @@ const CreateShowForm = () => {
         </ConfirmButton>
       </div>
     </div>
+      </div>
   );
 };
 

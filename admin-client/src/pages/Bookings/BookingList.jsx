@@ -62,10 +62,10 @@ export default function BookingList() {
 
   return (
     <>
-      <div>
+      <div className="p-8">
         <PageHeader title="Ticket Bookings" />
 
-        <BookingFilters />
+        <BookingFilters/>
 
         <DataTable
           columns={columns}

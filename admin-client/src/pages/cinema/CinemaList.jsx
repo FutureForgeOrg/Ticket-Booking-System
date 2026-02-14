@@ -25,7 +25,7 @@ function CinemaList() {
 
   return (
     <>
-      <div>
+      <div className="p-8">
         <PageHeader
           title="Cinemas"
           actionText="Add Cinema"

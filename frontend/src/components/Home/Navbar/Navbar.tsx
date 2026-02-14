@@ -41,7 +41,7 @@ export default function Navbar() {
             {/* Nav Links */}
             <nav className="hidden md:flex items-center gap-6">
               <NavLink label="Movies" />
-              <NavLink label="Cinemas" />
+              <NavLink label="Events" />
               <NavLink label="Offers" />
             </nav>
           </div>
