@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../../store/authStore";
 import Dropdown from "../../ui/Dropdown";
 import { useLogout } from "../../../hooks/useUserAuth";
-import { LogOut, User2 } from "lucide-react";
+import { LogOut, Ticket, User2 } from "lucide-react";
 
 export default function UserMenu() {
   const navigate = useNavigate();
@@ -43,6 +43,16 @@ export default function UserMenu() {
             <div className="flex items-center gap-2">
               <User2 size={18} />
               <span>Profile</span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => navigate("/my-tickets")}
+            className="w-full text-left px-3 py-2 text-sm text-text-secondary hover:bg-primary/10 rounded-lg"
+          >
+            <div className="flex items-center gap-2">
+              <Ticket size={18} />
+              <span>My Tickets</span>
             </div>
           </button>
 

@@ -8,6 +8,7 @@ import MovieShowSeats from "./pages/MovieShowSeats";
 import Login from "./pages/Login";
 import Signup from "./pages/SignUp";
 import TicketPage from "./pages/TicketPage";
+import MyTicketsPage from "./pages/MyTicketsPage";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route path="/movies/:movieId/:city" element={<MovieDetail />} />
             <Route path="/movies/:movieId/shows" element={<MovieShows />} />
             <Route path="/show/:showId" element={<MovieShowSeats />} />
+            <Route path="/my-tickets" element={<MyTicketsPage />} />
           </Route>
         </Route>
 
