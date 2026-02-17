@@ -30,7 +30,7 @@ export const getAllMovies = async (req, res) => {
             .limit(limit)
             .sort({ createdAt: -1 });  //latest first
 
-        if (!movies) {
+        if (movies.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: "No movies found",
@@ -39,7 +39,7 @@ export const getAllMovies = async (req, res) => {
 
 
 
-        const totalMovies = await Movie.countDocuments();
+        const totalMovies = await Movie.countDocuments(query);
         let totalPages = Math.ceil(totalMovies / limit);
 
         res.status(200).json({

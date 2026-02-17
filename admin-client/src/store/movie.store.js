@@ -2,16 +2,39 @@ import { movieApi } from "../services/movie.service";
 import { create } from "zustand";
 import toast from "react-hot-toast";
 
-const useMovieStore = create((set) => ({
+const useMovieStore = create((set, get) => ({
     movie: [],
     current: null,
     loading: false,
+    page: 1,
+    limit: 8,
+    totalPages: 1,
+    totalMovies: 0,
+
+    setPage: (page) => set({ page }),
+    setLimit: (limit) => set({ limit }),
+
+
 
     fetchMovies: async () => {
-        set({ loading: true });
-        const { data } = await movieApi.getAllMovies();
-        set({ movie: data.data, loading: false });
+        try {
+            set({ loading: true });
+
+            const { page, limit } = get();
+            const { data } = await movieApi.getAllMovies({ page, limit });
+
+            set({
+                movie: data.data,
+                totalPages: data.totalPages,
+                totalMovies: data.totalMovies,
+                loading: false,
+            });
+        } catch (err) {
+            toast.error("Failed to fetch movies");
+            set({ loading: false });
+        }
     },
+
 
     fetchMovie: async (id) => {
         set({ loading: true, current: null });
@@ -49,7 +72,7 @@ const useMovieStore = create((set) => ({
 
     },
 
-    clearCurrent: () => ({ current: null })
+    clearCurrent: () => set({ current: null })
 
 }))
 
