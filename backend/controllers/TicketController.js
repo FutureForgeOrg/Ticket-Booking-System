@@ -257,13 +257,15 @@ export const getAllTickets = async (req, res) => {
 
 export const getMyTickets = async (req, res) => {
     try {
+        console.log("Fetching tickets for user:", req.user._id);
         const userId = req.user._id;
+        console.log("User ID:", userId);
 
         const tickets = await Ticket.find({ user: userId })
             .populate({
                 path: "show",
                 populate: [
-                    { path: "movie", select: "title" },
+                    { path: "movie", select: "title posterUrl runtime genres" },
                     { path: "cinema", select: "name location" }
                 ]
             })
@@ -272,7 +274,16 @@ export const getMyTickets = async (req, res) => {
 
         const grouped = {};
 
+        // safe ticket data access with checks for show, movie, and cinema as if any of these are missing, 
+        // it will log a warning and skip that ticket to prevent crashes. 
+        // This ensures that even if there are some incomplete data entries, 
+        // the API can still return the valid tickets without failing entirely.
         tickets.forEach(ticket => {
+            if (!ticket.show || !ticket.show.movie || !ticket.show.cinema) {
+                console.warn("Incomplete ticket data of ticket:", ticket._id);
+                return;
+            }
+
             const show = ticket.show;
             const showId = show._id.toString();
 
@@ -281,6 +292,9 @@ export const getMyTickets = async (req, res) => {
                     show: {
                         id: showId,
                         movieTitle: show.movie.title,
+                        moviePoster: show.movie.posterUrl,
+                        movieRuntime: show.movie.runtime,
+                        movieGenres: show.movie.genres,
                         cinemaName: show.cinema.name,
                         location: `${show.cinema.location.city}, ${show.cinema.location.state}`,
                         screen: show.screenName,
@@ -290,10 +304,13 @@ export const getMyTickets = async (req, res) => {
                     tickets: []
                 };
             }
-            const bookedSeats = show.seats
+
+            console.log("booked seats for ticket:", ticket._id, "show:", showId);
+            console.log("show seats:", show.seats);
+            const bookedSeats = (show.seats || [])
                 .filter(seat =>
                     ticket.seats.some(
-                        seatId => seat.seatId.toString() === seatId.toString()
+                        tseatId => tseatId.toString() === seat.seatId.toString()
                     )
                 )
                 .map(seat => ({
@@ -302,6 +319,7 @@ export const getMyTickets = async (req, res) => {
                     number: seat.number,
                     type: seat.type
                 }));
+            console.log("booked seats details:", bookedSeats);
 
             grouped[showId].tickets.push({
                 ticketId: ticket._id,
@@ -324,7 +342,8 @@ export const getMyTickets = async (req, res) => {
     } catch (err) {
         return res.status(500).json({
             success: false,
-            message: "Failed to fetch tickets"
+            message: "Failed to fetch tickets",
+            error: err.message
         });
     }
 };
