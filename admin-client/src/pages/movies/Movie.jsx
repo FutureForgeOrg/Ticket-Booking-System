@@ -6,14 +6,15 @@ import DataTable from "@/components/common/DataTable";
 import ConfirmButton from "@/components/common/ConfirmButton";
 import { Edit2, Trash2 } from "lucide-react";
 import ConfirmButtonAlert from "@/components/common/ConfirmButtonALert";
+import Pagination from "@/components/common/Pagination";
 
 function Movie() {
   const navigate = useNavigate();
-  const { movie, fetchMovies, deleteMovie } = useMovieStore();
+  const { movie, fetchMovies, deleteMovie,page, totalPages, setPage } = useMovieStore();
   useEffect(() => {
     fetchMovies();
     console.log(movie);
-  }, []);
+  }, [page]);
 
   return (
     <>
@@ -44,13 +45,12 @@ function Movie() {
               accessorKey: "status",
               cell: ({ row }) => (
                 <span
-                  className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    row.original.status === "RELEASED"
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.status === "RELEASED"
                       ? "bg-green-100 text-green-800"
                       : row.original.status === "UPCOMING"
                         ? "bg-yellow-100 text-yellow-800"
                         : "bg-red-100 text-red-800"
-                  }`}
+                    }`}
                 >
                   {row.original.status === "RELEASED"
                     ? "Released"
@@ -105,6 +105,11 @@ function Movie() {
           )}
         />
       </div>
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
     </>
   );
 }

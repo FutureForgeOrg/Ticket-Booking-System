@@ -1,8 +1,11 @@
 import razorpay from '../config/razorpay.js'
 import crypto from 'crypto';
+import Payment from '../models/Payment.js';
+import pagination from '../utils/pagination.js';
 export const createOrder = async (req, res) => {
     try {
-        const { amount } = req.body;
+        const { amount, ticketId, showId } = req.body;
+        const userId = req.user._id;
 
         const order = await razorpay.orders.create({
             amount: amount * 100, //  paise
@@ -10,7 +13,16 @@ export const createOrder = async (req, res) => {
             receipt: "receipt_" + Date.now(),
         });
 
-        res.status(200).json({ success: true, order });
+        const payment = await Payment.create({
+            user: userId,
+            ticket: ticketId,
+            show: showId,
+            amount,
+            razorpayOrderId: order.id,
+            status: "created",
+        });
+
+        res.status(200).json({ success: true, order, paymentId: payment._id });
     } catch (error) {
         res.status(500).json({ success: false, message: "Order creation failed" });
     }
@@ -22,6 +34,7 @@ export const verifyPayment = async (req, res) => {
             razorpay_order_id,
             razorpay_payment_id,
             razorpay_signature,
+            paymentMethod
         } = req.body;
 
         const sign = razorpay_order_id + "|" + razorpay_payment_id;
@@ -31,13 +44,143 @@ export const verifyPayment = async (req, res) => {
             .update(sign)
             .digest("hex");
 
+
+        const payment = await Payment.findOne({
+            razorpayOrderId: razorpay_order_id
+        });
+
+        if (!payment) {
+            return res.status(404).json({ success: false, message: "Payment not found" });
+        }
+
         if (expectedSign === razorpay_signature) {
+            payment.status = "paid";
+            payment.razorpayPaymentId = razorpay_payment_id;
+            payment.razorpaySignature = razorpay_signature;
+            payment.paymentMethod = paymentMethod;
+            payment.paidAt = new Date();
+            await payment.save();
+
 
             res.status(200).json({ success: true });
         } else {
+            payment.status = "failed";
+            payment.failureReason = "Signature mismatch";
+            await payment.save();
             res.status(400).json({ success: false });
         }
     } catch (err) {
         res.status(500).json({ success: false });
     }
 };
+
+export const refundPayment = async (req, res) => {
+    try {
+        const { paymentId } = req.body;
+
+        const payment = await Payment.findById(paymentId);
+
+        if (!payment || payment.status !== "paid") {
+            return res.status(400).json({ success: false, message: "Invalid payment" });
+        }
+
+        const refund = await razorpay.payments.refund(
+            payment.razorpayPaymentId,
+            {
+                amount: payment.amount * 100
+            }
+        );
+
+        payment.status = "refunded";
+        payment.refundId = refund.id;
+        payment.refundStatus = refund.status;
+
+        await payment.save();
+
+        res.status(200).json({ success: true, refund });
+
+    } catch (error) {
+        res.status(500).json({ success: false });
+    }
+};
+
+export const getRevenueStats = async (req, res) => {
+    try {
+        const revenue = await Payment.aggregate([
+            { $match: { status: "paid" } },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: { $sum: "$amount" },
+                    totalTransactions: { $sum: 1 }
+                }
+            }
+        ]);
+
+        res.json({
+            success: true,
+            revenue: revenue[0] || { totalRevenue: 0, totalTransactions: 0 }
+        });
+
+    } catch (error) {
+        res.status(500).json({ success: false });
+    }
+};
+
+export const getAllPayments = async (req, res) => {
+    try {
+        const { page, limit, skip } = pagination(req.query);
+        const { userId, status } = req.query;
+
+        const query = {}
+        if (userId) query.user = userId;
+        if (status) query.status = status;
+
+        const payments = await Payment.find()
+            .populate("user", "name email")
+            .populate("ticket", "show seats totalPrice")
+            .populate("show", "movie showTime")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const total = await Payment.countDocuments(query);
+
+        res.status(200).json({
+            success: true,
+            total,
+            page,
+            totalPages: Math.ceil(total / limit),
+            payments
+        });
+
+    } catch (error) {
+        res.status(500).json({ success: false });
+    }
+};
+
+export const getPaymentDetails = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const payment = await Payment.findById(id)
+            .populate("user", "name email")
+            .populate("ticket")
+            .populate("show");
+
+        if (!payment) {
+            return res.status(404).json({ success: false });
+        }
+
+        res.status(200).json({
+            success: true,
+            payment
+        });
+
+    } catch (error) {
+        res.status(500).json({ success: false });
+    }
+};
+
+
+
