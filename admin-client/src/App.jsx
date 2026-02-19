@@ -12,7 +12,9 @@ import CreateShowForm from "./pages/show/CreateShowForm";
 import EditShowForm from "./pages/show/EditShowForm";
 import BookingList from "./pages/Bookings/bookingList";
 import Payment from "./pages/Payment";
-import System from "./pages/System";
+import EventList from "./pages/event/EventList";
+import CreateEvent from "./pages/event/CreateEvent";
+import EditEvent from "./pages/event/EditEvent";
 import Rating from "./pages/Rating";
 import { Toaster } from "react-hot-toast";
 function App() {
@@ -37,7 +39,9 @@ function App() {
             <Route path="/editShowForm/:id" element={<EditShowForm />} />
             <Route path="/booking" element={<BookingList />} />
             <Route path="/payment" element={<Payment />} />
-            <Route path="/system" element={<System />} />
+            <Route path="/event" element={<EventList />} />
+            <Route path="/createEvent" element={<CreateEvent />} />
+            <Route path="/editEvent/:id" element={<EditEvent />} /> 
             <Route path="/rating" element={<Rating />} />
 
           </Route>
