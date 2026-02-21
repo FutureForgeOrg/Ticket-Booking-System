@@ -164,7 +164,8 @@ export const cancelTicket = async (req, res) => {
         await unlockSeats(ticket)
         ticket.status = "CANCELLED";
         await ticket.save();
-        res.status(200).json({ message: "Ticket cancelled successfully" });
+
+        res.status(200).json({ message: "Ticket cancelled successfully and seats released" });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
