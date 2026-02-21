@@ -57,7 +57,7 @@ export const register = async (req, res) => {
         await Otp.create({
             userId: newUser._id,
             otp: otpCode,
-            expiresAt: new Date(Date.now() + 15 * 60 * 1000)
+            expiresAt: new Date(Date.now() + 5 * 60 * 1000)
         });
 
         //  Send Email
@@ -137,6 +137,89 @@ export const verifyOtp = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Internal server error"
+        });
+    }
+};
+
+export const resendOtp = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: "Email is required"
+            });
+        }
+
+        const user = await BaseUser.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({
+                success: false,
+                message: "User already verified"
+            });
+        }
+
+        //  OPTIONAL: Cooldown (60 sec)
+        const existingOtp = await Otp.findOne({ userId: user._id });
+
+        if (existingOtp) {
+            const timeDiff = Date.now() - existingOtp.createdAt.getTime();
+            const seconds = Math.floor(timeDiff / 1000);
+
+            if (seconds < 60) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Please wait ${60 - seconds}s before requesting new OTP`
+                });
+            }
+
+            await Otp.deleteOne({ _id: existingOtp._id });
+        }
+
+        // Generate new OTP
+        const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
+        await Otp.create({
+            userId: user._id,
+            otp: newOtp,
+            expiresAt: new Date(Date.now() + 5 * 60 * 1000)
+        });
+
+        // Send Email
+        await transporter.sendMail({
+            from: `"Your App Name" <${process.env.EMAIL}>`,
+            to: user.email,
+            subject: "Resend Verification Code",
+            text: `Your new OTP is ${newOtp}`,
+            html: `
+                <div style="font-family: Arial; padding: 20px;">
+                    <h2>Resend Verification Code</h2>
+                    <p>Your new OTP is:</p>
+                    <h1 style="letter-spacing: 5px;">${newOtp}</h1>
+                    <p>This code expires in 5 minutes.</p>
+                </div>
+            `
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "New OTP sent successfully"
+        });
+
+    } catch (error) {
+        console.error("Resend OTP Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
         });
     }
 };
