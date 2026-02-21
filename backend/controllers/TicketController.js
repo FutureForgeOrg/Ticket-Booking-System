@@ -27,19 +27,19 @@ export const bookSeats = async (req, res) => {
             return res.status(404).json({ message: "Show is cancelled" });
         }
 
-        //unlock expired seats
-        const expiredTickets = await Ticket.find({
-            show: showId,
-            status: "PENDING",
-            expiresAt: { $lt: new Date() }
-        });
+        // //unlock expired seats
+        // const expiredTickets = await Ticket.find({
+        //     show: showId,
+        //     status: "PENDING",
+        //     expiresAt: { $lt: new Date() }
+        // });
 
-        for (const ticket of expiredTickets) {
-            await unlockSeats(ticket);
-            ticket.status = "EXPIRED";
-            await ticket.save();
-        }
-        await show.save();
+        // for (const ticket of expiredTickets) {
+        //     await unlockSeats(ticket);
+        //     ticket.status = "EXPIRED";
+        //     await ticket.save();
+        // }
+        // await show.save();
 
 
         //Validate seat existence
@@ -85,9 +85,11 @@ export const bookSeats = async (req, res) => {
             seats: seatIds,
             totalPrice,
             status: "PENDING",
-            expiresAt: new Date(Date.now() + 1 * 60 * 1000) //1 minutes from now
+            expiresAt: new Date(Date.now() + 2 * 60 * 1000) //2 minutes from now
 
         });
+
+        console.log("ticket created with expiry time:", ticket.expiresAt);
 
         res.status(201).json({
             message: "Seats locked, proceed to payment",
@@ -257,11 +259,9 @@ export const getAllTickets = async (req, res) => {
 
 export const getMyTickets = async (req, res) => {
     try {
-        console.log("Fetching tickets for user:", req.user._id);
         const userId = req.user._id;
-        console.log("User ID:", userId);
 
-        const tickets = await Ticket.find({ user: userId })
+        const tickets = await Ticket.find({ user: userId , status: "CONFIRMED"})
             .populate({
                 path: "show",
                 populate: [
@@ -305,8 +305,6 @@ export const getMyTickets = async (req, res) => {
                 };
             }
 
-            console.log("booked seats for ticket:", ticket._id, "show:", showId);
-            console.log("show seats:", show.seats);
             const bookedSeats = (show.seats || [])
                 .filter(seat =>
                     ticket.seats.some(
@@ -319,7 +317,6 @@ export const getMyTickets = async (req, res) => {
                     number: seat.number,
                     type: seat.type
                 }));
-            console.log("booked seats details:", bookedSeats);
 
             grouped[showId].tickets.push({
                 ticketId: ticket._id,

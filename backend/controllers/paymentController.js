@@ -13,6 +13,8 @@ export const createOrder = async (req, res) => {
             receipt: "receipt_" + Date.now(),
         });
 
+        console.log("Razorpay Order Created:", order);
+
         const payment = await Payment.create({
             user: userId,
             ticket: ticketId,
@@ -22,8 +24,11 @@ export const createOrder = async (req, res) => {
             status: "created",
         });
 
+        console.log("Payment Record Created:", payment);
+
         res.status(200).json({ success: true, order, paymentId: payment._id });
     } catch (error) {
+        console.error("Error creating order:", error);
         res.status(500).json({ success: false, message: "Order creation failed" });
     }
 };
