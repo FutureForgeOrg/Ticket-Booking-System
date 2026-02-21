@@ -117,6 +117,7 @@ export const verifyOtp = async (req, res) => {
         }
 
         user.isVerified = true;
+        user.verificationExpiresAt = undefined;
         await user.save();
 
         await Otp.deleteOne({ _id: otpRecord._id });
