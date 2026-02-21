@@ -53,8 +53,20 @@ const baseUserSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-}
-    , { timestamps: true });
+    verificationExpiresAt: {
+        type: Date,
+        default: () => new Date(Date.now() + 20 * 60 * 1000)
+    }
+}, { timestamps: true });
+
+baseUserSchema.index(
+    {
+        verificationExpiresAt: 1
+    },
+    {
+        expireAfterSeconds: 0
+    }
+)
 
 
 const BaseUser = mongoose.model("BaseUser", baseUserSchema);
