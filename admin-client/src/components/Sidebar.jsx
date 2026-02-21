@@ -17,6 +17,7 @@ function Sidebar() {
                     <NavItem to="/payment">Payment</NavItem>
                     <NavItem to="/event">Event</NavItem>
                     <NavItem to="/rating">Rating</NavItem>
+                    <NavItem to="/profile">Admin Profile</NavItem>
                 </nav>
 
             </aside>
