@@ -21,7 +21,11 @@ const eventSchema = new mongoose.Schema({
         required: true
     },
 
-    posterImage: {
+    posterUrl: {
+        type: String, // Cloudinary
+        required: true
+    },
+    bannerUrl: {
         type: String, // Cloudinary
         required: true
     },

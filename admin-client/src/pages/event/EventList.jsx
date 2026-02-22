@@ -37,7 +37,7 @@ function EventList() {
               cell: ({ row }) => (
                 <div className="flex items-center gap-3">
                   <img
-                    src={row.original.posterImage}
+                    src={row.original.posterUrl}
                     alt={row.original.title}
                     className="size-8 rounded-md object-cover"
                   />
