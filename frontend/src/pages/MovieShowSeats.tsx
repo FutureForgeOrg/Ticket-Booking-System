@@ -131,7 +131,7 @@ export default function ShowSeatPage() {
                   Selected
                 </p>
 
-                <p className="mt-1 text-xs text-gray-200 truncate max-w-[220px]">
+                <p className="mt-1 text-xs text-muted truncate max-w-[220px]">
                   {selectedList.map((s) => `${s.row}${s.number}`).join(", ") ||
                     "—"}
                 </p>

@@ -24,7 +24,7 @@ function SeatTypeDivider({
 
   return (
     <div className="my-6 flex-col justify-center items-center gap-4">
-      <div className="text-sm text-center font-normal italic text-gray-200 whitespace-nowrap">
+      <div className="text-sm text-center font-normal italic text-muted whitespace-nowrap">
         ₹{price} {labelMap[type]}
       </div>
       <div className="h-[0.5px] flex-1 bg-gray-400" />  

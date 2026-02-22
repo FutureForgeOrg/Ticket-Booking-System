@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",
@@ -8,30 +9,39 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        canvas: "#020617",   // main background
-        surface: "#020617",  // cards / sections
-        border: "#1E293B",
+        canvas: "var(--color-canvas)",   // main background
+        surface: "var(--color-surface)",  // cards / sections
+        border: "var(--color-border)",
 
         primary: {
-          DEFAULT: "#F4C430",
-          hover: "#EAB308",
-          soft: "rgba(244,196,48,0.2)",
+          DEFAULT: "var(--color-primary)",
+          hover: "var(--color-primary-hover)",
+          soft: "var(--color-primary-soft)",
         },
 
         secondary: {
-          DEFAULT: "#22C55E",
-          soft: "rgba(34,197,94,0.18)",
+          DEFAULT: "var(--color-secondary)",
+          soft: "var(--color-secondary-soft)",
         },
 
         text: {
-          primary: "#F8FAFC",
-          secondary: "#CBD5E1",
-          muted: "#94A3B8",
+          primary: "var(--color-text-primary)",
+          secondary: "var(--color-text-secondary)",
+          muted: "var(--color-text-muted)",
         },
 
-        danger: "#EF4444",
+        danger: "var(--color-danger)",
 
-        skeleton : "#334155",
+        skeleton: "var(--color-skeleton)",
+
+        seat: {
+          selected: "var(--color-seat-selected)",
+          booked: "var(--color-seat-booked)",
+          "booked-bg": "var(--color-seat-booked-bg)",
+          premium: "var(--color-seat-premium)",
+          vip: "var(--color-seat-vip)",
+          regular: "var(--color-seat-regular)",
+        },
       },
 
       borderRadius: {
@@ -39,8 +49,8 @@ const config: Config = {
       },
 
       boxShadow: {
-        soft: "0 10px 30px rgba(0,0,0,0.6)",
-        focus: "0 0 0 3px rgba(244,196,48,0.4)",
+        soft: "var(--shadow-soft)",
+        focus: "var(--shadow-focus)",
       },
     },
   },

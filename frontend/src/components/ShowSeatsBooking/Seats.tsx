@@ -26,16 +26,16 @@ export default function Seat({ seatId, row, number, type, isBooked, bookedBy }: 
       disabled={isBooked}
       onClick={() => toggleSeat({ seatId, row, number, type })}
       className={clsx(
-        "h-7 w-7 rounded-sm border text-[10px] leading-none transition",
+        "size-8 rounded-sm border text-[10px] leading-none transition",
         "flex items-center justify-center",
-        isBooked && bookedBy === user?._id && "bg-blue-600 text-white cursor-not-allowed opacity-40",
+        isBooked && bookedBy === user?._id && "bg-seat-booked text-white cursor-not-allowed opacity-40",
         isBooked && "cursor-not-allowed opacity-40 line-through",
-        !isBooked && !isSelected && "hover:scale-[1.06]",
-        isSelected && "bg-green-600 text-white border-green-700",
+        !isBooked && !isSelected && "hover:scale-[1]",
+        isSelected && "bg-seat-selected text-white border-seat-selected",
         !isSelected && !isBooked && "bg-transparent",
-        type === "premium" && !isSelected && "border-yellow-500",
-        type === "vip" && !isSelected && "border-purple-500",
-        type === "regular" && !isSelected && "border-gray-400"
+        type === "premium" && !isSelected && "border-seat-premium",
+        type === "vip" && !isSelected && "border-seat-vip",
+        type === "regular" && !isSelected && "border-seat-regular"
       )}
       title={`${row}${number} • ${type}${isBooked ? " • booked" : ""}`}
     >

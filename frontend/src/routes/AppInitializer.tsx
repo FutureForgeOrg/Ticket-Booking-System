@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useAuthStore } from "../store/authStore";
 import { useGetUserAuth } from "../hooks/useUserAuth";
+import { useThemeStore } from "../store/themeStore";
 
 export default function AppInitializer({
   children,
@@ -10,6 +11,7 @@ export default function AppInitializer({
   const setUser = useAuthStore((s) => s.setUser);
   const setAuthInitialized = useAuthStore((s) => s.setAuthInitialized);
   const { isLoading, data, isError } = useGetUserAuth();
+  const { isDark, setTheme } = useThemeStore();
 
   useEffect(() => {
     if (data) {
@@ -23,6 +25,10 @@ export default function AppInitializer({
       setAuthInitialized(true);
     }
   }, [data, isError, setUser, setAuthInitialized, isLoading]);
+
+  useEffect(() => {
+    setTheme(isDark);
+  }, [isDark, setTheme]);
 
   if (isLoading) {
     return (

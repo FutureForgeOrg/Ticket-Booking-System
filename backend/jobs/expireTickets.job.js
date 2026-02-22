@@ -9,11 +9,12 @@ console.log("🕒 Expire Ticket Cron Job Registered...");
 // to run every 1 min = */1 * * * *
 // to run every 30 min = */30 * * * *
 
-cron.schedule("*/1 * * * *", async () => {  // every 1 min
+cron.schedule("*/1 * * * *", async () => {
+  // every 1 min
 
-//  all tickets expire date
-    const allTickets = await Ticket.find().select("expiresAt");
-    console.log("Current Tickets in DB with Expiry Times:", allTickets);
+  //  all tickets expire date
+  // const allTickets = await Ticket.find().select("expiresAt");
+  // console.log("Current Tickets in DB with Expiry Times:", allTickets);
 
   console.log("\n==============================");
   console.log("⏰ Cron Triggered At:", new Date().toISOString());
