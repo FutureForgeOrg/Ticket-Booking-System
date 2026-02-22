@@ -6,11 +6,12 @@ import { ZoomableLayout } from "../components/ShowSeatsBooking/SeatLens";
 import MovieCinemaSeatHeader from "../components/ShowSeatsBooking/MovieCinemaSeatHeader";
 import { useBookSeatsMutation } from "../hooks/useBookSeatsMutation";
 import { useVerifyPayment } from "../hooks/useVerifyPayment";
-import { useCreateOrder } from "../hooks/useCreateOrder";
+import { useCreateOrder } from "../hooks/useCreatePaymentOrder";
 import { useConfirmTicket } from "../hooks/useConfirmTicker";
 import { loadRazorpay } from "../lib/razorPay";
 import { useEffect } from "react";
 import Button from "../components/ui/Button";
+import { useCancelTicket } from "../hooks/useCancelTicket";
 
 export default function ShowSeatPage() {
   const { showId = "" } = useParams();
@@ -27,6 +28,7 @@ export default function ShowSeatPage() {
   const createOrder = useCreateOrder();
   const verifyPayment = useVerifyPayment();
   const confirmTicket = useConfirmTicket();
+  const cancelTicket = useCancelTicket(showId);
 
   // clear selected seats when showId changes
   useEffect(() => {
@@ -43,7 +45,12 @@ export default function ShowSeatPage() {
 
       // 2 create razorpay order
       await loadRazorpay();
-      const order = await createOrder.mutateAsync(booking.totalPrice);
+      const orderPayload = {
+        amount: booking.totalPrice,
+        ticketId: booking.ticketId,
+        showId,
+      };
+      const order = await createOrder.mutateAsync(orderPayload);
 
       // 3 open razorpay
       const rzp = new (window as any).Razorpay({
@@ -69,6 +76,13 @@ export default function ShowSeatPage() {
           navigate(`/booking-success/${booking.ticketId}`, {
             replace: true,
           });
+        },
+
+        modal: {
+          ondismiss: async () => {
+            await cancelTicket.mutateAsync(booking.ticketId); // release seats in DB
+            clearSeats(); // clear frontend
+          },
         },
       });
 

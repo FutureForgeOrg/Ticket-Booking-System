@@ -29,6 +29,13 @@ const ticketSchema = new mongoose.Schema({
         type: String,
         enum: ["USER", "ADMIN"],
     },
+
+    expiresAt: {
+        type: Date,
+        required: true,
+        default: () => new Date(Date.now() + 2 * 60 * 1000) // 2 mins from now
+    }
+
 }, { timestamps: true })
 
 const Ticket = mongoose.model("Ticket", ticketSchema)

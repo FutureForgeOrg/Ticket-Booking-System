@@ -12,6 +12,7 @@ import movieLikeRoutes from "./routes/movieLikeRoutes.js";
 import paymentRoutes from './routes/paymentRoutes.js'
 import EventRoutes from './routes/EventRoutes.js';
 import connectDB from "./config/db.js";
+import "./jobs/expireTickets.job.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
