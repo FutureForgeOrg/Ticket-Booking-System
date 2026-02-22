@@ -11,6 +11,7 @@ import ticketRoutes from "./routes/ticketRoutes.js";
 import movieLikeRoutes from "./routes/movieLikeRoutes.js";
 import paymentRoutes from './routes/paymentRoutes.js'
 import EventRoutes from './routes/EventRoutes.js';
+import paymentRoutesForEvent from './routes/paymentRoutesForEvent.js'
 import connectDB from "./config/db.js";
 import "./jobs/expireTickets.job.js";
 
@@ -39,6 +40,7 @@ app.use("/api/tickets", ticketRoutes);
 app.use("/api/movieLikes", movieLikeRoutes);
 app.use("/api/payment",paymentRoutes);
 app.use("/api/events", EventRoutes);
+app.use("/api/payment-for-event", paymentRoutesForEvent);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

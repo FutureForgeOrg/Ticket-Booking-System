@@ -164,14 +164,19 @@ export const getSingleEvent = async (req, res) => {
 };
 
 
-// Book an event
-export const bookEvent = async (req, res) => {
+export const bookEventSeats = async (req, res) => {
     try {
         const { eventId, category, numberOfSeats } = req.body;
         const userId = req.user._id;
 
-        const event = await Event.findById(eventId);
+        if (!eventId || !category || !numberOfSeats) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing required fields"
+            });
+        }
 
+        const event = await Event.findById(eventId);
         if (!event) {
             return res.status(404).json({
                 success: false,
@@ -197,16 +202,11 @@ export const bookEvent = async (req, res) => {
             });
         }
 
-        // Calculate total amount
-        const totalAmount = selectedCategory.price * numberOfSeats;
-
-        // Deduct seats
+        // Lock seats (reduce temporarily)
         selectedCategory.availableSeats -= numberOfSeats;
-
-        // Increase booking count
-        event.bookingsCount += numberOfSeats;
-
         await event.save();
+
+        const totalAmount = selectedCategory.price * numberOfSeats;
 
         const booking = await EventBooking.create({
             user: userId,
@@ -214,13 +214,16 @@ export const bookEvent = async (req, res) => {
             category,
             numberOfSeats,
             totalAmount,
-            paymentStatus: "paid" // change after Razorpay integration
+            status: "PENDING",
+            expiresAt: new Date(Date.now() + 2 * 60 * 1000)
         });
 
         res.status(201).json({
             success: true,
-            message: "Event booked successfully",
-            booking
+            message: "Seats locked. Proceed to payment.",
+            bookingId: booking._id,
+            totalAmount,
+            expiresAt: booking.expiresAt
         });
 
     } catch (error) {
@@ -228,6 +231,58 @@ export const bookEvent = async (req, res) => {
             success: false,
             message: error.message
         });
+    }
+};
+
+//confirm booking after successful payment
+export const confirmEventBooking = async (req, res) => {
+    try {
+        const { bookingId } = req.params;
+        const userId = req.user._id;
+
+        const booking = await EventBooking.findById(bookingId);
+
+        if (!booking) {
+            return res.status(404).json({ message: "Booking not found" });
+        }
+
+        if (booking.user.toString() !== userId.toString()) {
+            return res.status(403).json({ message: "Unauthorized" });
+        }
+
+        if (booking.status !== "PENDING") {
+            return res.status(400).json({ message: "Booking already processed" });
+        }
+
+        if (new Date() > booking.expiresAt) {
+            booking.status = "EXPIRED";
+
+            const event = await Event.findById(booking.event);
+            const category = event.categories.find(
+                (cat) => cat.name === booking.category
+            );
+
+            category.availableSeats += booking.numberOfSeats;
+
+            await event.save();
+            await booking.save();
+
+            return res.status(400).json({ message: "Booking expired" });
+        }
+
+        // CONFIRM BOOKING
+        booking.status = "CONFIRMED";
+
+        const event = await Event.findById(booking.event);
+        event.bookingsCount += booking.numberOfSeats;
+
+        await event.save();
+        await booking.save();
+
+        res.json({ message: "Event booking confirmed" });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -243,38 +298,30 @@ export const cancelEventBooking = async (req, res) => {
             });
         }
 
-        if (booking.ticketStatus === "cancelled") {
+        if (booking.status === "CANCELLED") {
             return res.status(400).json({
                 success: false,
                 message: "Already cancelled"
             });
         }
 
-        const event = await Event.findById(booking.event);
-
-        if (!event) {
-            return res.status(404).json({
+        if (booking.status !== "CONFIRMED") {
+            return res.status(400).json({
                 success: false,
-                message: "Event not found"
+                message: "Only confirmed bookings can be cancelled"
             });
         }
+
+        const event = await Event.findById(booking.event);
 
         const category = event.categories.find(
             (cat) => cat.name === booking.category
         );
 
-        if (!category) {
-            return res.status(400).json({
-                success: false,
-                message: "Category not found"
-            });
-        }
-
-        // Restore seats
         category.availableSeats += booking.numberOfSeats;
         event.bookingsCount -= booking.numberOfSeats;
 
-        booking.ticketStatus = "cancelled";
+        booking.status = "CANCELLED";
 
         await event.save();
         await booking.save();
@@ -285,7 +332,6 @@ export const cancelEventBooking = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Cancel booking error:", error); //  important
         res.status(500).json({
             success: false,
             message: error.message
