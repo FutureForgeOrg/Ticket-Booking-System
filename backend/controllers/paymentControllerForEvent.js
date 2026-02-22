@@ -1,10 +1,24 @@
+import razorpay from "../config/razorpay.js";
+import crypto from "crypto";
+import Payment from "../models/Payment.js";
+import EventBooking from "../models/EventBooking.js";
+
 export const createEventOrder = async (req, res) => {
     try {
-        const { amount, bookingId } = req.body;
+        const { bookingId } = req.body;
         const userId = req.user._id;
 
+        const booking = await EventBooking.findById(bookingId);
+
+        if (!booking) {
+            return res.status(404).json({
+                success: false,
+                message: "Event booking not found"
+            });
+        }
+
         const order = await razorpay.orders.create({
-            amount: amount * 100,
+            amount: booking.totalAmount * 100,
             currency: "INR",
             receipt: "event_receipt_" + Date.now(),
         });
@@ -12,10 +26,11 @@ export const createEventOrder = async (req, res) => {
         const payment = await Payment.create({
             user: userId,
             bookingType: "event",
-            bookingId,
+            bookingId: booking._id,
             bookingTypeModel: "EventBooking",
-            amount,
-            razorpayOrderId: order.id
+            amount: booking.totalAmount,
+            razorpayOrderId: order.id,
+            status: "created"
         });
 
         res.status(200).json({
@@ -31,7 +46,6 @@ export const createEventOrder = async (req, res) => {
         });
     }
 };
-
 
 export const verifyEventPayment = async (req, res) => {
     try {
@@ -59,6 +73,14 @@ export const verifyEventPayment = async (req, res) => {
             });
         }
 
+        // Prevent double verification
+        if (payment.status === "paid") {
+            return res.status(200).json({
+                success: true,
+                message: "Already verified"
+            });
+        }
+
         if (expectedSign === razorpay_signature) {
 
             payment.status = "paid";
@@ -67,18 +89,106 @@ export const verifyEventPayment = async (req, res) => {
             payment.paidAt = new Date();
             await payment.save();
 
-            // Confirm booking
+            // Confirm booking safely
             const booking = await EventBooking.findById(payment.bookingId);
-            booking.status = "CONFIRMED";
-            await booking.save();
 
-            res.status(200).json({ success: true });
+            if (!booking) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Event booking not found"
+                });
+            }
+
+            if (booking.status !== "CONFIRMED") {
+                booking.status = "CONFIRMED";
+                await booking.save();
+            }
+
+            return res.status(200).json({ success: true });
 
         } else {
+
             payment.status = "failed";
+            payment.failureReason = "Signature mismatch";
             await payment.save();
-            res.status(400).json({ success: false });
+
+            return res.status(400).json({ success: false });
         }
+
+    } catch (error) {
+        res.status(500).json({ success: false });
+    }
+};
+
+export const refundEventPayment = async (req, res) => {
+    try {
+        const { paymentId } = req.body;
+
+        const payment = await Payment.findById(paymentId);
+
+        if (!payment || payment.status !== "paid") {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid payment"
+            });
+        }
+
+        if (payment.status === "refunded") {
+            return res.status(400).json({
+                success: false,
+                message: "Already refunded"
+            });
+        }
+
+        const refund = await razorpay.payments.refund(
+            payment.razorpayPaymentId,
+            {
+                amount: payment.amount * 100
+            }
+        );
+
+        payment.status = "refunded";
+        payment.refundId = refund.id;
+        payment.refundStatus = refund.status;
+        await payment.save();
+
+        // Optional: update booking status
+        const booking = await EventBooking.findById(payment.bookingId);
+        if (booking) {
+            booking.status = "CANCELLED";
+            await booking.save();
+        }
+
+        res.status(200).json({
+            success: true,
+            refund
+        });
+
+    } catch (error) {
+        res.status(500).json({ success: false });
+    }
+};
+
+export const getAllEventPayments = async (req, res) => {
+    try {
+        const { page, limit, skip } = pagination(req.query);
+
+        const payments = await Payment.find({ bookingType: "event" })
+            .populate("user", "name email")
+            .populate("bookingId")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const total = await Payment.countDocuments({ bookingType: "event" });
+
+        res.status(200).json({
+            success: true,
+            total,
+            page,
+            totalPages: Math.ceil(total / limit),
+            payments
+        });
 
     } catch (error) {
         res.status(500).json({ success: false });
