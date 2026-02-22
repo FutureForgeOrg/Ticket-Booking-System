@@ -1,29 +1,36 @@
 import Event from '../models/Event.js';
 import EventBooking from '../models/EventBooking.js';
 import cloudinary from '../config/cloudinary.js';
-import { getPublicIdFromUrl, uploadBufferToCloudinary } from "../utils/mediaUtils.js";
+import { getPublicIdFromUrlOfEvents, uploadBufferToCloudinary } from "../utils/mediaUtils.js";
 import pagination from '../utils/pagination.js';
 // Create a new event
 export const createEvent = async (req, res) => {
 
     try {
-        if (!req.file) {
+        if (!req.files?.poster || !req.files?.banner) {
             return res.status(400).json({
                 success: false,
-                message: "Event image is required"
+                message: "Poster and banner image are required"
             });
         }
 
         // Upload image to Cloudinary
-        const imageResult = await uploadBufferToCloudinary(
-            req.file.buffer,
-            "events/images"
-        );
+        const [posterResult, bannerResult] = await Promise.all([
+            uploadBufferToCloudinary(
+                req.files.poster[0].buffer,
+                "events/posters"
+            ),
+            uploadBufferToCloudinary(
+                req.files.banner[0].buffer,
+                "events/banners"
+            )
+        ]);
 
         const event = await Event.create({
             ...req.body,
             categories: JSON.parse(req.body.categories),
-            posterImage: imageResult.secure_url
+            posterUrl: posterResult.secure_url,
+            bannerUrl: bannerResult.secure_url
         });
 
         res.status(201).json({
@@ -59,24 +66,26 @@ export const updateEvent = async (req, res) => {
             updateData.categories = JSON.parse(req.body.categories);
         }
 
-        // If new image uploaded
-        if (req.file) {
-            const imageResult = await uploadBufferToCloudinary(
-                req.file.buffer,
-                "events/images"
-            );
 
-            updateData.posterImage = imageResult.secure_url;
-
-            // Delete old image safely
-            if (event.posterImage) {
-                try {
-                    const publicId = getPublicIdFromUrl(event.posterImage);
-                    await cloudinary.uploader.destroy(publicId);
-                } catch (err) {
-                    console.error("Cloudinary delete failed:", err.message);
-                }
+       //delete old image and upload new one if new image is uploaded
+            if (req.files?.poster){
+                const publicId = getPublicIdFromUrlOfEvents(event.posterUrl);
+                 await cloudinary.uploader.destroy(publicId);
+                const posterResult = await uploadBufferToCloudinary(
+                    req.files.poster[0].buffer,
+                    "events/posters"
+                );
+                updateData.posterUrl = posterResult.secure_url;
             }
+        
+        if (req.files?.banner){
+            const publicId = getPublicIdFromUrlOfEvents(event.bannerUrl);
+             await cloudinary.uploader.destroy(publicId);
+            const bannerResult = await uploadBufferToCloudinary(
+                req.files.banner[0].buffer,
+                "events/banners"
+            );
+             updateData.bannerUrl = bannerResult.secure_url;
         }
 
         const updatedEvent = await Event.findByIdAndUpdate(
@@ -113,7 +122,7 @@ export const getAllEvents = async (req, res) => {
 
         const total = await Event.countDocuments(filter);
         const totalPages = Math.ceil(total / limit);
-        
+
         res.status(200).json({
             success: true,
             events,

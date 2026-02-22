@@ -8,6 +8,12 @@ export const getPublicIdFromUrl = (url) => {
     return `movies/posters/${publicId}`;
 }
 
+export const getPublicIdFromUrlOfEvents = (url) => {
+    const parts = url.split('/');
+    const fileName = parts[parts.length - 1];
+    const publicId = fileName.split('.')[0];
+    return `events/posters/${publicId}`;
+}
 
 
 // function to upload buffer to cloudinary

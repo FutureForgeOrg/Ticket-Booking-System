@@ -13,6 +13,7 @@ const otpSchema = new mongoose.Schema({
     expiresAt: {
         type: Date,
         required: true,
+        default: () => Date.now() + 10 * 60 * 1000,
         expires: 0  //  TTL auto delete
     }
 }, { timestamps: true });

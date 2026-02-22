@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import TextInput from "@/components/common/TextInput";
 import FileInput from "@/components/common/FileInput";
 import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
 
 function EditEventForm({ initialData, onSubmit }) {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    eventType: "", // ✅ now string
+    eventType: "",
     comedianName: "",
     duration: "",
     ageRestriction: "",
@@ -16,16 +17,20 @@ function EditEventForm({ initialData, onSubmit }) {
     city: "",
     date: "",
     categories: [],
-    posterImage: null,
   });
 
-  // ✅ Fill form when editing
+  const [files, setFiles] = useState({
+    poster: null,
+    banner: null,
+  });
+
+  // Load initial data
   useEffect(() => {
     if (initialData) {
       setForm({
         title: initialData.title || "",
         description: initialData.description || "",
-        eventType: initialData.eventType || "", // string
+        eventType: initialData.eventType || "",
         comedianName: initialData.comedianName || "",
         duration: initialData.duration || "",
         ageRestriction: initialData.ageRestriction || "",
@@ -36,12 +41,11 @@ function EditEventForm({ initialData, onSubmit }) {
           ? new Date(initialData.date).toISOString().slice(0, 16)
           : "",
         categories: initialData.categories || [],
-        posterImage: null,
       });
     }
   }, [initialData]);
 
-  // ✅ Handle normal inputs
+  // Handle input change
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
@@ -51,7 +55,7 @@ function EditEventForm({ initialData, onSubmit }) {
     }));
   };
 
-  // ✅ Handle category change
+  // Handle category update
   const handleCategoryChange = (index, field, value) => {
     const updated = [...form.categories];
     updated[index][field] = value;
@@ -62,35 +66,85 @@ function EditEventForm({ initialData, onSubmit }) {
     }));
   };
 
-  // ✅ Handle file
-  const handleFileChange = (name, file) => {
-    setForm((prev) => ({
+  // Handle file selection
+  const handleFile = (name, file) => {
+    setFiles((prev) => ({
       ...prev,
       [name]: file,
     }));
   };
 
-  // ✅ Submit
+  // Compare updated fields
+  const compareUpdatedFields = (initial, updated) => {
+    const changed = {};
+
+    for (const key in updated) {
+      if (key === "date") {
+        const initialDate = initial.date
+          ? new Date(initial.date).toISOString().slice(0, 16)
+          : "";
+        const updatedDate = updated.date || "";
+
+        if (initialDate !== updatedDate) {
+          changed.date = updated.date;
+        }
+        continue;
+      }
+
+      if (key === "categories") {
+        if (
+          JSON.stringify(initial.categories || []) !==
+          JSON.stringify(updated.categories)
+        ) {
+          changed.categories = updated.categories;
+        }
+        continue;
+      }
+
+      if (initial[key] !== updated[key]) {
+        changed[key] = updated[key];
+      }
+    }
+
+    return changed;
+  };
+
+  // Submit form
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
+    if (!initialData) return;
 
-    Object.keys(form).forEach((key) => {
-      if (key !== "categories" && key !== "posterImage") {
-        formData.append(key, form[key]);
-      }
-    });
+    const changedData = compareUpdatedFields(initialData, form);
 
-    // Send categories as JSON
-    formData.append("categories", JSON.stringify(form.categories));
-
-    // Send image only if changed
-    if (form.posterImage) {
-      formData.append("image", form.posterImage);
+    if (
+      Object.keys(changedData).length === 0 &&
+      !files.poster &&
+      !files.banner
+    ) {
+      toast.error("No changes made to update.");
+      return;
     }
 
-    onSubmit(formData);
+    const fd = new FormData();
+
+    for (const key in changedData) {
+      if (key === "categories") {
+        fd.append("categories", JSON.stringify(changedData.categories));
+      } else {
+        fd.append(key, changedData[key]);
+      }
+    }
+
+    if (files.poster) {
+      fd.append("poster", files.poster);
+    }
+
+    if (files.banner) {
+      fd.append("banner", files.banner);
+    }
+
+    onSubmit(fd);
   };
 
   return (
@@ -100,13 +154,8 @@ function EditEventForm({ initialData, onSubmit }) {
     >
       <h2 className="text-2xl font-semibold">Edit Event</h2>
 
-      <TextInput
-        label="Title"
-        name="title"
-        value={form.title}
-        onChange={handleChange}
-        required
-      />
+      {/* Basic Fields */}
+      <TextInput label="Title" name="title" value={form.title} onChange={handleChange} />
 
       <div>
         <label className="text-sm font-medium">Description</label>
@@ -115,40 +164,13 @@ function EditEventForm({ initialData, onSubmit }) {
           value={form.description}
           onChange={handleChange}
           className="w-full border rounded-md px-3 py-2"
-          required
         />
       </div>
 
-      {/* ✅ Event Type (String) */}
-      <TextInput
-        label="Event Type"
-        name="eventType"
-        value={form.eventType}
-        onChange={handleChange}
-        required
-      />
-
-      <TextInput
-        label="Comedian Name"
-        name="comedianName"
-        value={form.comedianName}
-        onChange={handleChange}
-      />
-
-      <TextInput
-        label="Duration (minutes)"
-        type="number"
-        name="duration"
-        value={form.duration}
-        onChange={handleChange}
-      />
-
-      <TextInput
-        label="Age Restriction"
-        name="ageRestriction"
-        value={form.ageRestriction}
-        onChange={handleChange}
-      />
+      <TextInput label="Event Type" name="eventType" value={form.eventType} onChange={handleChange} />
+      <TextInput label="Comedian Name" name="comedianName" value={form.comedianName} onChange={handleChange} />
+      <TextInput label="Duration" type="number" name="duration" value={form.duration} onChange={handleChange} />
+      <TextInput label="Age Restriction" name="ageRestriction" value={form.ageRestriction} onChange={handleChange} />
 
       <div className="flex items-center gap-2">
         <input
@@ -160,36 +182,16 @@ function EditEventForm({ initialData, onSubmit }) {
         <label>Featured Event</label>
       </div>
 
-      <TextInput
-        label="Venue"
-        name="venue"
-        value={form.venue}
-        onChange={handleChange}
-      />
+      <TextInput label="Venue" name="venue" value={form.venue} onChange={handleChange} />
+      <TextInput label="City" name="city" value={form.city} onChange={handleChange} />
+      <TextInput label="Date & Time" type="datetime-local" name="date" value={form.date} onChange={handleChange} />
 
-      <TextInput
-        label="City"
-        name="city"
-        value={form.city}
-        onChange={handleChange}
-      />
-
-      <TextInput
-        label="Date & Time"
-        type="datetime-local"
-        name="date"
-        value={form.date}
-        onChange={handleChange}
-      />
-
-      {/* ✅ Categories */}
+      {/* Categories */}
       <div>
         <h3 className="font-semibold mb-2">Categories</h3>
-
         {form.categories.map((cat, index) => (
           <div key={cat._id || index} className="grid grid-cols-4 gap-4 mb-3">
             <TextInput label="Name" value={cat.name} disabled />
-
             <TextInput
               label="Price"
               type="number"
@@ -198,7 +200,6 @@ function EditEventForm({ initialData, onSubmit }) {
                 handleCategoryChange(index, "price", e.target.value)
               }
             />
-
             <TextInput
               label="Total Seats"
               type="number"
@@ -207,7 +208,6 @@ function EditEventForm({ initialData, onSubmit }) {
                 handleCategoryChange(index, "totalSeats", e.target.value)
               }
             />
-
             <TextInput
               label="Available Seats"
               type="number"
@@ -218,12 +218,61 @@ function EditEventForm({ initialData, onSubmit }) {
         ))}
       </div>
 
-      <FileInput
-        label="Event Poster"
-        name="posterImage"
-        value={initialData?.posterImage}
-        onChange={handleFileChange}
-      />
+      {/* Current Image Preview */}
+      <div className="grid grid-cols-2 gap-6">
+        {initialData?.posterUrl && (
+          <div>
+            <p className="text-sm font-medium mb-2">Current Poster</p>
+            <img
+              src={initialData.posterUrl}
+              alt="Poster"
+              className="w-full h-48 object-cover rounded-lg border"
+            />
+          </div>
+        )}
+
+        {initialData?.bannerUrl && (
+          <div>
+            <p className="text-sm font-medium mb-2">Current Banner</p>
+            <img
+              src={initialData.bannerUrl}
+              alt="Banner"
+              className="w-full h-48 object-cover rounded-lg border"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Upload New Files */}
+      <div className="grid grid-cols-2 gap-4">
+        <FileInput label="Replace Poster" name="poster" onChange={handleFile} />
+        <FileInput label="Replace Banner" name="banner" onChange={handleFile} />
+      </div>
+
+      {/* New Image Preview */}
+      <div className="grid grid-cols-2 gap-6">
+        {files.poster && (
+          <div>
+            <p className="text-sm font-medium">New Poster Preview</p>
+            <img
+              src={URL.createObjectURL(files.poster)}
+              alt="New Poster"
+              className="w-full h-48 object-cover rounded-lg border"
+            />
+          </div>
+        )}
+
+        {files.banner && (
+          <div>
+            <p className="text-sm font-medium">New Banner Preview</p>
+            <img
+              src={URL.createObjectURL(files.banner)}
+              alt="New Banner"
+              className="w-full h-48 object-cover rounded-lg border"
+            />
+          </div>
+        )}
+      </div>
 
       <Button type="submit">Update Event</Button>
     </form>
