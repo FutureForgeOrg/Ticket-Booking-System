@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/SignUp";
 import TicketPage from "./pages/TicketPage";
 import MyTicketsPage from "./pages/MyTicketsPage";
+import AllMoviesPage from "./pages/AllMoviesPage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/movies/all" element={<AllMoviesPage />} />
 
         {/* PROTECTED */}
         <Route element={<ProtectedRoute />}>

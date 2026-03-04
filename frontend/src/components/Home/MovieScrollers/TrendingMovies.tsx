@@ -12,6 +12,7 @@ export default function TrendingMovies() {
       renderItem={(movie) => <MovieCard key={movie._id} movie={movie} />}
       loading={isLoading}
       error={error as Error | null}
+      showAllLink="/movies/all"
     />
   );
 }
