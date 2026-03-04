@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.post("/create-order", authenticateToken, createOrder);
 router.post("/verify-payment", authenticateToken, verifyPayment);
-router.post("/refund-payment", refundPayment);
+router.post("/refund-payment",authenticateToken, refundPayment);
 router.get("/revenue-stats", getRevenueStats);
 router.get("/all-payments", getAllPayments);
 router.get("/payment-details/:paymentId", getPaymentDetails);

@@ -6,15 +6,22 @@ const paymentSchema = new mongoose.Schema({
         ref: "BaseUser",
         required: true
     },
-    ticket: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Ticket",
+    bookingType: {
+        type: String,
+        enum: ["show", "event"],
         required: true
     },
-    show: {
+
+    bookingId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Show",
-        required: true
+        required: true,
+        refPath: "bookingTypeModel"
+    },
+
+    bookingTypeModel: {
+        type: String,
+        required: true,
+        enum: ["Ticket", "EventBooking"]
     },
 
     amount: {

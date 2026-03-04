@@ -17,8 +17,9 @@ export const createOrder = async (req, res) => {
 
         const payment = await Payment.create({
             user: userId,
-            ticket: ticketId,
-            show: showId,
+            bookingType: "show",
+            bookingId: ticketId,
+            bookingTypeModel: "Ticket",
             amount,
             razorpayOrderId: order.id,
             status: "created",
@@ -141,10 +142,15 @@ export const getAllPayments = async (req, res) => {
         if (userId) query.user = userId;
         if (status) query.status = status;
 
-        const payments = await Payment.find()
+        const payments = await Payment.find(query)
             .populate("user", "name email")
-            .populate("ticket", "show seats totalPrice")
-            .populate("show", "movie showTime")
+            .populate({
+                path: "bookingId",
+                populate: {
+                    path: "show",
+                    select: "movie showTime"
+                }
+            })
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
@@ -170,8 +176,13 @@ export const getPaymentDetails = async (req, res) => {
 
         const payment = await Payment.findById(id)
             .populate("user", "name email")
-            .populate("ticket")
-            .populate("show");
+            .populate({
+                path: "bookingId",
+                populate: {
+                    path: "show",
+                    select: "movie showTime"
+                }
+            })
 
         if (!payment) {
             return res.status(404).json({ success: false });

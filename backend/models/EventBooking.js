@@ -25,17 +25,11 @@ const eventBookingSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    paymentStatus: {
+    status: {
         type: String,
-        enum: ["pending", "paid", "failed"],
-        default: "pending"
+        enum: ["PENDING", "CONFIRMED", "EXPIRED", "CANCELLED"],
+        default: "PENDING"
     },
-
-    ticketStatus: {
-        type: String,
-        enum: ["active", "used", "cancelled"],
-        default: "active"
-    }
 
 }, { timestamps: true });
 
