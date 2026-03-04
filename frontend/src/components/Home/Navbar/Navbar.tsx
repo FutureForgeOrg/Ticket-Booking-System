@@ -6,10 +6,12 @@ import { popularCities } from "../../../utils/data/cities";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../../store/authStore";
 import UserMenu from "./UserMenu";
+import { useThemeStore } from "../../../store/themeStore";
 
 export default function Navbar() {
   const { city, setCity } = useCityStore();
   const { user } = useAuthStore();
+  const { isDark, toggleTheme } = useThemeStore();
   // console.log("Navbar user:", user);
   const navigate = useNavigate();
   return (
@@ -48,6 +50,14 @@ export default function Navbar() {
 
           {/* RIGHT: ACTIONS */}
           <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleTheme}
+              className="p-2"
+            >
+              {isDark ? "☀️" : "🌙"}
+            </Button>
             <Select
               value={city}
               options={popularCities}

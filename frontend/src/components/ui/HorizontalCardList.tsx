@@ -1,4 +1,8 @@
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowRightCircleIcon,
+} from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 
 interface HorizontalCardListProps<T> {
@@ -6,9 +10,9 @@ interface HorizontalCardListProps<T> {
   items: T[];
   renderItem: (item: T) => ReactNode;
   scrollAmount?: number;
-
   loading?: boolean;
   error?: Error | null;
+  showAllLink?: string; // URL path for "All" link
 }
 
 export default function HorizontalCardList<T>({
@@ -18,6 +22,7 @@ export default function HorizontalCardList<T>({
   scrollAmount = 500,
   loading = false,
   error = null,
+  showAllLink,
 }: HorizontalCardListProps<T>) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -97,7 +102,20 @@ export default function HorizontalCardList<T>({
   return (
     <section className="bg-canvas">
       <div className="mx-auto max-w-7xl px-6 py-4">
-        <h2 className="mb-6 text-2xl font-semibold">{title}</h2>
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-2xl font-semibold">{title}</h2>
+          {showAllLink && (
+            <a
+              href={showAllLink}
+              className="text-primary hover:text-primary-hover text-sm font-medium transition-colors"
+            >
+              <span className="flex items-center gap-2">
+                <span className="text-lg">All</span>{" "}
+                <ArrowRightCircleIcon size={20} className="inline-block" />
+              </span>
+            </a>
+          )}
+        </div>
 
         <div className="relative">
           {showLeft && (

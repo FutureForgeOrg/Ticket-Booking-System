@@ -33,23 +33,23 @@ export function ZoomableLayout({
 
   return (
     <div className="w-full">
-      <div className="rounded-lg border border-gray-700 shadow-lg p-2">
+      <div className="rounded-lg border border-border shadow-lg p-2">
         <div className="mb-2 flex items-center justify-between gap-2">
           <div className="flex-1 items-center">
             {" "}
             <p className="text-center font-bold text-xl">{title}</p>
-            <div className="pt-2 pl-2 flex flex-wrap gap-4 text-xs text-gray-200">
-              <LegendDot label="Available" className="border-gray-400" />
+            <div className="pt-2 pl-2 flex flex-wrap gap-4 text-xs text-text-secondary">
+              <LegendDot label="Available" className="border-seat-regular" />
               <LegendDot
                 label="Selected"
-                className="bg-green-600 border-green-700"
+                className="bg-seat-selected border-seat-selected"
               />
               <LegendDot
                 label="Booked"
-                className="bg-gray-200 border-gray-300 opacity-60"
+                className="bg-seat-booked-bg border-seat-regular opacity-60"
               />
-              <LegendDot label="Premium" className="border-yellow-500" />
-              <LegendDot label="VIP" className="border-purple-500" />
+              <LegendDot label="Premium" className="border-seat-premium" />
+              <LegendDot label="VIP" className="border-seat-vip" />
             </div>
           </div>
 
@@ -57,7 +57,7 @@ export function ZoomableLayout({
             <button
               type="button"
               onClick={zoomOut}
-              className="rounded-md border border-gray-300 px-3 py-1 font-semibold text-sm"
+              className="rounded-md border border-border px-3 py-1 font-semibold text-sm"
               aria-label="Zoom out"
             >
               -
@@ -65,7 +65,7 @@ export function ZoomableLayout({
             <button
               type="button"
               onClick={resetZoom}
-              className="rounded-md border border-gray-300 px-3 py-1 font-semibold text-sm"
+              className="rounded-md border border-border px-3 py-1 font-semibold text-sm"
               aria-label="Reset zoom"
             >
               Reset
@@ -73,12 +73,12 @@ export function ZoomableLayout({
             <button
               type="button"
               onClick={zoomIn}
-              className="rounded-md border border-gray-300 px-3 py-1 font-semibold text-sm"
+              className="rounded-md border border-border px-3 py-1 font-semibold text-sm"
               aria-label="Zoom in"
             >
               +
             </button>
-            <span className="w-12 text-right text-gray-500 text-xs">
+            <span className="w-12 text-right text-text-muted text-xs">
               {Math.round(scale * 100)}%
             </span>
           </div>
