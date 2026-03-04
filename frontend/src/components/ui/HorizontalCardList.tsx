@@ -1,4 +1,8 @@
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowRightCircleIcon,
+} from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 
 interface HorizontalCardListProps<T> {
@@ -105,7 +109,10 @@ export default function HorizontalCardList<T>({
               href={showAllLink}
               className="text-primary hover:text-primary-hover text-sm font-medium transition-colors"
             >
-              All →
+              <span className="flex items-center gap-2">
+                <span className="text-lg">All</span>{" "}
+                <ArrowRightCircleIcon size={20} className="inline-block" />
+              </span>
             </a>
           )}
         </div>
