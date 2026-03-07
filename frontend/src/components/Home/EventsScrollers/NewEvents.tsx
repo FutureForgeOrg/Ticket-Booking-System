@@ -6,7 +6,7 @@ export default function NewEvents() {
   const { data: allEvents, isLoading, error } = useEventsQuery();
   return (
     <HorizontalCardList
-      title="New Releases"
+      title="New Events"
       items={allEvents ?? []}
       scrollAmount={400}
       renderItem={(event) => <EventCard key={event._id} event={event} />}

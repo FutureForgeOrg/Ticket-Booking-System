@@ -19,11 +19,11 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/movies/all" element={<AllMoviesPage />} />
 
         {/* PROTECTED */}
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
+            <Route path="/movies/all" element={<AllMoviesPage />} />
             <Route path="/movies/:movieId/:city" element={<MovieDetail />} />
             <Route path="/movies/:movieId/shows" element={<MovieShows />} />
             <Route path="/show/:showId" element={<MovieShowSeats />} />
