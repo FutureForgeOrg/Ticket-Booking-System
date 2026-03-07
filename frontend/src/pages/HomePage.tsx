@@ -1,3 +1,4 @@
+import NewEvents from "../components/Home/EventsScrollers/NewEvents";
 import Footer from "../components/Home/Footer";
 import Hero from "../components/Home/Hero";
 import HowItWorks from "../components/Home/Info/HowItWorksInfo";
@@ -13,6 +14,7 @@ function HomePage() {
       <TrendingMovies />
       <HowItWorks />
       <NewReleaseMovies />
+      <NewEvents />
       <Footer />
     </>
   );
