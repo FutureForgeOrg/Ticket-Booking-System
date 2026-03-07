@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 import Card from "./Card";
-import { useCityStore } from "../../store/cityStore";
+// import { useCityStore } from "../../store/cityStore";
 import dayjs from "dayjs";
 
 interface Event {
@@ -21,11 +21,10 @@ interface EventCardProps {
 
 export default function EventCard({ event }: EventCardProps) {
   const navigate = useNavigate();
-  const { city: selectedCity } = useCityStore();
+  //   const { city: selectedCity } = useCityStore();
 
   return (
-    <Card className="w-60 overflow-hidden group cursor-pointer transition-all duration-300">
-
+    <Card className="w-52 overflow-hidden group cursor-pointer transition-all duration-300">
       {/* Poster */}
       <div className="relative">
         <img
@@ -40,15 +39,14 @@ export default function EventCard({ event }: EventCardProps) {
         </span>
 
         <div className="w-full bg-black absolute bottom-0 h-[10%] flex items-center justify-start">
-            <p className="text-lg text-white px-2 py-1">
-                {dayjs(event.date).format("ddd, D MMM")}
-            </p>
+          <p className="text-lg text-white px-2 py-1">
+            {dayjs(event.date).format("ddd, D MMM")}
+          </p>
         </div>
       </div>
 
       {/* Content */}
       <div className="p-4 flex flex-col gap-1">
-
         <h3 className="text-lg font-semibold line-clamp-1" title={event.title}>
           {event.title}
         </h3>
@@ -63,16 +61,14 @@ export default function EventCard({ event }: EventCardProps) {
           {new Date(event.date).toLocaleDateString()}
         </p>
 
-        <p className="text-xs text-text-muted line-clamp-1">
-          {event.venue}
-        </p>
+        <p className="text-xs text-text-muted line-clamp-1">{event.venue}</p>
 
         <Button
           size="sm"
           className="mt-3 w-full"
           onClick={() => {
-            const formatSelectedCity = selectedCity.toLowerCase();
-            navigate(`/events/${event._id}/${formatSelectedCity}`);
+            // const formatSelectedCity = selectedCity.toLowerCase();
+            navigate(`/events/${event._id}`);
           }}
         >
           Book Event
