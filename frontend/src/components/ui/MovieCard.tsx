@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import type { Movie } from "../../types/movieType";
 import Button from "./Button";
 import Card from "./Card";
-import { useCityStore } from "../../store/cityStore";
+// import { useCityStore } from "../../store/cityStore";
 
 interface MovieCardProps {
   movie: Movie;
@@ -10,13 +10,13 @@ interface MovieCardProps {
 
 export default function MovieCard({ movie }: MovieCardProps) {
   const navigate = useNavigate();
-  const { city: selectedCity } = useCityStore();
+  // const { city: selectedCity } = useCityStore();
   return (
     <Card className="w-52 shrink-0 overflow-hidden">
       <img
         src={movie.posterUrl}
         alt={movie.title}
-        className="h-96 w-full object-cover"
+        className="h-80 w-full object-cover"
       />
 
       <div className="p-4 flex flex-col">
@@ -33,8 +33,8 @@ export default function MovieCard({ movie }: MovieCardProps) {
           size="sm"
           className="mt-4 w-full"
           onClick={() => {
-            const formatSelectedCity = selectedCity.toLowerCase();
-            navigate(`/movies/${movie._id}/${formatSelectedCity}`);
+            // const formatSelectedCity = selectedCity.toLowerCase();
+            navigate(`/movies/${movie._id}`);
           }}
         >
           Book Now

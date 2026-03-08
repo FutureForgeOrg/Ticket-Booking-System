@@ -10,6 +10,8 @@ import Signup from "./pages/SignUp";
 import TicketPage from "./pages/TicketPage";
 import MyTicketsPage from "./pages/MyTicketsPage";
 import AllMoviesPage from "./pages/AllMoviesPage";
+import EventDetailPage from "./pages/EventDetailPage";
+import AllEventsPage from "./pages/AllEventsPage";
 
 function App() {
   return (
@@ -19,15 +21,17 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/movies/all" element={<AllMoviesPage />} />
 
         {/* PROTECTED */}
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
-            <Route path="/movies/:movieId/:city" element={<MovieDetail />} />
+            <Route path="/movies/all" element={<AllMoviesPage />} />
+            <Route path="/events/all" element={<AllEventsPage />} />
+            <Route path="/movies/:movieId" element={<MovieDetail />} />
             <Route path="/movies/:movieId/shows" element={<MovieShows />} />
             <Route path="/show/:showId" element={<MovieShowSeats />} />
             <Route path="/my-tickets" element={<MyTicketsPage />} />
+            <Route path="/events/:eventId" element={<EventDetailPage />} />
           </Route>
         </Route>
 

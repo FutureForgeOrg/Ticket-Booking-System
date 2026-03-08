@@ -1,8 +1,9 @@
 interface NavLinkProps {
   label: string;
+  onClick?: () => void;
 }
 
-export function NavLink({ label }: NavLinkProps) {
+export function NavLink({ onClick, label }: NavLinkProps) {
   return (
     <button
       className="
@@ -10,6 +11,7 @@ export function NavLink({ label }: NavLinkProps) {
         hover:text-text-primary
         transition-colors
       "
+      onClick={onClick}
     >
       {label}
     </button>

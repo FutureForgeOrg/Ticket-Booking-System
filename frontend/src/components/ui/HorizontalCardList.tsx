@@ -102,7 +102,7 @@ export default function HorizontalCardList<T>({
   return (
     <section className="bg-canvas">
       <div className="mx-auto max-w-7xl px-6 py-4">
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-4 flex items-center justify-between">
           <h2 className="text-2xl font-semibold">{title}</h2>
           {showAllLink && (
             <a

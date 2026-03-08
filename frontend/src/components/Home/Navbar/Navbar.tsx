@@ -42,9 +42,9 @@ export default function Navbar() {
 
             {/* Nav Links */}
             <nav className="hidden md:flex items-center gap-6">
-              <NavLink label="Movies" />
-              <NavLink label="Events" />
-              <NavLink label="Offers" />
+              <NavLink onClick={() => navigate("/movies/all")} label="Movies"/>
+              <NavLink onClick={() => navigate("/events/all")} label="Events" />
+              <NavLink onClick={() => navigate("/offers")} label="Offers" />
             </nav>
           </div>
 

@@ -15,7 +15,7 @@ function FooterColumn({ title, links }: FooterColumnProps) {
             <ul className="mt-4 space-y-2">
                 {links.map((link) => (
                     <li key={link}>
-                        <NavLink label={link} />
+                        <NavLink onClick={() => {}} label={link} />
                     </li>
                 ))}
             </ul>
