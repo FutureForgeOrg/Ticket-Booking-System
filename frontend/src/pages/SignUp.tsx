@@ -22,9 +22,12 @@ export default function Signup() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-canvas">
       <div className="w-full max-w-md bg-surface p-8 rounded-xl shadow-soft border border-border">
-        <h2 className="text-2xl font-semibold text-text-primary mb-6 text-center">
+        <h2 className="text-2xl font-semibold text-text-primary mb-1 text-center">
           Create Account
         </h2>
+        <p className="text-text-secondary text-center text-sm mb-6">
+          Sign up to book tickets
+        </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
@@ -123,24 +126,26 @@ export default function Signup() {
             )}
           </div>
 
+          {/* Error Message */}
+          {signupMutation.isError && (
+            <p className="text-danger text-sm text-center bg-danger/10 p-3 rounded-lg">
+              {(signupMutation.error as any)?.response?.data?.message || 
+                "Failed to register user"}
+            </p>
+          )}
+
           <button
             type="submit"
             disabled={signupMutation.isPending}
-            className="w-full py-3 rounded-xl bg-primary hover:bg-primary-hover text-black font-medium"
+            className="w-full py-3 rounded-xl bg-primary hover:bg-primary-hover text-black font-medium disabled:opacity-50"
           >
             {signupMutation.isPending ? "Creating account..." : "Sign Up"}
           </button>
-
-          {signupMutation.isError && (
-            <p className="text-danger text-sm text-center">
-              Failed to register user
-            </p>
-          )}
         </form>
 
         <p className="text-text-secondary text-sm text-center mt-4">
           Already have an account?{" "}
-          <Link to="/login" className="text-primary">
+          <Link to="/login" className="text-primary hover:text-primary-hover">
             Login
           </Link>
         </p>
