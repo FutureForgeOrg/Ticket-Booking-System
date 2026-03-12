@@ -27,5 +27,15 @@ export const signupSchema = z.object({
   }),
 });
 
+export const otpSchema = z.object({
+  otp: z.string().regex(/^\d{6}$/, "OTP must be 6 digits"),
+});
+
+export const resendOtpSchema = z.object({
+  email: z.email("Invalid email address"),
+});
+
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type SignupFormData = z.infer<typeof signupSchema>;
+export type OtpFormData = z.infer<typeof otpSchema>;
+export type ResendOtpFormData = z.infer<typeof resendOtpSchema>;

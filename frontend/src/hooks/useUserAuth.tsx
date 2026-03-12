@@ -1,8 +1,8 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import { getMeApi, loginApi, logoutApi, signupApi } from "../api/auth";
+import { getMeApi, loginApi, logoutApi, signupApi, verifyOtpApi, resendOtpApi, type VerifyOtpPayload } from "../api/auth";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
-import type { SignupFormData } from "../schemas/auth.schema";
+import type { SignupFormData, ResendOtpFormData } from "../schemas/auth.schema";
 
 export const useGetUserAuth = () =>
   useQuery({
@@ -13,14 +13,35 @@ export const useGetUserAuth = () =>
 
 export function useSignup() {
   const navigate = useNavigate();
-  const setUser = useAuthStore((s) => s.setUser);
+  const setPendingEmail = useAuthStore((s) => s.setPendingEmail);
 
   return useMutation({
     mutationFn: (data: SignupFormData) => signupApi(data),
     onSuccess: (data) => {
-      setUser(data.user);
-      navigate("/dashboard");
+      setPendingEmail(data.user.email);
+      navigate("/verify-otp");
     },
+  });
+}
+
+export function useVerifyOtp() {
+  const navigate = useNavigate();
+  const setUser = useAuthStore((s) => s.setUser);
+  const setPendingEmail = useAuthStore((s) => s.setPendingEmail);
+
+  return useMutation({
+    mutationFn: (data: VerifyOtpPayload) => verifyOtpApi(data),
+    onSuccess: (data) => {
+      setUser(data.user);
+      navigate("/");
+      setPendingEmail(null);
+    },
+  });
+}
+
+export function useResendOtp() {
+  return useMutation({
+    mutationFn: (data: ResendOtpFormData) => resendOtpApi(data),
   });
 }
 
@@ -32,7 +53,7 @@ export function useLogin() {
     mutationFn: loginApi,
     onSuccess: (data) => {
       setUser(data.user);
-      navigate("/dashboard");
+      navigate("/");
     },
   });
 }
