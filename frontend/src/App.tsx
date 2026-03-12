@@ -7,6 +7,7 @@ import MovieShows from "./pages/MovieShows";
 import MovieShowSeats from "./pages/MovieShowSeats";
 import Login from "./pages/Login";
 import Signup from "./pages/SignUp";
+import VerifyOtp from "./pages/VerifyOtp";
 import TicketPage from "./pages/TicketPage";
 import MyTicketsPage from "./pages/MyTicketsPage";
 import AllMoviesPage from "./pages/AllMoviesPage";
@@ -21,6 +22,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/movies/all" element={<AllMoviesPage />} />
 
         {/* PROTECTED */}
