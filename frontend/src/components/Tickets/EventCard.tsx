@@ -1,6 +1,5 @@
 import { Check } from "lucide-react";
-import type { Seat, TicketData } from "../../types/ticket.type";
-import { useNavigate } from "react-router-dom";
+import type { EventBooking } from "../../types/eventBooking.type";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-IN", {
@@ -18,40 +17,34 @@ function formatTime(iso: string) {
   });
 }
 
-export function TicketCard({
-  ticket,
-  onClickRedirection,
+export function EventTicketCard({
+  booking,
+  event,
 }: {
-  ticket: TicketData;
-  onClickRedirection?: boolean;
+  booking: EventBooking;
+  event: {
+    title: string;
+    posterUrl: string;
+    venue: string;
+    date: string;
+  };
 }) {
-  const navigate = useNavigate();
+  const date = new Date(event.date);
+
   return (
-    <div
-      onClick={() =>
-        onClickRedirection && navigate(`/booking-success/${ticket.ticketId}`)
-      }
-      className={`relative w-full max-w-md text-text-primary rounded-3xl shadow-soft overflow-hidden bg-surface border border-border ${onClickRedirection ? "cursor-pointer hover:scale-110 transition-transform duration-200" : ""}`}
-    >
-      {/* Poster */}
+    <div className="relative w-full max-w-md text-text-primary rounded-3xl shadow-soft overflow-hidden bg-surface border border-border hover:scale-110 transition-all duration-200 cursor-pointer">
       <div className="relative bg-canvas">
         <img
-          src={ticket.movie.poster}
-          alt={ticket.movie.title}
+          src={event.posterUrl}
+          alt={event.title}
           className="w-full max-h-[220px] object-contain mx-auto"
         />
         {/* <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-surface to-transparent" /> */}
       </div>
 
-      {/* Movie Info */}
       <div className="relative px-6 pt-4">
-        <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">
-          {ticket.movie.title}
-        </h1>
-
-        <p className="text-sm text-text-muted mt-1">
-          {ticket.cinema.name} • {ticket.cinema.location}
-        </p>
+        <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">{event.title}</h1>
+        <p className="text-sm text-text-muted mt-1">{event.venue}</p>
 
         <div className="absolute left-0 top-1/2 translate-y-1/2 w-4 h-8 bg-border rounded-r-full" />
         <div className="absolute right-0 top-1/2 translate-y-1/2 w-4 h-8 bg-border rounded-l-full" />
@@ -59,46 +52,36 @@ export function TicketCard({
 
       <div className="my-5 border-t border-dashed border-border" />
 
-      {/* Show Details */}
       <div className="px-6 grid grid-cols-2 gap-4 text-sm">
-        <Info label="Date" value={formatDate(ticket.show.showTime)} />
-        <Info
-          label="Time"
-          value={`${formatTime(ticket.show.showTime)} – ${formatTime(ticket.show.endTime)}`}
-        />
-        <Info label="Screen" value={ticket.show.screen} />
+        <Info label="Date" value={formatDate(date.toISOString())} />
+        <Info label="Time" value={formatTime(date.toISOString())} />
+
+        <div className="bg-canvas rounded-xl p-3 border border-border">
+          <p className="text-text-muted text-xs mb-2">Category</p>
+          <p className="font-medium text-text-primary">{booking.category}</p>
+        </div>
 
         <div className="bg-canvas rounded-xl p-3 border border-border">
           <p className="text-text-muted text-xs mb-2">Seats</p>
-          <div className="flex flex-wrap gap-1">
-            {ticket.seats.map((s: Seat) => (
-              <span
-                key={s.seatName}
-                className="px-2 py-0.5 rounded-md dark:bg-neutral-700 bg-neutral-200 text-text-primary text-xs font-semibold"
-              >
-                {s.seatName}
-              </span>
-            ))}
-          </div>
+          <p className="font-medium text-text-primary">{booking.numberOfSeats}</p>
         </div>
       </div>
 
       <div className="my-5 border-t border-dashed border-border" />
 
-      {/* Footer */}
       <div className="px-6 pb-6 flex items-center justify-between">
         <div>
           <p className="text-xs text-text-muted">Total Paid</p>
-          <p className="text-2xl font-bold text-text-primary">₹{ticket.totalPrice}</p>
+          <p className="text-2xl font-bold text-text-primary">₹{booking.totalAmount}</p>
           <p className="text-xs font-semibold text-primary uppercase tracking-wide flex items-center gap-1">
-            {ticket.status}
+            {booking.status}
             <Check size={14} />
           </p>
         </div>
 
         <div className="h-20 w-20 rounded-xl bg-surface p-2 border border-border">
           <img
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${ticket.ticketId}`}
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${booking._id}`}
             className="h-full w-full"
           />
         </div>

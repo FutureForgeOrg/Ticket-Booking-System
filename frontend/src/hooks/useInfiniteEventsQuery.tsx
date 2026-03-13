@@ -8,7 +8,7 @@ interface PaginatedEventsResponse {
   data: Event[];
   totalPages: number;
   currentPage: number;
-}
+} 
 
 const fetchEventsPage = async (context: any): Promise<PaginatedEventsResponse> => {
   const response = await axiosInstance.get(

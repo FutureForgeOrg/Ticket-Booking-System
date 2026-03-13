@@ -6,5 +6,6 @@ export default function useEventByIdQuery(eventId: string) {
   return useQuery<Event>({
     queryKey: ["event", eventId],
     queryFn: () => fetchEventById(eventId),
+    enabled: Boolean(eventId),
   });
 }
