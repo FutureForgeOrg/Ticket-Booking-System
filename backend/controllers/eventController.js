@@ -139,6 +139,43 @@ export const getAllEvents = async (req, res) => {
     }
 };
 
+//get trending events
+export const getTrendingEvents = async (req, res) => {
+    try {
+        const { city, eventType } = req.query;
+        const { page, limit, skip } = pagination(req);
+
+        const filter = {};
+        if (city) filter.city = city;
+        if (eventType) filter.eventType = eventType;
+
+        const events = await Event.aggregate([
+            { $match: filter },
+            { $addFields: { totalAvailableSeats: { $sum: "$categories.availableSeats" } } },
+            { $sort: { totalAvailableSeats: 1 } },
+            { $skip: skip },
+            { $limit: limit }
+        ]);
+
+        const total = await Event.countDocuments(filter);
+        const totalPages = Math.ceil(total / limit);
+
+        res.status(200).json({
+            success: true,
+            events,
+            total,
+            totalPages,
+            limit,
+            currentPage: page
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 // Get a single event by ID
 export const getSingleEvent = async (req, res) => {
     try {

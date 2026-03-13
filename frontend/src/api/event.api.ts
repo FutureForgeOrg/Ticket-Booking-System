@@ -5,6 +5,11 @@ export const fetchEvents = async () => {
   return data.events;
 };
 
+export const fetchTrendingEvents = async () => {
+  const { data } = await axiosInstance.get("/events/trending");
+  return data.events;
+};
+
 export const fetchEventById = async (eventId: string) => {
   const { data } = await axiosInstance.get(`/events/${eventId}`);
   return data.event;
