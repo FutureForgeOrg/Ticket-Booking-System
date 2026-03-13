@@ -135,22 +135,17 @@ export const getRevenueStats = async (req, res) => {
 
 export const getAllPayments = async (req, res) => {
     try {
-        const { page, limit, skip } = pagination(req.query);
-        const { userId, status } = req.query;
+        const { page, limit, skip } = pagination(req);
+        const { userId, status, type } = req.query;
 
         const query = {}
         if (userId) query.user = userId;
         if (status) query.status = status;
+        if (type) query.bookingType = type;
 
         const payments = await Payment.find(query)
             .populate("user", "name email")
-            .populate({
-                path: "bookingId",
-                populate: {
-                    path: "show",
-                    select: "movie showTime"
-                }
-            })
+            .populate("bookingId")
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
@@ -166,7 +161,11 @@ export const getAllPayments = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).json({ success: false });
+        console.error("Get All Payments Error:", error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
 };
 

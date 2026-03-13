@@ -12,7 +12,8 @@ import ShowPage from "./pages/show/ShowPage";
 import CreateShowForm from "./pages/show/CreateShowForm";
 import EditShowForm from "./pages/show/EditShowForm";
 import BookingList from "./pages/Bookings/bookingList";
-import Payment from "./pages/Payment";
+import Payment from "./pages/payment/Payment";
+import PaymentDetailsPage from "./pages/payment/PaymentDetailsPage";
 import EventList from "./pages/event/EventList";
 import CreateEvent from "./pages/event/CreateEvent";
 import EditEvent from "./pages/event/EditEvent";
@@ -31,7 +32,7 @@ function App() {
     const checkAuth = async () => {
       try {
         const res = await instance.get("/auth/user");
-        setUser(res.data.user);
+        setUser(res.data.data);
       } catch (err) {
         setUser(null);
       } finally {
@@ -79,6 +80,7 @@ function App() {
             <Route path="/editShowForm/:id" element={<EditShowForm />} />
             <Route path="/booking" element={<BookingList />} />
             <Route path="/payment" element={<Payment />} />
+            <Route path="/payments/:id" element={<PaymentDetailsPage />} />
             <Route path="/event" element={<EventList />} />
             <Route path="/createEvent" element={<CreateEvent />} />
             <Route path="/editEvent/:id" element={<EditEvent />} />

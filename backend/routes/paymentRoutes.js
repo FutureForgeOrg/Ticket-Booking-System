@@ -16,6 +16,6 @@ router.post("/verify-payment", authenticateToken, verifyPayment);
 router.post("/refund-payment",authenticateToken, refundPayment);
 router.get("/revenue-stats", getRevenueStats);
 router.get("/all-payments", getAllPayments);
-router.get("/payment-details/:paymentId", getPaymentDetails);
+router.get("/payment-details/:id", getPaymentDetails);
 
 export default router;
