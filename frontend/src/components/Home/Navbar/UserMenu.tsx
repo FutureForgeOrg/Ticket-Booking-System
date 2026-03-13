@@ -52,7 +52,17 @@ export default function UserMenu() {
           >
             <div className="flex items-center gap-2">
               <Ticket size={18} />
-              <span>My Tickets</span>
+              <span>My Movie Tickets</span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => navigate("/my-event-tickets")}
+            className="w-full text-left px-3 py-2 text-sm text-text-secondary hover:bg-primary/10 rounded-lg"
+          >
+            <div className="flex items-center gap-2">
+              <Ticket size={18} />
+              <span>My Events Tickets</span>
             </div>
           </button>
 

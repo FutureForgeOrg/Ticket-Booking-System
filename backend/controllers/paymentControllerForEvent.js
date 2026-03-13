@@ -2,6 +2,7 @@ import razorpay from "../config/razorpay.js";
 import crypto from "crypto";
 import Payment from "../models/Payment.js";
 import EventBooking from "../models/EventBooking.js";
+import Event from "../models/Event.js";
 
 export const createEventOrder = async (req, res) => {
     try {
@@ -89,7 +90,7 @@ export const verifyEventPayment = async (req, res) => {
             payment.paidAt = new Date();
             await payment.save();
 
-            // Confirm booking safely
+            // Confirm booking safely and update event stats
             const booking = await EventBooking.findById(payment.bookingId);
 
             if (!booking) {
@@ -101,6 +102,13 @@ export const verifyEventPayment = async (req, res) => {
 
             if (booking.status !== "CONFIRMED") {
                 booking.status = "CONFIRMED";
+
+                const event = await Event.findById(booking.event);
+                if (event) {
+                    event.bookingsCount += booking.numberOfSeats;
+                    await event.save();
+                }
+
                 await booking.save();
             }
 

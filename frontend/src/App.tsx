@@ -10,9 +10,11 @@ import Signup from "./pages/SignUp";
 import VerifyOtp from "./pages/VerifyOtp";
 import TicketPage from "./pages/TicketPage";
 import MyTicketsPage from "./pages/MyTicketsPage";
+import MyEventTicketsPage from "./pages/MyEventTicketsPage";
 import AllMoviesPage from "./pages/AllMoviesPage";
 import EventDetailPage from "./pages/EventDetailPage";
 import AllEventsPage from "./pages/AllEventsPage";
+import EventBookingSuccessPage from "./pages/EventBookingSuccessPage";
 
 function App() {
   return (
@@ -33,13 +35,17 @@ function App() {
             <Route path="/movies/:movieId/shows" element={<MovieShows />} />
             <Route path="/show/:showId" element={<MovieShowSeats />} />
             <Route path="/my-tickets" element={<MyTicketsPage />} />
+            <Route path="/my-event-tickets" element={<MyEventTicketsPage />} />
             <Route path="/events/:eventId" element={<EventDetailPage />} />
+            <Route path="/booking-success/:ticketId" element={<TicketPage />} />
+            <Route
+              path="/events/booking-success/:bookingId"
+              element={<EventBookingSuccessPage />}
+            />
           </Route>
         </Route>
 
-        <Route element={<ProtectedRoute />}>
-          <Route path="/booking-success/:ticketId" element={<TicketPage />} />
-        </Route>
+        {/* <Route element={<ProtectedRoute />}></Route> */}
 
         <Route path="*" element={<HomePage />} />
       </Routes>

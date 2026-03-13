@@ -1,5 +1,5 @@
 import express from 'express';
-import { createEvent, updateEvent, getAllEvents, getSingleEvent, cancelEventBooking ,bookEventSeats,confirmEventBooking} from '../controllers/eventController.js';
+import { createEvent, updateEvent, getAllEvents, getSingleEvent, getEventBookingById, cancelEventBooking, bookEventSeats, confirmEventBooking, getMyEventBookings } from '../controllers/eventController.js';
 import upload from '../middlewares/multer.js';
 import { authenticateToken } from '../middlewares/authmiddleware.js';
 const router = express.Router();
@@ -15,9 +15,12 @@ router.put("/:id", upload.fields([
 ]), updateEvent);
 
 router.get("/", getAllEvents);
+router.get("/my-bookings", authenticateToken, getMyEventBookings);
+router.get("/bookings/:id", authenticateToken, getEventBookingById);
 router.get("/:id", getSingleEvent);
 router.post("/book", authenticateToken, bookEventSeats);
 router.post("/confirm/:bookingId", authenticateToken, confirmEventBooking);
 router.put("/cancel/:id", cancelEventBooking);
+router.get("/my-bookings", authenticateToken, getMyEventBookings);
 
 export default router;
