@@ -1,4 +1,5 @@
 import NewEvents from "../components/Home/EventsScrollers/NewEvents";
+import TrendingEvents from "../components/Home/EventsScrollers/TrendingEvents";
 import FeaturedBannerCarousel from "../components/Home/FeaturedBanners/FeaturedBannerCarousel";
 import Footer from "../components/Home/Footer";
 import HowItWorks from "../components/Home/Info/HowItWorksInfo";
@@ -13,6 +14,7 @@ function HomePage() {
       {/* <Hero /> */}
       <FeaturedBannerCarousel />
       <TrendingMovies />
+      <TrendingEvents />
       <HowItWorks />
       <NewReleaseMovies />
       <NewEvents />
