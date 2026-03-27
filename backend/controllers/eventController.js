@@ -3,6 +3,8 @@ import EventBooking from '../models/EventBooking.js';
 import cloudinary from '../config/cloudinary.js';
 import { getPublicIdFromUrlOfEvents, uploadBufferToCloudinary } from "../utils/mediaUtils.js";
 import pagination from '../utils/pagination.js';
+// import transporter from '../config/mail.js';
+// import BaseUser from '../models/BaseUser.js';
 // Create a new event
 export const createEvent = async (req, res) => {
 
@@ -32,6 +34,27 @@ export const createEvent = async (req, res) => {
             posterUrl: posterResult.secure_url,
             bannerUrl: bannerResult.secure_url
         });
+
+        // Send notification emails to all verified users
+        // BaseUser.find({ isVerified: true }).then(users => {
+        //     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        //     const eventUrl = `${frontendUrl}/events/${event._id}`;
+        //     users.forEach(user => {
+        //         transporter.sendMail({
+        //             from: process.env.EMAIL_USER,
+        //             to: user.email,
+        //             subject: `New Event Released: ${event.title}`,
+        //             html: `
+        //                 <h2>New Event Available!</h2>
+        //                 <p><strong>${event.title}</strong></p>
+        //                 <p>${event.description || ''}</p>
+        //                 <p>Date: ${new Date(event.date).toLocaleDateString()}</p>
+        //                 <p>Venue: ${event.venue}</p>
+        //                 <p>Check it out: <a href="${eventUrl}">${eventUrl}</a></p>
+        //             `
+        //         }).catch(err => console.error('Email send error:', err));
+        //     });
+        // }).catch(err => console.error('Error fetching users:', err));
 
         res.status(201).json({
             success: true,
@@ -93,6 +116,27 @@ export const updateEvent = async (req, res) => {
             updateData,
             { new: true, runValidators: true }
         );
+
+        // BaseUser.find({ isVerified: true }).then(users => {
+        //     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        //     const eventUrl = `${frontendUrl}/events/${event._id}`;
+        //     users.forEach(user => {
+        //         transporter.sendMail({
+        //             from: process.env.EMAIL_USER,
+        //             to: user.email,
+        //             subject: `New Event Released: ${event.title}`,
+        //             html: `
+        //                 <h2>New Event Available!</h2>
+        //                 <img src="${updatedEvent.posterUrl}" alt="${updatedEvent.title} Poster" style="width:200px;height:auto;"/>
+        //                 <p><strong>${event.title}</strong></p>
+        //                 <p>${event.description || ''}</p>
+        //                 <p>Date: ${new Date(event.date).toLocaleDateString()}</p>
+        //                 <p>Venue: ${event.venue}</p>
+        //                 <p>Check it out: <a href="${eventUrl}">${eventUrl}</a></p>
+        //             `
+        //         }).catch(err => console.error('Email send error:', err));
+        //     });
+        // }).catch(err => console.error('Error fetching users:', err));
 
         res.status(200).json({
             success: true,
