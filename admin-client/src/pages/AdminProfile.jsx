@@ -59,42 +59,42 @@ function AdminProfile({ setUser }) {
 
   if (!admin)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-gray-500 text-sm animate-pulse">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
+        <div className="text-text-muted text-sm animate-pulse">Loading...</div>
       </div>
     );
 
   const inputClass =
-    "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition";
+    "w-full border border-border bg-surface text-text-primary rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition";
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 md:p-10">
+    <div className="min-h-screen bg-canvas p-6 md:p-10">
       <div className="max-w-2xl mx-auto space-y-6">
 
         {/* Profile Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-surface rounded-2xl shadow-sm border border-border p-6">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-semibold text-gray-800">Admin Profile</h2>
-            <span className="text-xs bg-blue-50 text-blue-600 font-medium px-2.5 py-1 rounded-full">
+            <h2 className="text-lg font-semibold text-text-primary">Admin Profile</h2>
+            <span className="text-xs bg-primary-soft text-primary font-medium px-2.5 py-1 rounded-full">
               Admin
             </span>
           </div>
 
           <div className="flex items-center gap-4">
             {/* Avatar */}
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary-hover flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
               {admin.name?.charAt(0).toUpperCase()}
             </div>
             <div>
-              <p className="font-semibold text-gray-800">{admin.name}</p>
-              <p className="text-sm text-gray-500">{admin.email}</p>
+              <p className="font-semibold text-text-primary">{admin.name}</p>
+              <p className="text-sm text-text-secondary">{admin.email}</p>
             </div>
           </div>
 
-          <div className="mt-5 pt-5 border-t border-gray-100">
+          <div className="mt-5 pt-5 border-t border-border">
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 text-sm text-red-500 hover:text-red-600 font-medium transition"
+              className="flex items-center gap-2 text-sm text-danger hover:text-danger/80 font-medium transition"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" />
@@ -105,9 +105,9 @@ function AdminProfile({ setUser }) {
         </div>
 
         {/* Create Admin Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-1">Create New Admin</h2>
-          <p className="text-sm text-gray-400 mb-5">Fill in the details to add a new admin account.</p>
+        <div className="bg-surface rounded-2xl shadow-sm border border-border p-6">
+          <h2 className="text-lg font-semibold text-text-primary mb-1">Create New Admin</h2>
+          <p className="text-sm text-text-muted mb-5">Fill in the details to add a new admin account.</p>
 
           {message.text && (
             <div
@@ -164,7 +164,7 @@ function AdminProfile({ setUser }) {
             <div className="sm:col-span-2">
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2.5 rounded-lg transition"
+                className="w-full bg-primary hover:bg-primary-hover text-white text-sm font-medium py-2.5 rounded-lg transition"
               >
                 Create Admin
               </button>

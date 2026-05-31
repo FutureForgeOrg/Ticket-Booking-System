@@ -49,7 +49,7 @@ function Pagination({ page, totalPages, onPageChange }) {
                 disabled={page === 1}
                 onClick={() => onPageChange(page - 1)}
                 className="px-3 py-2 border rounded-md text-sm font-medium
-          hover:bg-gray-100 transition
+          hover:bg-blue-900 transition
           disabled:opacity-40 disabled:cursor-not-allowed"
             >
                 Prev
@@ -71,7 +71,7 @@ function Pagination({ page, totalPages, onPageChange }) {
                         className={`px-3 py-2 rounded-md text-sm font-medium border transition
               ${p === page
                                 ? "bg-black text-white border-black"
-                                : "hover:bg-gray-100"
+                                : "hover:bg-blue-800"
                             }`}
                     >
                         {p}
@@ -84,7 +84,7 @@ function Pagination({ page, totalPages, onPageChange }) {
                 disabled={page === totalPages}
                 onClick={() => onPageChange(page + 1)}
                 className="px-3 py-2 border rounded-md text-sm font-medium
-          hover:bg-gray-100 transition
+          hover:bg-blue-800 transition
           disabled:opacity-40 disabled:cursor-not-allowed"
             >
                 Next

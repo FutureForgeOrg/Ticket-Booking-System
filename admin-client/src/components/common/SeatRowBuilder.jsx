@@ -28,14 +28,14 @@ function SeatRowBuilder({ rows, setRows }) {
   return (
     <div className="space-y-4">
       {rows.map((row, rowIndex) => (
-        <div key={rowIndex} className="border p-3 rounded bg-white">
+        <div key={rowIndex} className="border border-border p-3 rounded bg-surface text-text-primary">
           <strong>Row {row.row}</strong>
 
           {row.blocks.map((block, blockIndex) => (
             <div key={blockIndex} className="flex gap-2 mt-2 items-center">
               <input
                 type="number"
-                className="w-20 border rounded px-2 py-1"
+                className="w-20 border border-border bg-canvas text-text-primary rounded px-2 py-1"
                 value={block.count}
                 onChange={(e) => {
                   const blocks = [...row.blocks];
@@ -45,6 +45,7 @@ function SeatRowBuilder({ rows, setRows }) {
               />
 
               <select
+                className="border border-border bg-canvas text-text-primary rounded px-2 py-1"
                 value={block.gap ? "gap" : "seat"}
                 onChange={(e) => {
                   const blocks = [...row.blocks];
@@ -61,6 +62,7 @@ function SeatRowBuilder({ rows, setRows }) {
 
               {!block.gap && (
                 <select
+                  className="border border-border bg-canvas text-text-primary rounded px-2 py-1"
                   value={block.seatType}
                   onChange={(e) => {
                     const blocks = [...row.blocks];

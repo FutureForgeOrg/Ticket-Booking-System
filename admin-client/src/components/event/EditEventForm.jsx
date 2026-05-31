@@ -150,20 +150,20 @@ function EditEventForm({ initialData, onSubmit }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-5xl space-y-6 bg-white p-6 rounded-2xl shadow-sm border"
+      className="max-w-5xl space-y-6 bg-surface p-6 rounded-2xl shadow-sm border border-border"
     >
-      <h2 className="text-2xl font-semibold">Edit Event</h2>
+      <h2 className="text-2xl font-semibold text-text-primary">Edit Event</h2>
 
       {/* Basic Fields */}
       <TextInput label="Title" name="title" value={form.title} onChange={handleChange} />
 
       <div>
-        <label className="text-sm font-medium">Description</label>
+        <label className="text-sm font-medium text-text-primary">Description</label>
         <textarea
           name="description"
           value={form.description}
           onChange={handleChange}
-          className="w-full border rounded-md px-3 py-2"
+          className="w-full border border-border bg-canvas text-text-primary rounded-md px-3 py-2"
         />
       </div>
 
@@ -179,7 +179,7 @@ function EditEventForm({ initialData, onSubmit }) {
           checked={form.isFeatured}
           onChange={handleChange}
         />
-        <label>Featured Event</label>
+        <label className="text-sm font-medium text-text-primary">Featured Event</label>
       </div>
 
       <TextInput label="Venue" name="venue" value={form.venue} onChange={handleChange} />
@@ -188,7 +188,7 @@ function EditEventForm({ initialData, onSubmit }) {
 
       {/* Categories */}
       <div>
-        <h3 className="font-semibold mb-2">Categories</h3>
+        <h3 className="font-semibold mb-2 text-text-primary">Categories</h3>
         {form.categories.map((cat, index) => (
           <div key={cat._id || index} className="grid grid-cols-4 gap-4 mb-3">
             <TextInput label="Name" value={cat.name} disabled />
@@ -222,22 +222,22 @@ function EditEventForm({ initialData, onSubmit }) {
       <div className="grid grid-cols-2 gap-6">
         {initialData?.posterUrl && (
           <div>
-            <p className="text-sm font-medium mb-2">Current Poster</p>
+            <p className="text-sm font-medium mb-2 text-text-primary">Current Poster</p>
             <img
               src={initialData.posterUrl}
               alt="Poster"
-              className="w-full h-48 object-cover rounded-lg border"
+              className="w-full h-48 object-cover rounded-lg border border-border"
             />
           </div>
         )}
 
         {initialData?.bannerUrl && (
           <div>
-            <p className="text-sm font-medium mb-2">Current Banner</p>
+            <p className="text-sm font-medium mb-2 text-text-primary">Current Banner</p>
             <img
               src={initialData.bannerUrl}
               alt="Banner"
-              className="w-full h-48 object-cover rounded-lg border"
+              className="w-full h-48 object-cover rounded-lg border border-border"
             />
           </div>
         )}
@@ -253,22 +253,22 @@ function EditEventForm({ initialData, onSubmit }) {
       <div className="grid grid-cols-2 gap-6">
         {files.poster && (
           <div>
-            <p className="text-sm font-medium">New Poster Preview</p>
+            <p className="text-sm font-medium text-text-primary mb-2">New Poster Preview</p>
             <img
               src={URL.createObjectURL(files.poster)}
               alt="New Poster"
-              className="w-full h-48 object-cover rounded-lg border"
+              className="w-full h-48 object-cover rounded-lg border border-border"
             />
           </div>
         )}
 
         {files.banner && (
           <div>
-            <p className="text-sm font-medium">New Banner Preview</p>
+            <p className="text-sm font-medium text-text-primary mb-2">New Banner Preview</p>
             <img
               src={URL.createObjectURL(files.banner)}
               alt="New Banner"
-              className="w-full h-48 object-cover rounded-lg border"
+              className="w-full h-48 object-cover rounded-lg border border-border"
             />
           </div>
         )}

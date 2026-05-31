@@ -59,8 +59,8 @@ const CreateShowForm = () => {
 
   return (
     <div className="flex items-center justify-between w-full h-screen">
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-semibold mb-6 text-gray-700">Create New Show</h2>
+    <div className="max-w-4xl mx-auto p-6 bg-surface shadow-md border border-border rounded-lg">
+      <h2 className="text-2xl font-semibold mb-6 text-text-primary">Create New Show</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* MOVIE */}
@@ -130,7 +130,7 @@ const CreateShowForm = () => {
         <ConfirmButton
           onConfirm={handleSubmit}
           disabled={isCreatingShow}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-md shadow"
+          className="bg-primary hover:bg-primary-hover text-white font-semibold px-6 py-3 rounded-md shadow"
         >
           {isCreatingShow ? "Creating..." : "Create Show"}
         </ConfirmButton>
