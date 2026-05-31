@@ -49,10 +49,10 @@ function ConfirmButtonAlert({
           />
 
           {/* Modal */}
-          <div className="relative z-10 w-[92%] max-w-md rounded-xl bg-white p-5 shadow-xl">
+          <div className="relative z-10 w-[92%] max-w-md rounded-xl bg-surface border border-border p-5 shadow-xl">
             <div className="space-y-2">
-              <h2 className="text-start text-lg font-semibold text-gray-900">{title}</h2>
-              <p className="text-start text-sm text-gray-600">{description}</p>
+              <h2 className="text-start text-lg font-semibold text-text-primary">{title}</h2>
+              <p className="text-start text-sm text-text-secondary">{description}</p>
             </div>
 
             <div className="mt-5 flex justify-end gap-2">
@@ -60,7 +60,7 @@ function ConfirmButtonAlert({
                 type="button"
                 onClick={() => setOpen(false)}
                 disabled={isLoading}
-                className="rounded-md border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60"
+                className="rounded-md border border-border bg-canvas px-4 py-2 text-sm font-medium text-text-primary hover:bg-surface disabled:opacity-60"
               >
                 {cancelText}
               </button>
@@ -69,7 +69,7 @@ function ConfirmButtonAlert({
                 type="button"
                 onClick={handleConfirm}
                 disabled={isLoading}
-                className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-60"
+                className="rounded-md bg-danger px-4 py-2 text-sm font-medium text-white hover:bg-danger/80 disabled:opacity-60"
               >
                 {isLoading ? "Deleting..." : confirmText}
               </button>

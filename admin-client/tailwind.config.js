@@ -70,30 +70,62 @@ export default {
   theme: {
     extend: {
       colors: {
-        canvas: "#F5F3FF",
-        surface: "#FFFFFF",
-        border: "#E9D5FF",
+        canvas: "var(--canvas)",
+        surface: "var(--surface)",
+        border: "var(--border)",
+
+        background: "var(--canvas)",
+        foreground: "var(--text-primary)",
+
+        card: {
+          DEFAULT: "var(--surface)",
+          foreground: "var(--text-primary)",
+        },
+        popover: {
+          DEFAULT: "var(--surface)",
+          foreground: "var(--text-primary)",
+        },
 
         primary: {
-          DEFAULT: "#6366F1",
-          hover: "#4F46E5",
-          soft: "rgba(99,102,241,0.1)",
+          DEFAULT: "var(--primary)",
+          foreground: "#ffffff",
+          hover: "var(--primary-hover)",
+          soft: "var(--primary-soft)",
         },
 
         secondary: {
-          DEFAULT: "#EC4899",
-          soft: "rgba(236,72,153,0.1)",
+          DEFAULT: "var(--secondary)",
+          foreground: "#ffffff",
+          soft: "var(--secondary-soft)",
         },
+
+        muted: {
+          DEFAULT: "var(--surface)",
+          foreground: "var(--text-muted)",
+        },
+
+        accent: {
+          DEFAULT: "var(--surface)",
+          foreground: "var(--text-primary)",
+        },
+
+        destructive: {
+          DEFAULT: "var(--danger)",
+          foreground: "#ffffff",
+        },
+
+        input: "var(--border)",
+        ring: "var(--primary)",
 
         text: {
-          primary: "#312E81",
-          secondary: "#4C1D95",
-          muted: "#A78BFA",
+          primary: "var(--text-primary)",
+          secondary: "var(--text-secondary)",
+          muted: "var(--text-muted)",
         },
 
-        danger: "#EF4444",
-        success: "#10B981",
-        warning: "#F59E0B",
+        danger: "var(--danger)",
+        success: "var(--success)",
+        warning: "var(--warning)",
       },
 
       borderRadius: {

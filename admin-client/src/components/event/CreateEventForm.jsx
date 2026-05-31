@@ -93,19 +93,19 @@ function CreateEventForm({ onSubmit }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-5xl space-y-6 bg-white p-6 rounded-2xl shadow-sm border"
+      className="max-w-5xl space-y-6 bg-surface p-6 rounded-2xl shadow-sm border border-border"
     >
-      <h2 className="text-2xl font-semibold">Create Event</h2>
+      <h2 className="text-2xl font-semibold text-text-primary">Create Event</h2>
 
       <TextInput label="Title" name="title" value={form.title} onChange={handleChange} required />
 
       <div>
-        <label className="text-sm font-medium">Description</label>
+        <label className="text-sm font-medium text-text-primary">Description</label>
         <textarea
           name="description"
           value={form.description}
           onChange={handleChange}
-          className="w-full border rounded-md px-3 py-2"
+          className="w-full border border-border bg-canvas text-text-primary rounded-md px-3 py-2"
           required
         />
       </div>
@@ -120,7 +120,7 @@ function CreateEventForm({ onSubmit }) {
 
       <div className="flex items-center gap-2">
         <input type="checkbox" name="isFeatured" checked={form.isFeatured} onChange={handleChange} />
-        <label>Featured Event</label>
+        <label className="text-sm font-medium text-text-primary">Featured Event</label>
       </div>
 
       <TextInput label="Venue" name="venue" value={form.venue} onChange={handleChange} />
@@ -129,7 +129,7 @@ function CreateEventForm({ onSubmit }) {
 
       {/* Categories */}
       <div>
-        <h3 className="font-semibold mb-2">Categories</h3>
+        <h3 className="font-semibold mb-2 text-text-primary">Categories</h3>
 
         {form.categories.map((cat, index) => (
           <div key={index} className="grid grid-cols-4 gap-4 mb-3">

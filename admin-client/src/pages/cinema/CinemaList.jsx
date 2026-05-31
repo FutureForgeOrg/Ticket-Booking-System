@@ -40,7 +40,7 @@ function CinemaList() {
             { header: "Screens", accessorKey: "screens" },]}
           data={tableData}
           renderActions={(row) => (
-            <div className="flex gap-2">
+            <div className="flex gap-4">
               <button onClick={() => navigate(`/cinemaDetails/${row._id}`)}>
                 View
               </button>

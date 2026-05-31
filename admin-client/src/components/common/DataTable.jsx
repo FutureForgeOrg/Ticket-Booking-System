@@ -85,40 +85,40 @@ function DataTable({ columns, data, renderActions }) {
   const colSpan = columns.length + (renderActions ? 1 : 0);
 
   return (
-    <div className="w-full overflow-hidden rounded-2xl border border-slate-200/70 bg-gradient-to-b from-white to-slate-50 shadow-sm shadow-slate-200/80 ring-1 ring-slate-900/5">
+    <div className="w-full overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
       <div className="w-full overflow-x-auto">
         <table className="w-full min-w-[700px] border-collapse">
           <thead>
-            <tr className="border-b border-slate-200/70 bg-gradient-to-b from-slate-50 to-slate-100/80">
+            <tr className="border-b border-border bg-canvas/50">
               {columns.map((col) => (
                 <th
                   key={col.header}
-                  className="px-5 py-3.5 text-left text-[10px] font-semibold uppercase tracking-widest text-slate-400"
+                  className="px-5 py-3.5 text-left text-[10px] font-semibold uppercase tracking-widest text-text-secondary"
                 >
                   {col.header}
                 </th>
               ))}
               {renderActions && (
-                <th className="px-5 py-3.5 text-right text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+                <th className="px-5 py-3.5 text-right text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
                   Actions
                 </th>
               )}
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-border">
             {Array.isArray(data) && data.length > 0 ? (
               data.map((row, idx) => (
                 <tr
                   key={row._id ?? idx}
-                  className="group transition-colors duration-100 odd:bg-white even:bg-slate-50/60 hover:bg-indigo-50/40"
+                  className="group transition-colors duration-100 odd:bg-surface even:bg-canvas/50 hover:bg-primary-soft"
                 >
                   {columns.map((col, colIdx) => (
                     <td
                       key={col.accessorKey ?? col.header}
-                      className={`px-5 py-3 text-sm text-slate-700 transition-colors duration-100 ${
+                      className={`px-5 py-3 text-sm text-text-primary transition-colors duration-100 ${
                         colIdx === 0
-                          ? "border-l-2 border-transparent group-hover:border-indigo-400"
+                          ? "border-l-2 border-transparent group-hover:border-primary"
                           : ""
                       }`}
                     >
@@ -144,7 +144,7 @@ function DataTable({ columns, data, renderActions }) {
                   className="px-5 py-14 text-center"
                 >
                   <svg
-                    className="mx-auto mb-3 text-slate-300"
+                    className="mx-auto mb-3 text-text-muted"
                     width="36"
                     height="36"
                     viewBox="0 0 24 24"
@@ -155,7 +155,7 @@ function DataTable({ columns, data, renderActions }) {
                     <rect x="3" y="3" width="18" height="18" rx="3" />
                     <path d="M3 9h18M9 21V9" />
                   </svg>
-                  <span className="text-sm text-slate-400">No data available</span>
+                  <span className="text-sm text-text-muted">No data available</span>
                 </td>
               </tr>
             )}

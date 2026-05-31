@@ -28,6 +28,6 @@ export const refundPaymentAdmin = async (paymentId) => {
 
 // Revenue
 export const getRevenueStatsAdmin = async () => {
-  const response = await instance.get("/payments/revenue");
+  const response = await instance.get("/payment/revenue-stats");
   return response.data;
 };

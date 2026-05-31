@@ -30,7 +30,7 @@ function Login({ setUser }) {
       }
 
       setUser(res.data.user);   // only state
-      navigate("/dashboard");
+      navigate("/movie"); // redirect to dashboard
 
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
@@ -40,14 +40,14 @@ function Login({ setUser }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-canvas">
+      <div className="bg-surface border border-border p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-bold text-center mb-6 text-text-primary">
           Admin Login
         </h2>
 
         {error && (
-          <div className="bg-red-100 text-red-600 p-2 mb-4 rounded">
+          <div className="bg-danger/10 text-danger p-2 mb-4 rounded border border-danger/20">
             {error}
           </div>
         )}
@@ -63,7 +63,7 @@ function Login({ setUser }) {
               name="email"
               value={form.email}
               onChange={handleChange}
-              className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full border border-border bg-canvas text-text-primary p-2 rounded focus:outline-none focus:ring-2 focus:ring-primary"
               required
             />
           </div>
@@ -77,7 +77,7 @@ function Login({ setUser }) {
               name="password"
               value={form.password}
               onChange={handleChange}
-              className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full border border-border bg-canvas text-text-primary p-2 rounded focus:outline-none focus:ring-2 focus:ring-primary"
               required
             />
           </div>
@@ -85,7 +85,7 @@ function Login({ setUser }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-black text-white p-2 rounded hover:bg-gray-800 transition"
+            className="w-full bg-primary text-white p-2 rounded hover:bg-primary-hover transition"
           >
             {loading ? "Logging in..." : "Login"}
           </button>

@@ -96,7 +96,7 @@ function Movie() {
                 cancelText="Cancel"
                 confirmText="Delete"
               >
-                <div className="flex items-center gap-2 text-red-500">
+                <div className="flex items-center gap-2 text-white-500">
                   <Trash2 size={18} />
                   <span>Delete</span>
                 </div>

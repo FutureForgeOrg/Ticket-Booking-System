@@ -7,7 +7,7 @@ const ScreenSeatLayout = ({ screen }) => {
   const { rows, rowGap } = screen.layout;
 
   return (
-    <div className="border rounded p-4 bg-white">
+    <div className="border border-border rounded p-4 bg-surface text-text-primary">
       <h4 className="font-semibold mb-3">{screen.name}</h4>
 
       {rows.map((row) => {
@@ -40,7 +40,7 @@ const ScreenSeatLayout = ({ screen }) => {
         );
       })}
 
-      <div className="text-center text-xs mt-4">----- SCREEN -----</div>
+      <div className="text-center text-xs mt-4 text-text-muted">----- SCREEN -----</div>
     </div>
   );
 };

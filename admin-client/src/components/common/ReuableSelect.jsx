@@ -13,14 +13,14 @@ export default function ReusableSelect({
   value,
   onChange,
   disabled = false,
-  className = "bg-white",
+  className = "bg-surface border-border text-text-primary",
   name,
   emptyMessage = "No options available",
 }) {
   return (
     <div className="space-y-2">
       {label && (
-        <label className="text-sm font-medium ml-3" htmlFor={name}>
+        <label className="text-sm font-medium ml-3 text-text-primary" htmlFor={name}>
           {label}
         </label>
       )}
@@ -30,7 +30,7 @@ export default function ReusableSelect({
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
 
-        <SelectContent className="z-50 bg-white max-h-[380px] overflow-y-auto">
+        <SelectContent className="z-50 bg-surface border-border text-text-primary max-h-[380px] overflow-y-auto">
           {options.length === 0 && (
             <SelectItem value="no-options" disabled className="">
               {emptyMessage}

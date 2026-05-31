@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Layout from "./components/Layout";
+import { ThemeProvider } from "./components/ThemeProvider";
 import Dashboard from "./pages/Dashboard";
 import Movie from "./pages/movies/Movie";
 import CreateMovie from "./pages/movies/CreateMovie";
@@ -52,7 +53,7 @@ function App() {
   }
 
   return (
-    <>
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <Toaster position="top-right" />
       <BrowserRouter>
         <Routes>
@@ -90,7 +91,7 @@ function App() {
 
         </Routes>
       </BrowserRouter>
-    </>
+    </ThemeProvider>
   );
 }
 

@@ -12,7 +12,7 @@ function EditShowForm() {
   const { editShow } = useShowStore();
 
   // Show loading if show is not passed
-  if (!show) return <div className="text-center mt-20 text-gray-500">Loading...</div>;
+  if (!show) return <div className="text-center mt-20 text-text-muted">Loading...</div>;
 
   const [form, setForm] = useState({
     showTime: new Date(show.showTime).toISOString().slice(0, 16),
@@ -30,8 +30,8 @@ function EditShowForm() {
   };
 
   return (
-    <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-      <h1 className="text-2xl font-semibold text-gray-700 mb-6">Edit Show</h1>
+    <div className="max-w-lg mx-auto mt-10 p-6 bg-surface shadow-lg border border-border rounded-lg">
+      <h1 className="text-2xl font-semibold text-text-primary mb-6">Edit Show</h1>
 
       {/* Show Time */}
       <TextInput
@@ -90,7 +90,7 @@ function EditShowForm() {
       <div className="mt-6 flex justify-end">
         <ConfirmButton
           onConfirm={handleSubmit}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-md shadow"
+          className="bg-primary hover:bg-primary-hover text-white font-semibold px-6 py-3 rounded-md shadow"
         >
           Update Show
         </ConfirmButton>
